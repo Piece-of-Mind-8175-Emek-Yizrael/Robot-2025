@@ -36,6 +36,8 @@ import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+
 /**
  * This class is where the bulk of the robot should be declared. Since
  * Command-based is a
@@ -103,10 +105,10 @@ public class RobotContainer {
                                 break;
                 }
 
-                SendableChooser<Command> c = new SendableChooser<>();
-
                 // Set up auto routines
-                autoChooser = new LoggedDashboardChooser<>("Auto Choices", c); // TODO use auto builder
+                autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser()); // TODO use
+                                                                                                            // auto
+                                                                                                            // builder
 
                 // Set up SysId routines
                 autoChooser.addOption(
