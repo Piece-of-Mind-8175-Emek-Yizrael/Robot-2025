@@ -24,12 +24,21 @@ public class OutakeIOSim implements OutakeIO {
     public OutakeIOSim(SwerveDriveSimulation swerveDriveSimulation) {
         flywheel = new FlywheelSim(LinearSystemId.createFlywheelSystem(DCMotor.getNeo550(1), 0, 50),DCMotor.getNeo550(1), 50.0, 0.1);
         intakeSimulation = IntakeSimulation.InTheFrameIntake("Coral", swerveDriveSimulation, Meters.of(0.7), IntakeSide.BACK, 1);
-        intakeSimulation.startIntake();
+
     }
 
     @Override
     public void setSpeed(double speed) {
         flywheel.setAngularVelocity(speed);
+    }
+
+    @Override
+    public void stop() {
+        flywheel.setAngularVelocity(0);
+        intakeSimulation.stopIntake();
+    }
+
+    public void Outake(){
         if(intakeSimulation.obtainGamePieceFromIntake()){
 
             ReefscapeCoral coral = new ReefscapeCoral(swerveDriveSimulation.getSimulatedDriveTrainPose());
@@ -37,15 +46,10 @@ public class OutakeIOSim implements OutakeIO {
         }
     }
 
-    @Override
-    public void stop() {
-        flywheel.setAngularVelocity(0);
+    public void Intake(){
+        intakeSimulation.startIntake();
+        
     }
-
-
-
-
-
 
     public void updateOutputs(OutakeIOInputs outputs) {
         outputs.outakeVelocityRadPerSec = flywheel.getAngularVelocity().magnitude();
