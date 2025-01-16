@@ -21,14 +21,14 @@ public class POMTalonFX extends TalonFX implements POMMotor {
         config.Audio.AllowMusicDurDisable = true;
         getConfigurator().apply(config);
         orchestra.addInstrument(this);
-        
+
     }
-    
+
     @Override
     public void stop() {
         set(0);
     }
-    
+
     @Override
     public void setDirection(Direction direction) {
         if (direction == Direction.ClockWise) {
@@ -39,7 +39,6 @@ public class POMTalonFX extends TalonFX implements POMMotor {
         getConfigurator().apply(config);
     }
 
-    
     @Override
     public void setBrake(boolean isBrake) {
         config.MotorOutput.withNeutralMode(isBrake ? NeutralModeValue.Coast : NeutralModeValue.Brake);
@@ -47,15 +46,14 @@ public class POMTalonFX extends TalonFX implements POMMotor {
 
     }
 
-    public static void EnableSound(){
+    public static void EnableSound() {
         orchestra.loadMusic("enable.chrp");
         orchestra.play();
     }
 
-    public static void DisableSound(){
+    public static void DisableSound() {
         orchestra.loadMusic("disable.chrp");
         orchestra.play();
     }
-    
-    
+
 }

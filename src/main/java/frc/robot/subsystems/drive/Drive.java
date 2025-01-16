@@ -191,6 +191,7 @@ public class Drive extends SubsystemBase {
                 - lastModulePositions[moduleIndex].distanceMeters,
             modulePositions[moduleIndex].angle);
         lastModulePositions[moduleIndex] = modulePositions[moduleIndex];
+        Logger.recordOutput("Module " + moduleIndex + " distance meters", modulePositions[moduleIndex].distanceMeters);
       }
 
       // Update gyro angle

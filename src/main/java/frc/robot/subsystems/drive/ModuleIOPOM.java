@@ -59,6 +59,7 @@ import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.POM_lib.Dashboard.DashboardNumber;
 import frc.robot.POM_lib.Motors.POMTalonFX;
 import frc.robot.util.SparkUtil;
 
@@ -84,8 +85,14 @@ public class ModuleIOPOM implements ModuleIO {
 
   private final VelocityVoltage velocityVoltageRequest = new VelocityVoltage(0.0);
 
+  // DashboardNumber driveKV;
+  // DashboardNumber driveKS;
+  // double lastKS = 0, lastKV = 0;
+
   public ModuleIOPOM(int module) {
     this.module = module;
+    // driveKV = new DashboardNumber("driveKv" + module, 0.9);
+    // driveKS = new DashboardNumber("driveKs" + module, 0.1);
 
     Rotation2d zeroRotation = switch (module) {
       case 0 -> frontLeftZeroRotation;
@@ -112,7 +119,9 @@ public class ModuleIOPOM implements ModuleIO {
     Slot0Configs driveMotorGains = new Slot0Configs()
         .withKP(driveKp).withKD(driveKd).withKS(driveKs).withKV(driveKv);
     driveConfig.Slot0 = driveMotorGains;
+
     driveConfig.Feedback.SensorToMechanismRatio = driveEncoderPositionFactor;
+    driveConfig.Feedback.RotorToSensorRatio = 1.0;
     driveConfig.TorqueCurrent.PeakForwardTorqueCurrent = driveSlipCurrent;
     driveConfig.TorqueCurrent.PeakReverseTorqueCurrent = -driveSlipCurrent;
     driveConfig.CurrentLimits.StatorCurrentLimit = driveSlipCurrent;
@@ -216,6 +225,13 @@ public class ModuleIOPOM implements ModuleIO {
     if (!resetToAbsoluteTimer.isRunning()) {
       resetToAbsoluteTimer.start();
     }
+
+    // if (lastKS != (lastKS = driveKS.get()) || lastKV != (lastKV = driveKV.get()))
+    // {
+    // var driveConfig = new TalonFXConfiguration();
+    // driveConfig.Slot0 = new Slot0Configs().withKS(lastKS).withKV(lastKV);
+    // driveMotor.getConfigurator().apply(driveConfig);
+    // }
   }
 
   public void resetToAbsolute() {
@@ -240,6 +256,7 @@ public class ModuleIOPOM implements ModuleIO {
 
   @Override
   public void setDriveVelocity(double velocityRadPerSec) {
+    Logger.recordOutput(getModuleString() + "/drive request velocity", velocityRadPerSec);
     double velocityRotPerSec = Units.radiansToRotations(velocityRadPerSec);
     driveMotor.setControl(velocityVoltageRequest.withVelocity(velocityRotPerSec));
   }
