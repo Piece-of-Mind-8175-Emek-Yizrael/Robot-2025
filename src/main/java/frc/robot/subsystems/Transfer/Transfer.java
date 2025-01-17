@@ -1,11 +1,7 @@
 package frc.robot.subsystems.Transfer;
 
 import org.littletonrobotics.junction.Logger;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import static frc.robot.subsystems.Transfer.TransferConstants.CORAL_INTAKE_SPEED;
-import static frc.robot.subsystems.Transfer.TransferConstants.CORAL_OUTTAKE_SPEED;
-
 
 public class Transfer extends SubsystemBase {
 
@@ -34,7 +30,7 @@ public class Transfer extends SubsystemBase {
         getIO().stopMotor();
     }
 
-
+    
     public void periodic() {
         transferIO.updateInputs(transferInputs);
         Logger.processInputs("Transfer", transferInputs);
