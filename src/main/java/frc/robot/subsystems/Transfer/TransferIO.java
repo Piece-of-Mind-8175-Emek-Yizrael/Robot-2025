@@ -7,7 +7,7 @@ public interface TransferIO {
   public static class TransferIOInputs {
   public double speed;
   public double voltage;
-  public boolean IRSensor1isCrossed;
+  public boolean transferSensorInput;
     
   }  
 

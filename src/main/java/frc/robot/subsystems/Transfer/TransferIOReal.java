@@ -1,25 +1,24 @@
 package frc.robot.subsystems.Transfer;
 
-import java.io.ObjectInputFilter.Config;
-import java.security.Policy;
-
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-
-import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.POM_lib.Motors.POMSparkMax;
+import frc.robot.POM_lib.sensors.POMDigitalInput;
+import static frc.robot.subsystems.Transfer.TransferConstants.TRANSFER_MOTOR_ID;
+import static frc.robot.subsystems.Transfer.TransferConstants.TRANSFER_SENSOR_CHANNEL;;
+
+
 
 public class TransferIOReal implements TransferIO{
-        private final DigitalInput IRSensor1 = new DigitalInput(0);
-        //private final DigitalInput IRSensor2 = new DigitalInput(0);
-        private final POMSparkMax transferMotor = new POMSparkMax(0,MotorType.kBrushless);
+        private final POMDigitalInput transferSensor = new POMDigitalInput(TRANSFER_SENSOR_CHANNEL);
+        private final POMSparkMax transferMotor = new POMSparkMax(TRANSFER_MOTOR_ID,MotorType.kBrushless);
         private final SparkMaxConfig config = new SparkMaxConfig();
-        boolean IRS1isCrossed;
     
         public TransferIOReal(){
             config
             .idleMode(IdleMode.kCoast);
+            
         }
 
         @Override
@@ -39,14 +38,14 @@ public class TransferIOReal implements TransferIO{
     
         @Override
         public boolean isCoralIn() {
-            return IRSensor1.get();
+            return transferSensor.get();
     }
     
         @Override
         public void updateInputs(TransferIOInputs inputs){
             inputs.speed = transferMotor.get();
             inputs.voltage = (transferMotor.getAppliedOutput() * transferMotor.getBusVoltage());
-            inputs.IRSensor1isCrossed = IRSensor1.get();
+            inputs.transferSensorInput = transferSensor.get();
         }
     
     
