@@ -1,11 +1,8 @@
 package frc.robot.subsystems.Transfer;
 
-import java.io.ObjectInputFilter.Config;
-import java.security.Policy;
-
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.POM_lib.Motors.POMSparkMax;
@@ -29,7 +26,7 @@ public class TransferIOReal implements TransferIO{
     
         @Override
         public void setVoltage(double voltage) {
-            transferMotor.setVoltage(voltage);
+            transferMotor.setVoltage(voltage);        
         }
     
         public void stopMotor() {
@@ -44,9 +41,10 @@ public class TransferIOReal implements TransferIO{
     
         @Override
         public void updateInputs(TransferIOInputs inputs){
-            inputs.speed = transferMotor.get();
+            inputs.velocity = transferMotor.get();
             inputs.voltage = (transferMotor.getAppliedOutput() * transferMotor.getBusVoltage());
             inputs.IRSensor1isCrossed = IRSensor1.get();
+            inputs.current = transferMotor.getOutputCurrent();
         }
     
     
