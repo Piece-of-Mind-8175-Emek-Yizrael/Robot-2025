@@ -60,7 +60,7 @@ public class TransferIOSim implements TransferIO {
         outputs.velocity = flywheel.getAngularVelocity().magnitude();
         outputs.voltage = flywheel.getInputVoltage();
         outputs.current = flywheel.getCurrentDrawAmps();
-        outputs.IRSensor1isCrossed = intakeSimulation.getGamePiecesAmount() > 0;
+        outputs.transferSensorInput = intakeSimulation.getGamePiecesAmount() > 0;
         
     }
 
