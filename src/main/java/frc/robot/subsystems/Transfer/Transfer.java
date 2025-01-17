@@ -34,13 +34,6 @@ public class Transfer extends SubsystemBase {
         getIO().stopMotor();
     }
 
-    public Command startTransfer() {
-        return startEnd(() -> setSpeed(CORAL_INTAKE_SPEED), () ->stopMotor()).until(() -> getIO().isCoralIn());
-    }
-
-    public Command coralOutake() {
-        return startEnd(() -> setSpeed(CORAL_OUTTAKE_SPEED), () -> stopMotor()).until(() -> !getIO().isCoralIn());
-    }
 
     public void periodic() {
         transferIO.updateInputs(transferInputs);
