@@ -13,23 +13,24 @@ public class Transfer extends SubsystemBase {
     }
 
 
-    public TransferIO getIO(){
-        return transferIO;
-    }
+
 
     public void setSpeed(double speed) {
-        getIO().setSpeed(speed);
+        transferIO.setSpeed(speed);
     }
 
 
     public void setVoltage(double voltage) {
-        getIO().setVoltage(voltage);
+        transferIO.setVoltage(voltage);
     }
 
     public void stopMotor() {
-        getIO().stopMotor();
+        transferIO.stopMotor();
     }
 
+    public boolean isCoralIn(){
+        return transferIO.isCoralIn();
+    }
     
     public void periodic() {
         transferIO.updateInputs(transferInputs);
