@@ -15,6 +15,7 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -36,6 +37,7 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathPlannerPath;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -153,11 +155,13 @@ public class RobotContainer {
         private void configureButtonBindings() {
                 // Default command, normal field-relative drive
                 drive.setDefaultCommand(
-                                DriveCommands.joystickDriveClosedLoopVel(
+                                DriveCommands.joystickDrive(
                                                 drive,
                                                 () -> driverController.getLeftY() * 0.25,
                                                 () -> driverController.getLeftX() * 0.25,
                                                 () -> driverController.getRightX() * 0.25));
+
+                driverController.b().onTrue(getPathCommand());
                 // driverController.x().onTrue(Commands.runOnce(() ->
                 // moduleFL.setTurnPosition(new Rotation2d(Math.PI))));
                 // driverController.b().onTrue(
@@ -212,4 +216,21 @@ public class RobotContainer {
         public Command getAutonomousCommand() {
                 return autoChooser.get();
         }
+
+        public Command getPathCommand() {
+                try {
+                        // Load the path you want to follow using its name in the GUI
+                        PathPlannerPath path = PathPlannerPath.fromPathFile("Drive 1 meter path");
+
+                        // Create a path following command using AutoBuilder. This will also trigger
+                        // event markers.
+                        return (AutoBuilder.followPath(path).andThen(Commands.print("After command")))
+                                        .beforeStarting(() -> drive.setPose(path.getStartingDifferentialPose()))
+                                        .beforeStarting(Commands.print("Starts following path"));
+                } catch (Exception e) {
+                        DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
+                        return Commands.print("Exception creating path");
+                }
+        }
+
 }
