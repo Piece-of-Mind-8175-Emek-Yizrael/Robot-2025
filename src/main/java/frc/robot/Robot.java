@@ -81,7 +81,6 @@ public class Robot extends LoggedRobot {
       case REAL:
         // Running on a real robot, log to a USB stick ("/U/logs")
         Logger.addDataReceiver(new WPILOGWriter("/home/lvuser/logs"));
-        Logger.addDataReceiver(new WPILOGWriter("/home/lvuser/logs"));
         Logger.addDataReceiver(new NT4Publisher());
         break;
 
@@ -131,6 +130,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void disabledInit() {
     // POMTalonFX.DisableSound();
+    // POMTalonFX.DisableSound();
   }
 
   /** This function is called periodically when disabled. */
@@ -173,6 +173,7 @@ public class Robot extends LoggedRobot {
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }
+    // POMTalonFX.EnableSound();
     // POMTalonFX.EnableSound();
   }
 
