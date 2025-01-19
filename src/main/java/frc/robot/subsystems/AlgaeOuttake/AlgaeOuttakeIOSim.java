@@ -1,4 +1,4 @@
-package frc.robot.subsystems.Arm;
+package frc.robot.subsystems.AlgaeOuttake;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -6,14 +6,14 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.wpilibj.simulation.PWMSim;
 
-public class ArmIOSim implements ArmIO {
+public class AlgaeOuttakeIOSim implements AlgaeOuttakeIO {
 
     private PWMSim sim;
 
     private final double MAX_ANGLE = 180;
 
     private Pose3d pose;
-    public ArmIOSim() {
+    public AlgaeOuttakeIOSim() {
         sim = new PWMSim(0);//TODO Replace with port constant
         Logger.recordOutput("Arm/Pose", pose);
 
@@ -32,7 +32,7 @@ public class ArmIOSim implements ArmIO {
     }
 
     @Override
-    public void updateInputs(ArmIOInputs inputs) {
+    public void updateInputs(AlgaeOuttakeIOInputs inputs) {
 
         inputs.Degrees = getAngle();
         
