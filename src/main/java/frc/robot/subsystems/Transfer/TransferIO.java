@@ -5,8 +5,9 @@ import org.littletonrobotics.junction.AutoLog;
 public interface TransferIO {
   @AutoLog
   public static class TransferIOInputs {
-  public double speed;
+  public double velocity;
   public double voltage;
+  public double current;
   public boolean transferSensorInput;
     
   }  

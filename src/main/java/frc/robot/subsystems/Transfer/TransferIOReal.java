@@ -3,8 +3,8 @@ package frc.robot.subsystems.Transfer;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
 import frc.robot.POM_lib.Motors.POMSparkMax;
 import frc.robot.POM_lib.sensors.POMDigitalInput;
 import static frc.robot.subsystems.Transfer.TransferConstants.TRANSFER_MOTOR_ID;
@@ -30,7 +30,7 @@ public class TransferIOReal implements TransferIO{
     
         @Override
         public void setVoltage(double voltage) {
-            transferMotor.setVoltage(voltage);
+            transferMotor.setVoltage(voltage);        
         }
     
         public void stopMotor() {
@@ -45,7 +45,7 @@ public class TransferIOReal implements TransferIO{
     
         @Override
         public void updateInputs(TransferIOInputs inputs){
-            inputs.speed = transferMotor.get();
+            inputs.velocity = transferMotor.get();
             inputs.voltage = (transferMotor.getAppliedOutput() * transferMotor.getBusVoltage());
             inputs.transferSensorInput = transferSensor.get();
         }
