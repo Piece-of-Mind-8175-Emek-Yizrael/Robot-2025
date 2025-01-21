@@ -21,5 +21,6 @@ public interface ElevatorIO {
     public default void setSetPoint(double setpoint) {}
     public default void goToGoal(){}
     public default BooleanSupplier atGoal(){ return () ->  false; }
-
+    public default void stopMotor(){}
+    public default void resistGravity(){}
 }

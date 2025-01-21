@@ -50,7 +50,15 @@ public class ElevatorSubsystem extends SubsystemBase {
         elevatorIO.atGoal();
     }
 
+    public void resistGravity(){
+        elevatorIO.resistGravity();
+    }
+
     public Command goToPosition(double position){
         return run(() -> setSetPoint(position)).until(atGoal());
+    }
+    
+    public Command stopElevator(){
+        return runOnce(() -> resistGravity());
     }
 }
