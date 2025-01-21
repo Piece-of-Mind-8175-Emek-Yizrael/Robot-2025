@@ -34,7 +34,8 @@ public class ElevatorReal implements ElevatorIO{
         inputs.motorConnected = true /*turnConnectedDebouncer.calculate(sparkStickyFault)*/;
         inputs.elevatorVelocity = encoder.getVelocity();
         inputs.elevatorPosition = encoder.getPosition();
-        inputs.elevatorAppliedVolts = motor.getAppliedOutput() * motor.getBusVoltage();
+        inputs.elevatorAppliedVolts = motor.getAppliedOutput() * motor.getBusVoltage(); //FIXME Wont Return Motor Voltage
+        
     }
 
     @Override
