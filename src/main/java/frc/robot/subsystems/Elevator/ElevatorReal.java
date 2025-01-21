@@ -4,6 +4,8 @@ import static frc.robot.subsystems.Elevator.ElevatorConstants.*;
 import static frc.robot.subsystems.drive.DriveConstants.pigeonCanId;
 import static frc.robot.util.SparkUtil.sparkStickyFault;
 
+import java.util.function.BooleanSupplier;
+
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkBase.ControlType;
@@ -58,6 +60,11 @@ public class ElevatorReal implements ElevatorIO{
     public void goToGoal(){
         double pidVoltage = pidController.calculate(encoder.getPosition());
         setSpeed(pidVoltage);
+    }
+
+    @Override
+    public BooleanSupplier atGoal() {
+        return () -> pidController.atGoal();
     }
 
     

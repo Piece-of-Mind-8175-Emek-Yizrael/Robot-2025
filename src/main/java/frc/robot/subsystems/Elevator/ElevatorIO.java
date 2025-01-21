@@ -1,5 +1,7 @@
 package frc.robot.subsystems.Elevator;
 
+import java.util.function.BooleanSupplier;
+
 import org.littletonrobotics.junction.AutoLog;
 
 public interface ElevatorIO {
@@ -18,4 +20,6 @@ public interface ElevatorIO {
     public default void setVoltage(double voltage) {}
     public default void setSetPoint(double setpoint) {}
     public default void goToGoal(){}
+    public default BooleanSupplier atGoal(){ return () ->  false; }
+
 }

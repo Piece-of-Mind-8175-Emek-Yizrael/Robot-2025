@@ -2,7 +2,11 @@ package frc.robot.subsystems.Elevator;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+import java.util.function.BooleanSupplier;
+
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -40,5 +44,13 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     public void goToGoal(){
         elevatorIO.goToGoal();
+    }
+
+    public BooleanSupplier atGoal(){
+        elevatorIO.atGoal();
+    }
+
+    public Command goToPosition(double position){
+        return run(() -> setSetPoint(position)).until(atGoal());
     }
 }
