@@ -1,6 +1,7 @@
 package frc.robot.subsystems.Elevator;
 
 import static frc.robot.subsystems.Elevator.ElevatorConstants.*;
+import static frc.robot.subsystems.drive.DriveConstants.pigeonCanId;
 import static frc.robot.util.SparkUtil.sparkStickyFault;
 
 import com.revrobotics.RelativeEncoder;
@@ -8,7 +9,9 @@ import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.config.ClosedLoopConfig;
 
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import frc.robot.POM_lib.Motors.POMSparkMax;
 
 public class ElevatorReal implements ElevatorIO{
@@ -16,11 +19,14 @@ public class ElevatorReal implements ElevatorIO{
     RelativeEncoder encoder = motor.getEncoder();
     private final Debouncer turnConnectedDebouncer;
     public SparkClosedLoopController controller;
+    private ProfiledPIDController pidController;
+    
 
     public ElevatorReal(){
         motor = new POMSparkMax(ELEVATOR_ID);
         turnConnectedDebouncer = new Debouncer(0);
         controller = motor.getClosedLoopController();
+        pidController = new ProfiledPIDController(KP, KI, KD, null);
     }
 
     @Override
@@ -43,7 +49,16 @@ public class ElevatorReal implements ElevatorIO{
 
     @Override
     public void setSetPoint(double setpoint) {
-        controller.setReference(setpoint, ControlType.kPosition);
+        pidController.setGoal(setpoint);
+        motor.set(pidController.calculate(encoder.getPosition()));
     }
+
+    @Override
+    public void goToGoal(){
+        double pidVoltage = pidController.calculate(encoder.getPosition());
+        setSpeed(pidVoltage);
+    }
+
+    
     
 }

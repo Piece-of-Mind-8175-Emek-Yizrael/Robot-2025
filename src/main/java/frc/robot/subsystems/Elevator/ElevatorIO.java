@@ -17,4 +17,5 @@ public interface ElevatorIO {
     public default void setSpeed(double speed) {}
     public default void setVoltage(double voltage) {}
     public default void setSetPoint(double setpoint) {}
+    public default void goToGoal(){}
 }
