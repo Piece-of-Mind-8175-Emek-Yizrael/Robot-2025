@@ -15,6 +15,7 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -22,6 +23,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.POM_lib.Joysticks.PomXboxController;
+import frc.robot.POM_lib.Vision.POMAprilTagCamera;
+import frc.robot.POM_lib.Vision.TestCommad;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -30,6 +33,8 @@ import frc.robot.subsystems.drive.GyroIOSim;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOPOM;
 import frc.robot.subsystems.drive.ModuleIOSim;
+
+import java.io.IOException;
 
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
@@ -60,6 +65,8 @@ public class RobotContainer {
 
         private SwerveDriveSimulation driveSimulation = null;
 
+        private POMAprilTagCamera camera;
+
         /**
          * The container for the robot. Contains subsystems, OI devices, and commands.
          */
@@ -73,6 +80,12 @@ public class RobotContainer {
                                                 new ModuleIOPOM(1),
                                                 new ModuleIOPOM(2),
                                                 new ModuleIOPOM(3));
+                                                try {
+                                                        camera = new POMAprilTagCamera("photonvision", new Transform3d());
+                                                }
+                                                catch (IOException e){
+                                                        Logger.recordOutput("Vision/Tag", e.getMessage());
+                                                }
                                 break;
 
                         case SIM:
@@ -196,6 +209,8 @@ public class RobotContainer {
 
                 // Reset gyro to 0° when Y button is pressed
                 driverController.y().onTrue(drive.resetGyroCommand());
+
+                driverController.b().onTrue(new TestCommad(camera));
         }
 
         public void displaSimFieldToAdvantageScope() {
