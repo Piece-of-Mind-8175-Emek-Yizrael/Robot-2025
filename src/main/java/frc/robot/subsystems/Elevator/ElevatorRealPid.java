@@ -11,20 +11,18 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.Debouncer;
 import frc.robot.POM_lib.Motors.POMSparkMax;
 
-public class ElevatorReal implements ElevatorIO{
+public class ElevatorRealPid implements ElevatorIO{
     POMSparkMax motor;
     RelativeEncoder encoder = motor.getEncoder();
     private final Debouncer turnConnectedDebouncer;
-    //public SparkClosedLoopController controller;
-    private ProfiledPIDController pidController;
+    public SparkClosedLoopController controller;
 
     
 
-    public ElevatorReal(){
+    public ElevatorRealPid(){
         motor = new POMSparkMax(ELEVATOR_ID);
         turnConnectedDebouncer = new Debouncer(0);
-        //controller = motor.getClosedLoopController();
-        pidController = new ProfiledPIDController(KP, KI, KD, null);
+        controller = motor.getClosedLoopController();
     }
 
     @Override
@@ -48,19 +46,19 @@ public class ElevatorReal implements ElevatorIO{
 
     @Override
     public void setSetPoint(double setpoint) {
-        pidController.setGoal(setpoint);
-        setVoltage(pidController.calculate(encoder.getPosition()));
+        // pidController.setGoal(setpoint);
+        // setVoltage(pidController.calculate(encoder.getPosition()));
     }
 
     @Override
     public void goToGoal(){
-        double pidVoltage = pidController.calculate(encoder.getPosition());
-        setVoltage(pidVoltage);
+        // double pidVoltage = pidController.calculate(encoder.getPosition());
+        // setVoltage(pidVoltage);
     }
 
     @Override
     public BooleanSupplier atGoal() {
-        return () -> pidController.atGoal();
+        //return () -> pidController.atGoal();
     }
 
     @Override
