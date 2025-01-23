@@ -204,9 +204,6 @@ public class RobotContainer {
                 // Reset gyro to 0° when Y button is pressed
                 driverController.y().onTrue(drive.resetGyroCommand());
 
-                driverController.PovUp().onTrue(elevatorSubsystem.goToPosition(100));//TODO find actual position
-                driverController.PovLeft().onTrue(elevatorSubsystem.goToPosition(60));//TODO find actual position
-                driverController.PovDown().onTrue(elevatorSubsystem.goToPosition(0));//TODO find actual position
         }
 
         public void displaSimFieldToAdvantageScope() {

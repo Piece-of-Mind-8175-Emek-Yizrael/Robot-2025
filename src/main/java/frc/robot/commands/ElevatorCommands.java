@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class ElevatorCommands {
     
     public static Command goToPosition(ElevatorSubsystem elevator, double position){
-        return Commands.startRun(() -> elevator.setSetPoint(position), elevator::goToGoal, elevator).until(elevator.atGoal());
+        return Commands.run(() -> elevator.setSetPoint(position), elevator).until(elevator.atGoal());
     }
 
     public static Command stopElevator(ElevatorSubsystem elevator){
