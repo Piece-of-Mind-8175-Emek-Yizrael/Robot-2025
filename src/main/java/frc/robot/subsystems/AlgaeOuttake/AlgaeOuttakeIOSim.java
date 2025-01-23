@@ -20,8 +20,8 @@ public class AlgaeOuttakeIOSim implements AlgaeOuttakeIO {
     }
 
     @Override
-    public void setDegrees(Double Degrees) {
-        sim.setPosition(Degrees);
+    public void setDegrees(double degrees) {
+        sim.setPosition(degrees);
         pose = new Pose3d(0,0,0, new Rotation3d(0,getAngle(),0));
 
 
@@ -34,7 +34,7 @@ public class AlgaeOuttakeIOSim implements AlgaeOuttakeIO {
     @Override
     public void updateInputs(AlgaeOuttakeIOInputs inputs) {
 
-        inputs.Degrees = getAngle();
+        inputs.degrees = getAngle();
         
     }
     
