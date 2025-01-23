@@ -69,12 +69,12 @@ public class ElevatorReal implements ElevatorIO{
 
     @Override
     public void stopMotor(){
-        setSpeed(0 + RESIST_GRAVITY);
+        setVoltage(0 + RESIST_GRAVITY);
     }
     
     @Override
     public void resistGravity() {
-        setSpeed(RESIST_GRAVITY);
+        setVoltage(RESIST_GRAVITY);
     }
     
 }

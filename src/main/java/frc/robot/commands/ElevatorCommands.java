@@ -16,6 +16,8 @@ public class ElevatorCommands {
     //     return runOnce(() -> resistGravity());
     // }
 
-    public static Command goToPosition(ElevatorSubsystem elevator)
+    public static Command goToPosition(ElevatorSubsystem elevator, double position){
+        return Command.run(() -> elevator.setSetPoint(position)).until(() -> elevator.atGoal());
+    }
     
 }

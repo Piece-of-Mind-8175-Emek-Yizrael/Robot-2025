@@ -24,11 +24,6 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     
-    public ElevatorIO getIO(){
-        return elevatorIO;
-    }
-
-    
     public void setSpeed(double speed){
         elevatorIO.setSpeed(speed);
     }
