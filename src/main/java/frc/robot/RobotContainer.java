@@ -13,7 +13,13 @@
 
 package frc.robot;
 
+import org.ironmaple.simulation.SimulatedArena;
+import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -23,6 +29,10 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.POM_lib.Joysticks.PomXboxController;
 import frc.robot.commands.DriveCommands;
+import frc.robot.subsystems.Elevator.ElevatorIO;
+import frc.robot.subsystems.Elevator.ElevatorIOSim;
+import frc.robot.subsystems.Elevator.ElevatorReal;
+import frc.robot.subsystems.Elevator.ElevatorSubsystem;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon;
@@ -30,11 +40,6 @@ import frc.robot.subsystems.drive.GyroIOSim;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOPOM;
 import frc.robot.subsystems.drive.ModuleIOSim;
-
-import org.ironmaple.simulation.SimulatedArena;
-import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
-import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -57,6 +62,8 @@ public class RobotContainer {
 
         private SwerveDriveSimulation driveSimulation = null;
 
+        private ElevatorSubsystem elevatorSubsystem;
+
         /**
          * The container for the robot. Contains subsystems, OI devices, and commands.
          */
@@ -64,6 +71,7 @@ public class RobotContainer {
                 switch (Constants.currentMode) {
                         case REAL:
                                 // Real robot, instantiate hardware IO implementations
+                                elevatorSubsystem = new ElevatorSubsystem(new ElevatorReal());
                                 drive = new Drive(
                                                 new GyroIOPigeon(),
                                                 new ModuleIOPOM(0),
@@ -78,6 +86,9 @@ public class RobotContainer {
                                 driveSimulation = new SwerveDriveSimulation(Drive.maplesimConfig,
                                                 new Pose2d(3, 3, new Rotation2d()));
                                 SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
+                                elevatorSubsystem = new ElevatorSubsystem(new ElevatorIOSim());
+                                Logger.recordOutput("Intake Pose", new Pose3d());//FIXME temp
+
 
                                 drive = new Drive(
                                                 new GyroIOSim(this.driveSimulation.getGyroSimulation()),
@@ -100,6 +111,7 @@ public class RobotContainer {
                                                 },
                                                 new ModuleIO() {
                                                 });
+                                elevatorSubsystem = new ElevatorSubsystem(new ElevatorIO() {});
                                 break;
                 }
 
@@ -191,6 +203,10 @@ public class RobotContainer {
 
                 // Reset gyro to 0° when Y button is pressed
                 driverController.y().onTrue(drive.resetGyroCommand());
+
+                driverController.PovUp().onTrue(elevatorSubsystem.goToPosition(100));//TODO find actual position
+                driverController.PovLeft().onTrue(elevatorSubsystem.goToPosition(60));//TODO find actual position
+                driverController.PovDown().onTrue(elevatorSubsystem.goToPosition(0));//TODO find actual position
         }
 
         public void displaSimFieldToAdvantageScope() {

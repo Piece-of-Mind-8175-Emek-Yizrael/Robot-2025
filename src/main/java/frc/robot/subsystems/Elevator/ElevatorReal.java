@@ -1,19 +1,12 @@
 package frc.robot.subsystems.Elevator;
 
 import static frc.robot.subsystems.Elevator.ElevatorConstants.*;
-import static frc.robot.subsystems.drive.DriveConstants.pigeonCanId;
-import static frc.robot.util.SparkUtil.sparkStickyFault;
-
 import java.util.function.BooleanSupplier;
 
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkClosedLoopController;
-import com.revrobotics.spark.SparkBase.ControlType;
-import com.revrobotics.spark.config.ClosedLoopConfig;
-
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.Debouncer;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import frc.robot.POM_lib.Motors.POMSparkMax;
 
 public class ElevatorReal implements ElevatorIO{
