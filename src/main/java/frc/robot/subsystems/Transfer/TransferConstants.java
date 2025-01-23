@@ -5,4 +5,5 @@ public final class TransferConstants {
     public static final int TRANSFER_MOTOR_ID = 15;
     public static final double CORAL_INTAKE_SPEED = 0.3;
     public static final double CORAL_OUTTAKE_SPEED = 0.5;
+    public static final double CORAL_INTAKE_TIME = 0;
 }
