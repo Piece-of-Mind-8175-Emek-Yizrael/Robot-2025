@@ -15,6 +15,7 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -26,6 +27,8 @@ import frc.robot.POM_lib.Joysticks.PomXboxController;
 import frc.robot.POM_lib.Vision.POMAprilTagCamera;
 import frc.robot.POM_lib.Vision.TestCommad;
 import frc.robot.commands.DriveCommands;
+import frc.robot.subsystems.Vision.VisionIOSim;
+import frc.robot.subsystems.Vision.VisionSubsystem;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon;
@@ -67,6 +70,8 @@ public class RobotContainer {
 
         private POMAprilTagCamera camera;
 
+        private VisionSubsystem vision;
+
         /**
          * The container for the robot. Contains subsystems, OI devices, and commands.
          */
@@ -80,12 +85,11 @@ public class RobotContainer {
                                                 new ModuleIOPOM(1),
                                                 new ModuleIOPOM(2),
                                                 new ModuleIOPOM(3));
-                                                try {
-                                                        camera = new POMAprilTagCamera("photonvision", new Transform3d());
-                                                }
-                                                catch (IOException e){
-                                                        Logger.recordOutput("Vision/Tag", e.getMessage());
-                                                }
+                                try {
+                                        camera = new POMAprilTagCamera("photonvision", new Transform3d());
+                                } catch (IOException e) {
+                                        Logger.recordOutput("Vision/Tag", e.getMessage());
+                                }
                                 break;
 
                         case SIM:
@@ -101,6 +105,13 @@ public class RobotContainer {
                                                 new ModuleIOSim(this.driveSimulation.getModules()[1]),
                                                 new ModuleIOSim(this.driveSimulation.getModules()[2]),
                                                 new ModuleIOSim(this.driveSimulation.getModules()[3]));
+
+                                vision = new VisionSubsystem(drive::addVisionMeasurement,
+                                                new VisionIOSim("camera_0",
+                                                                new Transform3d(0.2, 0.0, 0.2,
+                                                                                new Rotation3d(0.0, 0.0, Math.PI)),
+                                                                driveSimulation::getSimulatedDriveTrainPose));
+
                                 break;
 
                         default:

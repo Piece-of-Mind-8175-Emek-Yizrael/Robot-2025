@@ -241,6 +241,10 @@ public class Drive extends SubsystemBase {
     Logger.recordOutput("SwerveStates/SetpointsOptimized", setpointStates);
   }
 
+  public void addVisionMeasurement(Pose2d visionPose, double timestamp) {
+    poseEstimator.addVisionMeasurement(visionPose, timestamp);
+  }
+
   /** Runs the drive in a straight line with the specified drive output. */
   public void runCharacterization(double output) {
     for (int i = 0; i < 4; i++) {
