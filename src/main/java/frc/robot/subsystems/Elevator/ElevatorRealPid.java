@@ -4,25 +4,33 @@ import static frc.robot.subsystems.Elevator.ElevatorConstants.*;
 import java.util.function.BooleanSupplier;
 
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkClosedLoopController.ArbFFUnits;
 
+import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.Debouncer;
 import frc.robot.POM_lib.Motors.POMSparkMax;
+import frc.robot.POM_lib.sensors.POMDigitalInput;
 
 public class ElevatorRealPid implements ElevatorIO{
     POMSparkMax motor;
     RelativeEncoder encoder = motor.getEncoder();
-    private final Debouncer turnConnectedDebouncer;
-    public SparkClosedLoopController controller;
+    private SparkClosedLoopController controller;
+    private ElevatorFeedforward feedforward;
+    private double currentSetPoint;
+    private POMDigitalInput foldSwitch;
 
     
 
     public ElevatorRealPid(){
         motor = new POMSparkMax(ELEVATOR_ID);
-        turnConnectedDebouncer = new Debouncer(0);
+        feedforward = new ElevatorFeedforward(KS, KG, 0);
         controller = motor.getClosedLoopController();
+        foldSwitch = new POMDigitalInput(FOLD_SWITCH);
     }
 
     @Override
@@ -31,6 +39,7 @@ public class ElevatorRealPid implements ElevatorIO{
         inputs.elevatorVelocity = encoder.getVelocity();
         inputs.elevatorPosition = encoder.getPosition();
         inputs.elevatorAppliedVolts = motor.getAppliedOutput() * motor.getBusVoltage(); //FIXME Wont Return Motor Voltage
+        inputs.foldSwitch = foldSwitch.get();
         
     }
 
@@ -46,19 +55,14 @@ public class ElevatorRealPid implements ElevatorIO{
 
     @Override
     public void setSetPoint(double setpoint) {
-        // pidController.setGoal(setpoint);
-        // setVoltage(pidController.calculate(encoder.getPosition()));
-    }
-
-    @Override
-    public void goToGoal(){
-        // double pidVoltage = pidController.calculate(encoder.getPosition());
-        // setVoltage(pidVoltage);
+        double ffPower = feedforward.calculate(encoder.getPosition() - setpoint > 0 ? -1 : 1);
+        controller.setReference(setpoint, ControlType.kPosition, ClosedLoopSlot.kSlot0,ffPower, ArbFFUnits.kVoltage);
+        currentSetPoint = setpoint;
     }
 
     @Override
     public BooleanSupplier atGoal() {
-        //return () -> pidController.atGoal();
+        return () -> Math.abs(currentSetPoint - encoder.getPosition()) < TOLERANCE;
     }
 
     @Override
@@ -69,6 +73,13 @@ public class ElevatorRealPid implements ElevatorIO{
     @Override
     public void resistGravity() {
         setVoltage(RESIST_GRAVITY);
+    }
+
+    @Override
+    public void restPosition() {
+        if(foldSwitch.get()){
+            encoder.setPosition(0);
+        }
     }
     
 }

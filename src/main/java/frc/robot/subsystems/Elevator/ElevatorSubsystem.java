@@ -36,15 +36,19 @@ public class ElevatorSubsystem extends SubsystemBase {
         elevatorIO.setSetPoint(setpoint);
     }
 
-    public void goToGoal(){
-        elevatorIO.goToGoal();
-    }
-
     public BooleanSupplier atGoal(){
        return elevatorIO.atGoal();
     }
 
     public void resistGravity(){
         elevatorIO.resistGravity();
+    }
+
+    public void stopElevator(){
+        elevatorIO.stopMotor();
+    }
+
+    public void restPosition(){
+        elevatorIO.restPosition();
     }
 }
