@@ -43,12 +43,12 @@ public class LEDsIOReal implements LEDsIO{
     // Gets a list of Colors and splits them equally across the LED strip
     @Override
     public void setParts(Color... colors){
-        int ledLength = ledBuffer.getLength() - 1;
+        int ledLength = ledBuffer.getLength();
         int partLength = ledLength / colors.length;
         int numberOfParts = colors.length;
 
         for (int i = 1; i <= numberOfParts; i++) {
-            setRange((i - 1)*partLength, i*partLength, colors[i]);
+            setRange((i - 1)*partLength, i*partLength, colors[i-1]);
         }
 
     }
