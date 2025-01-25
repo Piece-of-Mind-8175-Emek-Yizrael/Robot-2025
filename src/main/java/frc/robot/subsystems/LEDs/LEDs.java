@@ -1,7 +1,9 @@
 package frc.robot.subsystems.LEDs;
+import org.littletonrobotics.junction.Logger;
+
+import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import org.littletonrobotics.junction.Logger;
 
 
 public class LEDs extends SubsystemBase {
@@ -18,10 +20,17 @@ public class LEDs extends SubsystemBase {
         ledsIO.setAll(color);    
     }
 
-
-
     public void setParts(Color... colors){
         ledsIO.setParts(colors);
+    }
+
+    
+    public void blink(Color color, double seconds) {
+        ledsIO.blink(color, seconds);
+    }
+
+    public void blink(LEDPattern pattern, double seconds) {
+        ledsIO.blink(pattern, seconds);
     }
 
 
