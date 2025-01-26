@@ -48,7 +48,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         elevatorIO.stopMotor();
     }
 
-    public void restPosition(){
-        elevatorIO.restPosition();
+    public void resetlfPressed(){
+        elevatorIO.resetlfPressed();
     }
 }
