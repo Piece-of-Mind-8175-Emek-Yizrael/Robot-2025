@@ -45,7 +45,7 @@ public class ElevatorRealPid implements ElevatorIO{
 
     @Override
     public void setSpeed(double speed) {
-        motor.set(speed + RESIST_GRAVITY);
+        motor.set(speed);
     }
 
     @Override
@@ -67,7 +67,7 @@ public class ElevatorRealPid implements ElevatorIO{
 
     @Override
     public void stopMotor(){
-        setVoltage(0 + RESIST_GRAVITY);
+        setVoltage(0 + feedforward.calculate(0));//TODO check this 
     }
     
     @Override

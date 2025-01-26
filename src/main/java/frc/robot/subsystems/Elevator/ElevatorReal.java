@@ -11,6 +11,7 @@ import static frc.robot.subsystems.Elevator.ElevatorConstants.KV;
 import static frc.robot.subsystems.Elevator.ElevatorConstants.MAX_ACCELERATION;
 import static frc.robot.subsystems.Elevator.ElevatorConstants.MAX_VELOCITY;
 import static frc.robot.subsystems.Elevator.ElevatorConstants.RESIST_GRAVITY;
+import static frc.robot.subsystems.Elevator.ElevatorConstants.TOLERANCE;
 
 import java.util.function.BooleanSupplier;
 
@@ -52,7 +53,7 @@ public class ElevatorReal implements ElevatorIO{
 
     @Override
     public void setSpeed(double speed) {
-        motor.set(speed + RESIST_GRAVITY);
+        motor.set(speed);
     }
 
     @Override
@@ -68,12 +69,13 @@ public class ElevatorReal implements ElevatorIO{
 
     @Override
     public BooleanSupplier atGoal() {
+        pidController.setTolerance(TOLERANCE);//TODO chaeck this
         return () -> pidController.atGoal();
     }
 
     @Override
     public void stopMotor(){
-        setVoltage(0 + RESIST_GRAVITY);
+        setVoltage(0 + feedforward.calculate(0));//TODO check this 
     }
     
     @Override
