@@ -1,7 +1,7 @@
 package frc.robot.subsystems.Elevator;
 
 public class ElevatorConstants {//TODO tune on robot
-    public static final int ELEVATOR_ID = 0;
+    public static final int ELEVATOR_ID = 16;
     public static final int KP = 0;
     public static final int KI = 0;
     public static final int KD = 0;
