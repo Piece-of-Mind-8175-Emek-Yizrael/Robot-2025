@@ -61,8 +61,8 @@ public class ElevatorReal implements ElevatorIO{
     }
 
     @Override
-    public void setSetPoint(double setpoint) {
-        pidController.setGoal(setpoint);
+    public void setGoal(double goal) {
+        pidController.setGoal(goal);
         setVoltage(pidController.calculate(encoder.getPosition()) + feedforward.calculate(pidController.getSetpoint().velocity));
     }
 
@@ -82,7 +82,7 @@ public class ElevatorReal implements ElevatorIO{
     }
 
     @Override
-    public void restPosition() {
+    public void resetlfPressed() {
         if(foldSwitch.get()){
             encoder.setPosition(0);
         }

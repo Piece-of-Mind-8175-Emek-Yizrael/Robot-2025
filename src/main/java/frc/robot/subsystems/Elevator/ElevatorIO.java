@@ -19,9 +19,9 @@ public interface ElevatorIO {
     public default void updateInputs(ElevatorIOInputs inputs) {}
     public default void setSpeed(double speed) {}
     public default void setVoltage(double voltage) {}
-    public default void setSetPoint(double setpoint) {}
+    public default void setGoal(double goal) {}
     public default BooleanSupplier atGoal(){ return () ->  false; }
     public default void stopMotor(){}
     public default void resistGravity(){}
-    public default void restPosition(){}
+    public default void resetlfPressed(){}
 }

@@ -32,8 +32,8 @@ public class ElevatorSubsystem extends SubsystemBase {
         elevatorIO.setVoltage(voltage);
     }
 
-    public void setSetPoint(double setpoint){
-        elevatorIO.setSetPoint(setpoint);
+    public void setGoal(double goal){
+        elevatorIO.setGoal(goal);
     }
 
     public BooleanSupplier atGoal(){

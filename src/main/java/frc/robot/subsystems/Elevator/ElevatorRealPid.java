@@ -54,10 +54,10 @@ public class ElevatorRealPid implements ElevatorIO{
     }
 
     @Override
-    public void setSetPoint(double setpoint) {
-        double ffPower = feedforward.calculate(encoder.getPosition() - setpoint > 0 ? -1 : 1);
-        controller.setReference(setpoint, ControlType.kPosition, ClosedLoopSlot.kSlot0,ffPower, ArbFFUnits.kVoltage);
-        currentSetPoint = setpoint;
+    public void setGoal(double goal) {
+        double ffPower = feedforward.calculate(encoder.getPosition() - goal > 0 ? -1 : 1);
+        controller.setReference(goal, ControlType.kPosition, ClosedLoopSlot.kSlot0,ffPower, ArbFFUnits.kVoltage);
+        currentSetPoint = goal;
     }
 
     @Override
@@ -76,7 +76,7 @@ public class ElevatorRealPid implements ElevatorIO{
     }
 
     @Override
-    public void restPosition() {
+    public void resetlfPressed() {
         if(foldSwitch.get()){
             encoder.setPosition(0);
         }
