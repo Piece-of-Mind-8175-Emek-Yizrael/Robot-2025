@@ -80,7 +80,7 @@ public class ElevatorReal implements ElevatorIO{
     
     @Override
     public void resistGravity() {
-        setVoltage(RESIST_GRAVITY);
+        setVoltage(feedforward.calculate(0));//TODO check this 
     }
 
     @Override
