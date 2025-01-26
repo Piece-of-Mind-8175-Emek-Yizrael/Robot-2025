@@ -38,6 +38,7 @@ public class ElevatorReal implements ElevatorIO{
         feedforward = new ElevatorFeedforward( KS, KG, KV);
         pidController = new ProfiledPIDController(KP, KI, KD, new TrapezoidProfile.Constraints(MAX_VELOCITY,MAX_ACCELERATION));
         foldSwitch = new POMDigitalInput(FOLD_SWITCH);
+        pidController.setTolerance(TOLERANCE);//TODO chaeck this
     }
 
     @Override
@@ -69,7 +70,6 @@ public class ElevatorReal implements ElevatorIO{
 
     @Override
     public BooleanSupplier atGoal() {
-        pidController.setTolerance(TOLERANCE);//TODO chaeck this
         return () -> pidController.atGoal();
     }
 
