@@ -1,27 +1,21 @@
 package frc.robot.subsystems.LEDs;
 
-import static frc.robot.subsystems.LEDs.LEDsConstants.LED_PORT;
+import static edu.wpi.first.units.Units.Seconds;
 import static frc.robot.subsystems.LEDs.LEDsConstants.LENGTH;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
-import static edu.wpi.first.units.Units.*;
 
 
-
-public class LEDsIOReal implements LEDsIO{
-    private final AddressableLED led = new AddressableLED(LED_PORT);
-    private final AddressableLEDBuffer ledBuffer = new AddressableLEDBuffer(LENGTH);
+public class LEDsIOSim implements LEDsIO{
+    private final AddressableLEDBuffer ledBuffer;
     
-    public LEDsIOReal() {
-        led.setLength(ledBuffer.getLength());
-        led.setData(ledBuffer);
-        led.start();
+    public LEDsIOSim() {
+        ledBuffer = new AddressableLEDBuffer(LENGTH);
 
     }
 
@@ -39,9 +33,7 @@ public class LEDsIOReal implements LEDsIO{
     public void setAll(Color color) {
         LEDPattern solidColorPattern = LEDPattern.solid(color);
         
-        solidColorPattern.applyTo(ledBuffer);
-        updateLEDs();
-    }
+        solidColorPattern.applyTo(ledBuffer);    }
 
 
     // Gets a list of Colors and splits them equally across the LED strip
@@ -56,8 +48,8 @@ public class LEDsIOReal implements LEDsIO{
 
         LEDPattern steps = LEDPattern.steps(map);
 
+
         steps.applyTo(ledBuffer);
-        updateLEDs();
 
     }
 
@@ -73,19 +65,12 @@ public class LEDsIOReal implements LEDsIO{
     public void blink(LEDPattern pattern, double seconds) {
         LEDPattern blinking = pattern.blink(Seconds.of(seconds));
         blinking.applyTo(ledBuffer);
-        updateLEDs();
-    }
-
-    private void updateLEDs(){
-        led.setData(ledBuffer);
     }
 
     // private void setColor(int idx, Color color) {
     //     int rgbFactor = 255;
     //     ledBuffer.setRGB(idx, (int) (color.red*rgbFactor), (int) (color.green*rgbFactor), (int) (color.blue*rgbFactor));
-    //     updateLEDs();
     // }
 
-    
 
     }

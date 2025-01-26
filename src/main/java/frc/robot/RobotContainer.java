@@ -13,16 +13,27 @@
 
 package frc.robot;
 
+import org.ironmaple.simulation.SimulatedArena;
+import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.POM_lib.Joysticks.PomXboxController;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.LEDsCommands;
+import frc.robot.subsystems.LEDs.LEDs;
+import frc.robot.subsystems.LEDs.LEDsIO;
+import frc.robot.subsystems.LEDs.LEDsIOReal;
+import frc.robot.subsystems.LEDs.LEDsIOSim;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon;
@@ -30,11 +41,6 @@ import frc.robot.subsystems.drive.GyroIOSim;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOPOM;
 import frc.robot.subsystems.drive.ModuleIOSim;
-
-import org.ironmaple.simulation.SimulatedArena;
-import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
-import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -48,6 +54,8 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
         // Subsystems
         private final Drive drive;
+
+        private final LEDs leds;
 
         // Controller
         private final PomXboxController driverController = new PomXboxController(0);
@@ -70,6 +78,8 @@ public class RobotContainer {
                                                 new ModuleIOPOM(1),
                                                 new ModuleIOPOM(2),
                                                 new ModuleIOPOM(3));
+
+                                leds = new LEDs(new LEDsIOReal());
                                 break;
 
                         case SIM:
@@ -85,6 +95,8 @@ public class RobotContainer {
                                                 new ModuleIOSim(this.driveSimulation.getModules()[1]),
                                                 new ModuleIOSim(this.driveSimulation.getModules()[2]),
                                                 new ModuleIOSim(this.driveSimulation.getModules()[3]));
+
+                                leds = new LEDs(new LEDsIOSim());
                                 break;
 
                         default:
@@ -100,6 +112,7 @@ public class RobotContainer {
                                                 },
                                                 new ModuleIO() {
                                                 });
+                                leds = new LEDs(new LEDsIO() {});
                                 break;
                 }
 
@@ -191,6 +204,11 @@ public class RobotContainer {
 
                 // Reset gyro to 0° when Y button is pressed
                 driverController.y().onTrue(drive.resetGyroCommand());
+
+                driverController.PovUp().whileTrue(LEDsCommands.blink(leds, Color.kPurple, 0.25));
+                driverController.PovDown().onTrue(LEDsCommands.setAll(leds, Color.kOrange));
+                driverController.PovLeft().onTrue(LEDsCommands.setParts(leds, Color.kRed, Color.kBlue, Color.kGreen));
+
         }
 
         public void displaSimFieldToAdvantageScope() {
