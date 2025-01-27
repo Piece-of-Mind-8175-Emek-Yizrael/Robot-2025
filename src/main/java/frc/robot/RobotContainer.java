@@ -45,6 +45,7 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.FollowPathCommand;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 /**
@@ -106,11 +107,11 @@ public class RobotContainer {
                                                 new ModuleIOSim(this.driveSimulation.getModules()[2]),
                                                 new ModuleIOSim(this.driveSimulation.getModules()[3]));
 
-                                vision = new VisionSubsystem(drive::addVisionMeasurement,
-                                                new VisionIOSim("camera_0",
-                                                                new Transform3d(0.2, 0.0, 0.2,
-                                                                                new Rotation3d(0.0, 0.0, Math.PI)),
-                                                                driveSimulation::getSimulatedDriveTrainPose));
+                                // vision = new VisionSubsystem(drive::addVisionMeasurement,
+                                // new VisionIOSim("camera_0",
+                                // new Transform3d(0.2, 0.0, 0.2,
+                                // new Rotation3d(0.0, 0.0, Math.PI)),
+                                // driveSimulation::getSimulatedDriveTrainPose));
 
                                 break;
 
@@ -209,11 +210,14 @@ public class RobotContainer {
                 driverController
                                 .a()
                                 .whileTrue(
-                                                DriveCommands.joystickDriveAtAngle(
+                                                DriveCommands.joystickDriveFixedAngles(
                                                                 drive,
-                                                                () -> -driverController.getLeftY(),
-                                                                () -> -driverController.getLeftX(),
-                                                                () -> new Rotation2d()));
+                                                                () -> driverController.getLeftY(),
+                                                                () -> driverController.getLeftX(),
+                                                                driverController.PovUp(),
+                                                                driverController.PovDown(),
+                                                                driverController.PovLeft(),
+                                                                driverController.PovRight()));
 
                 // Switch to X pattern when X button is pressed
                 driverController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
@@ -221,7 +225,6 @@ public class RobotContainer {
                 // Reset gyro to 0° when Y button is pressed
                 driverController.y().onTrue(drive.resetGyroCommand());
 
-                driverController.b().onTrue(new TestCommad(camera));
         }
 
         public void displaSimFieldToAdvantageScope() {
@@ -253,6 +256,7 @@ public class RobotContainer {
                         return (AutoBuilder.followPath(path).andThen(Commands.print("After command")))
                                         .beforeStarting(() -> drive.setPose(path.getStartingDifferentialPose()))
                                         .beforeStarting(Commands.print("Starts following path"));
+
                 } catch (Exception e) {
                         DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
                         return Commands.print("Exception creating path");
