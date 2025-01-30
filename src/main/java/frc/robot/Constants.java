@@ -13,6 +13,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.wpilibj.RobotBase;
 
 /**
@@ -23,8 +24,8 @@ import edu.wpi.first.wpilibj.RobotBase;
 public final class Constants {
   public static final Mode simMode = Mode.SIM;
   public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
-  public static int[] REEF_TAG_ID = {};
-  public static int[] CORAL_STATION_TAG_ID = {};
+  public static int[] REEF_TAG_ID = {/*blue reef*/ 17, 18, 19, 20, 22, 21, /*red reef*/ 6, 7, 8, 9, 10, 11};
+  public static int[] CORAL_STATION_TAG_ID = {1, 2, 12, 13};
 
 
   public static enum Mode {
