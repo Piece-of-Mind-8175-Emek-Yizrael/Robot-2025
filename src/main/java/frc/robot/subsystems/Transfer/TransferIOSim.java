@@ -6,7 +6,8 @@ import org.ironmaple.simulation.IntakeSimulation;
 import org.ironmaple.simulation.IntakeSimulation.IntakeSide;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
-import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeCoral;
+import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeCoralOnField;
+import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
@@ -20,7 +21,7 @@ public class TransferIOSim implements TransferIO {
     SwerveDriveSimulation swerveDriveSimulation;
 
     public TransferIOSim(SwerveDriveSimulation swerveDriveSimulation) {
-        flywheel = new FlywheelSim(LinearSystemId.createFlywheelSystem(DCMotor.getNeo550(1), 0, 50),DCMotor.getNeo550(1), 50.0, 0.1);
+        flywheel = new FlywheelSim(LinearSystemId.createFlywheelSystem(DCMotor.getNeo550(1), 1, 50), DCMotor.getNeo550(0), 50.0);
         intakeSimulation = IntakeSimulation.InTheFrameIntake("Coral", swerveDriveSimulation, Meters.of(0.7), IntakeSide.BACK, 1);
         intakeSimulation.startIntake();
     }
@@ -31,9 +32,12 @@ public class TransferIOSim implements TransferIO {
         flywheel.setAngularVelocity(flywheelAngularVelocity);
         if(intakeSimulation.obtainGamePieceFromIntake()){
 
-            ReefscapeCoral coral = new ReefscapeCoral(swerveDriveSimulation.getSimulatedDriveTrainPose());
+            ReefscapeCoralOnField coral = new ReefscapeCoralOnField(swerveDriveSimulation.getSimulatedDriveTrainPose());
             SimulatedArena.getInstance().addGamePiece(coral);
+
         }
+        intakeSimulation.startIntake();
+
     }
 
     @Override
@@ -41,9 +45,12 @@ public class TransferIOSim implements TransferIO {
         flywheel.setInputVoltage(voltage);
         if(intakeSimulation.obtainGamePieceFromIntake()){
 
-            ReefscapeCoral coral = new ReefscapeCoral(swerveDriveSimulation.getSimulatedDriveTrainPose());
+            ReefscapeCoralOnField coral = new ReefscapeCoralOnField(swerveDriveSimulation.getSimulatedDriveTrainPose());
             SimulatedArena.getInstance().addGamePiece(coral);
+            
         }
+        intakeSimulation.startIntake();
+
     }
 
     @Override

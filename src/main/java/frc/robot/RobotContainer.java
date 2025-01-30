@@ -23,6 +23,11 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.POM_lib.Joysticks.PomXboxController;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.TransferCommands;
+import frc.robot.subsystems.Transfer.Transfer;
+import frc.robot.subsystems.Transfer.TransferIO;
+import frc.robot.subsystems.Transfer.TransferIOReal;
+import frc.robot.subsystems.Transfer.TransferIOSim;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon;
@@ -49,6 +54,8 @@ public class RobotContainer {
         // Subsystems
         private final Drive drive;
 
+        private final Transfer transfer;
+
         // Controller
         private final PomXboxController driverController = new PomXboxController(0);
 
@@ -70,14 +77,14 @@ public class RobotContainer {
                                                 new ModuleIOPOM(1),
                                                 new ModuleIOPOM(2),
                                                 new ModuleIOPOM(3));
+
+                                transfer = new Transfer(new TransferIOReal());
                                 break;
 
                         case SIM:
                                 // Sim robot, instantiate physics sim IO implementations
-
                                 driveSimulation = new SwerveDriveSimulation(Drive.maplesimConfig,
                                                 new Pose2d(3, 3, new Rotation2d()));
-                                SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
 
                                 drive = new Drive(
                                                 new GyroIOSim(this.driveSimulation.getGyroSimulation()),
@@ -85,8 +92,10 @@ public class RobotContainer {
                                                 new ModuleIOSim(this.driveSimulation.getModules()[1]),
                                                 new ModuleIOSim(this.driveSimulation.getModules()[2]),
                                                 new ModuleIOSim(this.driveSimulation.getModules()[3]));
-                                break;
+                                transfer = new Transfer(new TransferIOSim(driveSimulation));
 
+                                SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
+                                break;
                         default:
                                 // Replayed robot, disable IO implementations
                                 drive = new Drive(
@@ -100,6 +109,7 @@ public class RobotContainer {
                                                 },
                                                 new ModuleIO() {
                                                 });
+                                transfer = new Transfer(new TransferIO() {});
                                 break;
                 }
 
@@ -191,6 +201,8 @@ public class RobotContainer {
 
                 // Reset gyro to 0° when Y button is pressed
                 driverController.y().onTrue(drive.resetGyroCommand());
+
+                driverController.LB().onTrue(TransferCommands.coralOutake(transfer));
         }
 
         public void displaSimFieldToAdvantageScope() {
