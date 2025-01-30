@@ -2,25 +2,38 @@ package frc.robot.subsystems.Elevator;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.POM_lib.Dashboard.DashboardNumber;
+
+import static frc.robot.subsystems.Elevator.ElevatorConstants.KP;
 
 import java.util.function.BooleanSupplier;
 
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class ElevatorSubsystem extends SubsystemBase {
     private  ElevatorIO elevatorIO;
     public  ElevatorIOInputsAutoLogged elevatorInputs = new ElevatorIOInputsAutoLogged();
-    
+
+    LoggedNetworkNumber kp = new LoggedNetworkNumber("kp", 0);
+    LoggedNetworkNumber ki = new LoggedNetworkNumber("ki", 0);
+    LoggedNetworkNumber kd = new LoggedNetworkNumber("kd", 0);
+    LoggedNetworkNumber kv = new LoggedNetworkNumber("kv", 0);
+    LoggedNetworkNumber kg = new LoggedNetworkNumber("kg", 0);
+    LoggedNetworkNumber ks = new LoggedNetworkNumber("ks", 0);
 
     public ElevatorSubsystem(ElevatorIO elevatorIO){
        this.elevatorIO = elevatorIO;
+
     }
     
     public void periodic(){
         elevatorIO.updateInputs(elevatorInputs);
         Logger.processInputs("Elevator/elevator", elevatorInputs);
+    
     }
 
     
@@ -51,4 +64,6 @@ public class ElevatorSubsystem extends SubsystemBase {
     public void resetlfPressed(){
         elevatorIO.resetlfPressed();
     }
+
+
 }

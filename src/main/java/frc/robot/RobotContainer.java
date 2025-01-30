@@ -60,7 +60,7 @@ public class RobotContainer {
         // Dashboard inputs
         private final LoggedDashboardChooser<Command> autoChooser;
 
-        private SwerveDriveSimulation driveSimulation = null;
+        private SwerveDriveSimulation driveSimulation;
 
         private ElevatorSubsystem elevatorSubsystem;
 
@@ -86,10 +86,10 @@ public class RobotContainer {
                                 driveSimulation = new SwerveDriveSimulation(Drive.maplesimConfig,
                                                 new Pose2d(3, 3, new Rotation2d()));
                                 SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
+                                // elevatorSubsystem = new ElevatorSubsystem(new ElevatorIOSim());
+                                // Logger.recordOutput("Intake Pose", new Pose3d());//FIXME temp
+
                                 elevatorSubsystem = new ElevatorSubsystem(new ElevatorIOSim());
-                                Logger.recordOutput("Intake Pose", new Pose3d());//FIXME temp
-
-
                                 drive = new Drive(
                                                 new GyroIOSim(this.driveSimulation.getGyroSimulation()),
                                                 new ModuleIOSim(this.driveSimulation.getModules()[0]),

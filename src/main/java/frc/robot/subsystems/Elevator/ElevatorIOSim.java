@@ -31,12 +31,12 @@ public class ElevatorIOSim implements ElevatorIO {
         elevator.setInputVoltage(voltage);
     }
 
-    @Override
-    public void setSetPoint(double setpoint) {
-        // setSpeed(pid.calculate(elevator.getPositionMeters(), setpoint));//FIXME Won't Work, need to find a way around PID probably
-        elevator.setState(0, setpoint);
+    // @Override
+    // public void setSetPoint(double setpoint) {
+    //     // setSpeed(pid.calculate(elevator.getPositionMeters(), setpoint));//FIXME Won't Work, need to find a way around PID probably
+    //     elevator.setState(0, setpoint);
         
-    }
+    // }
 
     @Override
     public void updateInputs(ElevatorIOInputs inputs) {
