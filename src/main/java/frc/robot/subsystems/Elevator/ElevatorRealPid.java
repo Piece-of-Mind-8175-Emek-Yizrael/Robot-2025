@@ -23,12 +23,15 @@ public class ElevatorRealPid implements ElevatorIO{
     private ElevatorFeedforward feedforward;
     private double currentSetPoint;
     private POMDigitalInput foldSwitch;
+    private ElevatorTuningPid pidConstants;
+
 
     
 
     public ElevatorRealPid(){
         motor = new POMSparkMax(ELEVATOR_ID);
-        feedforward = new ElevatorFeedforward(KS, KG, 0);
+        //feedforward = new ElevatorFeedforward(KS , KG, 0);
+        //feedforward = new ElevatorFeedforward(pidConstants.getKs(), pidConstants.getKg(), 0);//TODO
         controller = motor.getClosedLoopController();
         foldSwitch = new POMDigitalInput(FOLD_SWITCH);
     }

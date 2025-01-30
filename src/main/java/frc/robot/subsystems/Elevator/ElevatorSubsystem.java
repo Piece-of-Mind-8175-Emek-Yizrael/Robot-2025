@@ -18,12 +18,6 @@ public class ElevatorSubsystem extends SubsystemBase {
     private  ElevatorIO elevatorIO;
     public  ElevatorIOInputsAutoLogged elevatorInputs = new ElevatorIOInputsAutoLogged();
 
-    LoggedNetworkNumber kp = new LoggedNetworkNumber("kp", 0);
-    LoggedNetworkNumber ki = new LoggedNetworkNumber("ki", 0);
-    LoggedNetworkNumber kd = new LoggedNetworkNumber("kd", 0);
-    LoggedNetworkNumber kv = new LoggedNetworkNumber("kv", 0);
-    LoggedNetworkNumber kg = new LoggedNetworkNumber("kg", 0);
-    LoggedNetworkNumber ks = new LoggedNetworkNumber("ks", 0);
 
     public ElevatorSubsystem(ElevatorIO elevatorIO){
        this.elevatorIO = elevatorIO;
