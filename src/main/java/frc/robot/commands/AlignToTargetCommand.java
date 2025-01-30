@@ -10,12 +10,13 @@ import frc.robot.subsystems.Vision.VisionSubsystem;
 import frc.robot.subsystems.drive.Drive;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
-public class AlignToReefCommand extends Command {
+public class AlignToTargetCommand extends Command {
     public enum POMAlignmentTarget {
         REEF(Constants.REEF_TAG_ID), CORAL(Constants.CORAL_STATION_TAG_ID);
 
-        int[] tagIds;
+        final int[] tagIds;
 
         POMAlignmentTarget(int[] tagIds) {
             this.tagIds = tagIds;
@@ -27,7 +28,7 @@ public class AlignToReefCommand extends Command {
             for (Pair<Integer, Pose3d> item : tags) {
                 boolean isGood = false;
                 for (Integer i : tagIds) {
-                    if (item.getFirst() == i) {
+                    if (Objects.equals(item.getFirst(), i)) {
                         isGood = true;
                         break;
                     }
@@ -47,18 +48,19 @@ public class AlignToReefCommand extends Command {
     final Drive driveSubsystem;
     final VisionSubsystem visionSubsystem;
     final POMAlignmentTarget alignmentTarget;
-    final Transform2d wantedTransform;
+    // still needs to check if this is necessary. currently not implemented
+    //    final Transform2d wantedTransform;
 
-    public AlignToReefCommand(Drive driveSubsystem, VisionSubsystem visionSubsystem, POMAlignmentTarget alignmentTarget, Transform2d wantedTransform) {
+    public AlignToTargetCommand(Drive driveSubsystem, VisionSubsystem visionSubsystem, POMAlignmentTarget alignmentTarget /*,  Transform2d wantedTransform */) {
         this.visionSubsystem = visionSubsystem;
         this.driveSubsystem = driveSubsystem;
         this.alignmentTarget = alignmentTarget;
-        this.wantedTransform = wantedTransform;
+        //        this.wantedTransform = wantedTransform;
         addRequirements(driveSubsystem);
     }
 
     @Override
-    public void execute() {
+    public void initialize() {
         Pair<Integer, Transform2d>[] tags = alignmentTarget.getTagsFromVision(visionSubsystem, driveSubsystem.getPose());
         Pair<Integer, Transform2d> closestTag = tags[0];
         for (int i = 1; i < tags.length; i++) {
@@ -66,16 +68,18 @@ public class AlignToReefCommand extends Command {
                 closestTag = tags[i];
             }
         }
-        DriveCommands.rotateByAngle().execute();
+        // the part that spins the robot, requires careful checking.
+        DriveCommands.rotateByAngle(driveSubsystem, closestTag.getSecond().getRotation()).execute();
     }
 
     @Override
     public boolean isFinished() {
-        return false;
+        // needs confirmation from uri that this is the correct return value
+        return true;
     }
 
     @Override
     public void end(boolean interrupted) {
-
+        // needs confirmation from uri that this function does not need to be implemented
     }
 }
