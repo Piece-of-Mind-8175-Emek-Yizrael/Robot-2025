@@ -23,6 +23,8 @@ import edu.wpi.first.wpilibj.RobotBase;
 public final class Constants {
   public static final Mode simMode = Mode.SIM;
   public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
+  public static int[] REEF_TAG_ID = {};
+  public static int[] CORAL_STATION_TAG_ID = {};
 
 
   public static enum Mode {

@@ -19,15 +19,13 @@ import static frc.robot.subsystems.Vision.VisionConstants.*;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.subsystems.Vision.VisionIO.PoseObservationType;
 
 import java.util.ArrayList;
@@ -40,6 +38,7 @@ public class VisionSubsystem extends SubsystemBase {
     private final VisionIO[] io;
     private final VisionIOInputsAutoLogged[] inputs;
     private final Alert[] disconnectedAlerts;
+    ArrayList<Pair<Integer, Pose3d>> aprilTags = new ArrayList<>();
 
     public VisionSubsystem(VisionConsumer consumer, VisionIO... io) {
         this.consumer = consumer;
@@ -69,12 +68,42 @@ public class VisionSubsystem extends SubsystemBase {
         return inputs[cameraIndex].latestTargetObservation.tx();
     }
 
-    public ArrayList<Pair<Integer, Transform3d>> getReefTagsPositions() {
-        return null;
+    public ArrayList<Pair<Integer, Pose3d>> getAllAprilTags() {
+        return aprilTags;
     }
 
-    public ArrayList<Pair<Integer, Transform3d>> getCoralStationTagsPositions() {
-        return null;
+    public ArrayList<Pair<Integer, Transform2d>> getReefTagsPositions(Pose2d robotPose) {
+        ArrayList<Pair<Integer, Transform2d>> list = new ArrayList<Pair<Integer, Transform2d>>();
+        for (var tag : aprilTags) {
+            boolean isGood = false;
+            for (int i : Constants.REEF_TAG_ID) {
+                if(i == tag.getFirst()) {
+                    isGood = true;
+                    break;
+                }
+            }
+            if (isGood) {
+                list.add(new Pair<>(tag.getFirst(),robotPose.minus(tag.getSecond().toPose2d())));
+            }
+        }
+        return list;
+    }
+
+    public Pair<Integer, Transform2d>[] getCoralStationTagsPositions(Pose2d robotPose) {
+        ArrayList<Pair<Integer, Transform2d>> list = new ArrayList<>();
+        for (var tag : aprilTags) {
+            boolean isGood = false;
+            for (int i : Constants.CORAL_STATION_TAG_ID) {
+                if(i == tag.getFirst()) {
+                    isGood = true;
+                    break;
+                }
+            }
+            if (isGood) {
+                list.add(new Pair<>(tag.getFirst(),robotPose.minus(tag.getSecond().toPose2d())));
+            }
+        }
+        return (Pair<Integer, Transform2d>[]) list.toArray();
     }
 
     @Override
@@ -106,6 +135,7 @@ public class VisionSubsystem extends SubsystemBase {
                 var tagPose = aprilTagLayout.getTagPose(tagId);
                 if (tagPose.isPresent()) {
                     tagPoses.add(tagPose.get());
+                    aprilTags.add(new Pair<>(tagId, tagPose.get()));
                 }
             }
 
