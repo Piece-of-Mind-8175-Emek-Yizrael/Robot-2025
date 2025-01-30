@@ -89,7 +89,7 @@ public class VisionSubsystem extends SubsystemBase {
         return list;
     }
 
-    public Pair<Integer, Transform2d>[] getCoralStationTagsPositions(Pose2d robotPose) {
+    public ArrayList<Pair<Integer, Transform2d>> getCoralStationTagsPositions(Pose2d robotPose) {
         ArrayList<Pair<Integer, Transform2d>> list = new ArrayList<>();
         for (var tag : aprilTags) {
             boolean isGood = false;
@@ -103,7 +103,7 @@ public class VisionSubsystem extends SubsystemBase {
                 list.add(new Pair<>(tag.getFirst(),robotPose.minus(tag.getSecond().toPose2d())));
             }
         }
-        return (Pair<Integer, Transform2d>[]) list.toArray();
+        return list;
     }
 
     @Override
