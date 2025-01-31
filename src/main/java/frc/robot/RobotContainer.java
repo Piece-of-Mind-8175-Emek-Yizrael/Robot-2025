@@ -107,11 +107,11 @@ public class RobotContainer {
                                                 new ModuleIOSim(this.driveSimulation.getModules()[2]),
                                                 new ModuleIOSim(this.driveSimulation.getModules()[3]));
 
-                                // vision = new VisionSubsystem(drive::addVisionMeasurement,
-                                // new VisionIOSim("camera_0",
-                                // new Transform3d(0.2, 0.0, 0.2,
-                                // new Rotation3d(0.0, 0.0, Math.PI)),
-                                // driveSimulation::getSimulatedDriveTrainPose));
+                                vision = new VisionSubsystem(drive::addVisionMeasurement,
+                                                new VisionIOSim("camera_0",
+                                                                new Transform3d(0.2, 0.0, 0.2,
+                                                                                new Rotation3d(0.0, 0.0, Math.PI)),
+                                                                driveSimulation::getSimulatedDriveTrainPose));
 
                                 break;
 
@@ -249,7 +249,7 @@ public class RobotContainer {
         public Command getPathCommand() {
                 try {
                         // Load the path you want to follow using its name in the GUI
-                        PathPlannerPath path = PathPlannerPath.fromPathFile("Drive 1 meter path");
+                        PathPlannerPath path = PathPlannerPath.fromPathFile("Test");
 
                         // Create a path following command using AutoBuilder. This will also trigger
                         // event markers.

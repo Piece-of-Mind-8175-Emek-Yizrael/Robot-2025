@@ -61,6 +61,7 @@ import org.ironmaple.simulation.drivesims.COTS;
 import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class Drive extends SubsystemBase {
   static final Lock odometryLock = new ReentrantLock();
@@ -110,7 +111,9 @@ public class Drive extends SubsystemBase {
         this::getChassisSpeeds,
         this::runPureVelocity,
         new PPHolonomicDriveController(
-            new PIDConstants(50.0, 0.0, 0.0), new PIDConstants(5.0, 0.0, 0.0)),
+            new PIDConstants(new LoggedNetworkNumber("KP", 50).get(), new LoggedNetworkNumber("KI", 0).get(),
+                new LoggedNetworkNumber("KD", 0).get()),
+            new PIDConstants(5.0, 0.0, 0.0)),
         ppConfig,
         () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
         this);
