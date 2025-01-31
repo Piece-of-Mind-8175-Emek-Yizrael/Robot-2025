@@ -6,16 +6,13 @@ import frc.robot.subsystems.Elevator.ElevatorSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class ElevatorCommands {
-
-
-    // public static Command goToPosition(double position){
-    //     return run(() -> setSetPoint(position)).until(atGoal());
-    // }
     
-    // public static Command stopElevator(){
-    //     return runOnce(() -> resistGravity());
-    // }
+    public static Command goToPosition(ElevatorSubsystem elevator, double position){
+        return Commands.run(() -> elevator.setGoal(position), elevator).until(elevator.atGoal());
+    }
 
-    public static Command goToPosition(ElevatorSubsystem elevator)
+    public static Command stopElevator(ElevatorSubsystem elevator){
+        return Commands.runOnce(elevator::stopElevator, elevator);
+    }
     
 }

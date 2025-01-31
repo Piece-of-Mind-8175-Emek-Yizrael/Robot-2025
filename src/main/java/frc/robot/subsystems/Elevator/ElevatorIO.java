@@ -13,14 +13,15 @@ public interface ElevatorIO {
         double elevatorVelocity = 0.0;
         double elevatorPosition = 0.0;
         double elevatorAppliedVolts = 0.0;
+        boolean foldSwitch = false; 
     }
 
     public default void updateInputs(ElevatorIOInputs inputs) {}
     public default void setSpeed(double speed) {}
     public default void setVoltage(double voltage) {}
-    public default void setSetPoint(double setpoint) {}
-    public default void goToGoal(){}
+    public default void setGoal(double goal) {}
     public default BooleanSupplier atGoal(){ return () ->  false; }
     public default void stopMotor(){}
     public default void resistGravity(){}
+    public default void resetlfPressed(){}
 }

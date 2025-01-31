@@ -1,46 +1,39 @@
 package frc.robot.subsystems.Elevator;
 
-import static frc.robot.subsystems.Elevator.ElevatorConstants.ELEVATOR_ID;
-import static frc.robot.subsystems.Elevator.ElevatorConstants.FOLD_SWITCH;
-import static frc.robot.subsystems.Elevator.ElevatorConstants.KD;
-import static frc.robot.subsystems.Elevator.ElevatorConstants.KG;
-import static frc.robot.subsystems.Elevator.ElevatorConstants.KI;
-import static frc.robot.subsystems.Elevator.ElevatorConstants.KP;
-import static frc.robot.subsystems.Elevator.ElevatorConstants.KS;
-import static frc.robot.subsystems.Elevator.ElevatorConstants.KV;
-import static frc.robot.subsystems.Elevator.ElevatorConstants.MAX_ACCELERATION;
-import static frc.robot.subsystems.Elevator.ElevatorConstants.MAX_VELOCITY;
-import static frc.robot.subsystems.Elevator.ElevatorConstants.RESIST_GRAVITY;
-import static frc.robot.subsystems.Elevator.ElevatorConstants.TOLERANCE;
-
+import static frc.robot.subsystems.Elevator.ElevatorConstants.*;
 import java.util.function.BooleanSupplier;
 
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkClosedLoopController.ArbFFUnits;
 
 import edu.wpi.first.math.controller.ElevatorFeedforward;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.Debouncer;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import frc.robot.POM_lib.Motors.POMSparkMax;
 import frc.robot.POM_lib.sensors.POMDigitalInput;
 
-public class ElevatorReal implements ElevatorIO{
+public class ElevatorRealPid implements ElevatorIO{
     POMSparkMax motor;
     RelativeEncoder encoder = motor.getEncoder();
-    private ProfiledPIDController pidController;
+    private SparkClosedLoopController controller;
     private ElevatorFeedforward feedforward;
+    private double currentSetPoint;
     private POMDigitalInput foldSwitch;
     private ElevatorTuningPid pidConstants;
 
+
     
-    public ElevatorReal(){
+
+    public ElevatorRealPid(){
         motor = new POMSparkMax(ELEVATOR_ID);
-        // feedforward = new ElevatorFeedforward( KS, KG, KV);
-        // pidController = new ProfiledPIDController(KP, KI, KD, new TrapezoidProfile.Constraints(MAX_VELOCITY,MAX_ACCELERATION));
-        // feedforward = new ElevatorFeedforward( pidConstants.getKs(), pidConstants.getKg(), 0);
-        // pidController = new ProfiledPIDController(pidConstants.getKp(), pidConstants.getKi(), pidConstants.getKd(), new TrapezoidProfile.Constraints(MAX_VELOCITY,MAX_ACCELERATION));
+        //feedforward = new ElevatorFeedforward(KS , KG, 0);
+        //feedforward = new ElevatorFeedforward(pidConstants.getKs(), pidConstants.getKg(), 0);//TODO
+        controller = motor.getClosedLoopController();
         foldSwitch = new POMDigitalInput(FOLD_SWITCH);
-        pidController.setTolerance(TOLERANCE);//TODO chaeck this
     }
 
     @Override
@@ -50,7 +43,6 @@ public class ElevatorReal implements ElevatorIO{
         inputs.elevatorPosition = encoder.getPosition();
         inputs.elevatorAppliedVolts = motor.getAppliedOutput() * motor.getBusVoltage(); //FIXME Wont Return Motor Voltage
         inputs.foldSwitch = foldSwitch.get();
-
         
     }
 
@@ -66,13 +58,14 @@ public class ElevatorReal implements ElevatorIO{
 
     @Override
     public void setGoal(double goal) {
-        pidController.setGoal(goal);
-        setVoltage(pidController.calculate(encoder.getPosition()) + feedforward.calculate(pidController.getSetpoint().velocity));
+        double ffPower = feedforward.calculate(encoder.getPosition() - goal > 0 ? -1 : 1);
+        controller.setReference(goal, ControlType.kPosition, ClosedLoopSlot.kSlot0,ffPower, ArbFFUnits.kVoltage);
+        currentSetPoint = goal;
     }
 
     @Override
     public BooleanSupplier atGoal() {
-        return () -> pidController.atGoal();
+        return () -> Math.abs(currentSetPoint - encoder.getPosition()) < TOLERANCE;
     }
 
     @Override
