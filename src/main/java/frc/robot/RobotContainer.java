@@ -186,7 +186,7 @@ public class RobotContainer {
                                                 () -> driverController.getLeftX() * 0.25,
                                                 () -> driverController.getRightX() * 0.25));
 
-                driverController.b().onTrue(getPathCommand());
+                driverController.b().onTrue(getPathCommand("Drive 1 meter path"));
                 // driverController.x().onTrue(Commands.runOnce(() ->
                 // moduleFL.setTurnPosition(new Rotation2d(Math.PI))));
                 // driverController.b().onTrue(
@@ -246,10 +246,10 @@ public class RobotContainer {
                 return autoChooser.get();
         }
 
-        public Command getPathCommand() {
+        public Command getPathCommand(String pathName) {
                 try {
                         // Load the path you want to follow using its name in the GUI
-                        PathPlannerPath path = PathPlannerPath.fromPathFile("Test");
+                        PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
 
                         // Create a path following command using AutoBuilder. This will also trigger
                         // event markers.
