@@ -38,7 +38,7 @@ public class ElevatorReal implements ElevatorIO{
         // feedforward = new ElevatorFeedforward( KS, KG, KV);
         // pidController = new ProfiledPIDController(KP, KI, KD, new TrapezoidProfile.Constraints(MAX_VELOCITY,MAX_ACCELERATION));
         // feedforward = new ElevatorFeedforward( pidConstants.getKs(), pidConstants.getKg(), 0);
-        // pidController = new ProfiledPIDController(pidConstants.getKp(), pidConstants.getKi(), pidConstants.getKd(), new TrapezoidProfile.Constraints(MAX_VELOCITY,MAX_ACCELERATION));
+        //pidController = new ProfiledPIDController(pidConstants.getKp(), pidConstants.getKi(), pidConstants.getKd(), new TrapezoidProfile.Constraints(pidConstants.getMaxVelocity(),pidConstants.getMaxAcceleration()));
         foldSwitch = new POMDigitalInput(FOLD_SWITCH);
         pidController.setTolerance(TOLERANCE);//TODO chaeck this
     }

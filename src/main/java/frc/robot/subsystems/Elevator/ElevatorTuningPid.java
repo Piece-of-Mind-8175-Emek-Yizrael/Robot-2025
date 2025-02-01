@@ -11,6 +11,9 @@ public class ElevatorTuningPid {
     LoggedNetworkNumber kvTune = new LoggedNetworkNumber("kv", 0);
     LoggedNetworkNumber kgTune = new LoggedNetworkNumber("kg", 0);
     LoggedNetworkNumber ksTune = new LoggedNetworkNumber("ks", 0);
+    LoggedNetworkNumber maxAccelerationTune = new LoggedNetworkNumber("max acceleration", 0);
+    LoggedNetworkNumber maxVelocityTune = new LoggedNetworkNumber("max velocity", 0);
+
 
     public double getKp(){
         return kpTune.get();
@@ -33,6 +36,13 @@ public class ElevatorTuningPid {
 
     public double getKs(){
         return ksTune.get();
+    }
+    public double getMaxAcceleration(){
+        return maxAccelerationTune.get();
+    }
+
+    public double getMaxVelocity(){
+        return maxVelocityTune.get();
     }
 
 }
