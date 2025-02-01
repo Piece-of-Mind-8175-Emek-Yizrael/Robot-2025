@@ -2,6 +2,10 @@ package frc.robot.subsystems.Elevator;
 
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
+import edu.wpi.first.math.controller.ElevatorFeedforward;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+
 public class ElevatorTuningPid {
 
     
@@ -43,6 +47,18 @@ public class ElevatorTuningPid {
 
     public double getMaxVelocity(){
         return maxVelocityTune.get();
+    }
+
+    public void setPidValues(ProfiledPIDController pidController, ElevatorFeedforward feedforward){
+        pidController.setP(getKp());
+        pidController.setI(getKi());
+        pidController.setD(getKd());
+        pidController.setConstraints(new TrapezoidProfile.Constraints(getMaxVelocity(), getMaxAcceleration()));
+        feedforward = new ElevatorFeedforward(getKs(), getKg(), getKv());
+    }
+
+    public void setPidValues(ElevatorFeedforward feedforward){
+        feedforward = new ElevatorFeedforward(getKs(), getKg(), getKv());
     }
 
 }

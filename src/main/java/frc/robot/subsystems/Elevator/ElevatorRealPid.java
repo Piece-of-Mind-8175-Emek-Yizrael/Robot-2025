@@ -30,8 +30,9 @@ public class ElevatorRealPid implements ElevatorIO{
 
     public ElevatorRealPid(){
         motor = new POMSparkMax(ELEVATOR_ID);
-        //feedforward = new ElevatorFeedforward(KS , KG, 0);
-        //feedforward = new ElevatorFeedforward(pidConstants.getKs(), pidConstants.getKg(), 0);//TODO
+        feedforward = new ElevatorFeedforward(KS , KG, KV);
+        //feedforward = new ElevatorFeedforward(pidConstants.getKs(), pidConstants.getKg(), pidConstants.getKv());//TODO
+        pidConstants.setPidValues(feedforward);
         controller = motor.getClosedLoopController();
         foldSwitch = new POMDigitalInput(FOLD_SWITCH);
     }
