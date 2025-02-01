@@ -24,4 +24,5 @@ public interface ElevatorIO {
     public default void stopMotor(){}
     public default void resistGravity(){}
     public default void resetlfPressed(){}
+    public default void setPidValues(){}
 }

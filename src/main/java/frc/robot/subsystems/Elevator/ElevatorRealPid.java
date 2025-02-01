@@ -13,6 +13,7 @@ import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import frc.robot.POM_lib.Motors.POMSparkMax;
 import frc.robot.POM_lib.sensors.POMDigitalInput;
 
@@ -25,8 +26,6 @@ public class ElevatorRealPid implements ElevatorIO{
     private POMDigitalInput foldSwitch;
     private ElevatorTuningPid pidConstants;
 
-
-    
 
     public ElevatorRealPid(){
         motor = new POMSparkMax(ELEVATOR_ID);
@@ -83,6 +82,11 @@ public class ElevatorRealPid implements ElevatorIO{
         if(foldSwitch.get()){
             encoder.setPosition(0);
         }
+    }
+
+    @Override
+    public void setPidValues(){
+        feedforward = new ElevatorFeedforward(pidConstants.getKs(), pidConstants.getKg(), pidConstants.getKv());
     }
     
 }

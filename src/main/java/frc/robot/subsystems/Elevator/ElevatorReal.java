@@ -92,11 +92,13 @@ public class ElevatorReal implements ElevatorIO{
         }
     }
 
+    @Override
     public void setPidValues(){
         pidController.setP(pidConstants.getKp());
         pidController.setI(pidConstants.getKi());
         pidController.setD(pidConstants.getKd());
         pidController.setConstraints(new TrapezoidProfile.Constraints(pidConstants.getMaxVelocity(), pidConstants.getMaxAcceleration()));
+        feedforward = new ElevatorFeedforward(pidConstants.getKs(), pidConstants.getKg(), pidConstants.getKv());
     }
     
 }
