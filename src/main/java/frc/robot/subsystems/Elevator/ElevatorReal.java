@@ -37,9 +37,8 @@ public class ElevatorReal implements ElevatorIO{
         motor = new POMSparkMax(ELEVATOR_ID);
         feedforward = new ElevatorFeedforward( KS, KG, KV);
         pidController = new ProfiledPIDController(KP, KI, KD, new TrapezoidProfile.Constraints(MAX_VELOCITY,MAX_ACCELERATION));
-        feedforward = new ElevatorFeedforward( pidConstants.getKs(), pidConstants.getKg(), pidConstants.getKv());
-        pidController = new ProfiledPIDController(pidConstants.getKp(), pidConstants.getKi(), pidConstants.getKd(), new TrapezoidProfile.Constraints(pidConstants.getMaxVelocity(),pidConstants.getMaxAcceleration()));
-        pidConstants.setPidValues(pidController, feedforward);
+        // feedforward = new ElevatorFeedforward( pidConstants.getKs(), pidConstants.getKg(), pidConstants.getKv());
+        // pidController = new ProfiledPIDController(pidConstants.getKp(), pidConstants.getKi(), pidConstants.getKd(), new TrapezoidProfile.Constraints(pidConstants.getMaxVelocity(),pidConstants.getMaxAcceleration()));
 
         foldSwitch = new POMDigitalInput(FOLD_SWITCH);
         pidController.setTolerance(TOLERANCE);//TODO chaeck this
@@ -52,8 +51,7 @@ public class ElevatorReal implements ElevatorIO{
         inputs.elevatorPosition = encoder.getPosition();
         inputs.elevatorAppliedVolts = motor.getAppliedOutput() * motor.getBusVoltage(); //FIXME Wont Return Motor Voltage
         inputs.foldSwitch = foldSwitch.get();
-
-        
+        setPidValues();
     }
 
     @Override
@@ -92,6 +90,13 @@ public class ElevatorReal implements ElevatorIO{
         if(foldSwitch.get()){
             encoder.setPosition(0);
         }
+    }
+
+    public void setPidValues(){
+        pidController.setP(pidConstants.getKp());
+        pidController.setI(pidConstants.getKi());
+        pidController.setD(pidConstants.getKd());
+        pidController.setConstraints(new TrapezoidProfile.Constraints(pidConstants.getMaxVelocity(), pidConstants.getMaxAcceleration()));
     }
     
 }

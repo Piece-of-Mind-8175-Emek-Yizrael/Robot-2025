@@ -1,5 +1,7 @@
 package frc.robot.subsystems.Elevator;
 
+import static frc.robot.subsystems.Elevator.ElevatorConstants.*;
+
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 import edu.wpi.first.math.controller.ElevatorFeedforward;
@@ -9,14 +11,14 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 public class ElevatorTuningPid {
 
     
-    LoggedNetworkNumber kpTune = new LoggedNetworkNumber("kp", 0);
-    LoggedNetworkNumber kiTune = new LoggedNetworkNumber("ki", 0);
-    LoggedNetworkNumber kdTune = new LoggedNetworkNumber("kd", 0);
-    LoggedNetworkNumber kvTune = new LoggedNetworkNumber("kv", 0);
-    LoggedNetworkNumber kgTune = new LoggedNetworkNumber("kg", 0);
-    LoggedNetworkNumber ksTune = new LoggedNetworkNumber("ks", 0);
-    LoggedNetworkNumber maxAccelerationTune = new LoggedNetworkNumber("max acceleration", 0);
-    LoggedNetworkNumber maxVelocityTune = new LoggedNetworkNumber("max velocity", 0);
+    LoggedNetworkNumber kpTune = new LoggedNetworkNumber("kp", KP);
+    LoggedNetworkNumber kiTune = new LoggedNetworkNumber("ki", KI);
+    LoggedNetworkNumber kdTune = new LoggedNetworkNumber("kd", KD);
+    LoggedNetworkNumber kvTune = new LoggedNetworkNumber("kv", KV);
+    LoggedNetworkNumber kgTune = new LoggedNetworkNumber("kg", KG);
+    LoggedNetworkNumber ksTune = new LoggedNetworkNumber("ks", KS);
+    LoggedNetworkNumber maxAccelerationTune = new LoggedNetworkNumber("max acceleration", MAX_ACCELERATION);
+    LoggedNetworkNumber maxVelocityTune = new LoggedNetworkNumber("max velocity", MAX_VELOCITY);
 
 
     public double getKp(){
@@ -49,16 +51,5 @@ public class ElevatorTuningPid {
         return maxVelocityTune.get();
     }
 
-    public void setPidValues(ProfiledPIDController pidController, ElevatorFeedforward feedforward){
-        pidController.setP(getKp());
-        pidController.setI(getKi());
-        pidController.setD(getKd());
-        pidController.setConstraints(new TrapezoidProfile.Constraints(getMaxVelocity(), getMaxAcceleration()));
-        feedforward = new ElevatorFeedforward(getKs(), getKg(), getKv());
-    }
-
-    public void setPidValues(ElevatorFeedforward feedforward){
-        feedforward = new ElevatorFeedforward(getKs(), getKg(), getKv());
-    }
-
+    
 }
