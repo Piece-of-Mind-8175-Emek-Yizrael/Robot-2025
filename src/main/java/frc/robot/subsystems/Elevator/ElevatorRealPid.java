@@ -42,7 +42,7 @@ public class ElevatorRealPid implements ElevatorIO{
         inputs.elevatorPosition = encoder.getPosition();
         inputs.elevatorAppliedVolts = motor.getAppliedOutput() * motor.getBusVoltage(); //FIXME Wont Return Motor Voltage
         inputs.foldSwitch = foldSwitch.get();
-        
+        setPidValues();
     }
 
     @Override
