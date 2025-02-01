@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.POM_lib.Joysticks.PomXboxController;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.ElevatorCommands;
 import frc.robot.subsystems.Elevator.ElevatorIO;
 import frc.robot.subsystems.Elevator.ElevatorIOSim;
 import frc.robot.subsystems.Elevator.ElevatorReal;
@@ -203,6 +204,11 @@ public class RobotContainer {
 
                 // Reset gyro to 0° when Y button is pressed
                 driverController.y().onTrue(drive.resetGyroCommand());
+
+
+                driverController.PovUp().onTrue(ElevatorCommands.goToPosition(elevatorSubsystem, 100));
+                driverController.PovLeft().onTrue(ElevatorCommands.goToPosition(elevatorSubsystem, 50));
+                driverController.PovDown().onTrue(ElevatorCommands.goToPosition(elevatorSubsystem, 0));
 
         }
 

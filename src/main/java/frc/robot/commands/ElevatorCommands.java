@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class ElevatorCommands {
     
     public static Command goToPosition(ElevatorSubsystem elevator, double position){
+        System.out.print("Going To: " + position);
         return Commands.run(() -> elevator.setGoal(position), elevator).until(elevator.atGoal());
     }
 
