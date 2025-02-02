@@ -88,5 +88,20 @@ public class ElevatorRealPid implements ElevatorIO{
     public void setPidValues(){
         feedforward = new ElevatorFeedforward(pidConstants.getKs(), pidConstants.getKg(), pidConstants.getKv());
     }
+
+    @Override
+    public void setFeedForward(double velocity){
+        motor.setVoltage(feedforward.calculate(velocity));
+    }
+
+    @Override
+    public boolean isPressed() {
+        return foldSwitch.get();
+    }
+
+    @Override
+    public void setVoltageWithResistGravity(double voltage) {
+        motor.setVoltage(feedforward.calculate(0) + voltage);
+    }
     
 }

@@ -31,33 +31,36 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     
-    public void setSpeed(double speed){
-        elevatorIO.setSpeed(speed);
-    }
+    // public void setSpeed(double speed){
+    //     elevatorIO.setSpeed(speed);
+    // }
 
-    public void setVoltage(double voltage){
-        elevatorIO.setVoltage(voltage);
-    }
+    // public void setVoltage(double voltage){
+    //     elevatorIO.setVoltage(voltage);
+    // }
 
-    public void setGoal(double goal){
-        elevatorIO.setGoal(goal);
-    }
+    // public void setGoal(double goal){
+    //     elevatorIO.setGoal(goal);
+    // }
 
-    public BooleanSupplier atGoal(){
-       return elevatorIO.atGoal();
-    }
+    // public BooleanSupplier atGoal(){
+    //    return elevatorIO.atGoal();
+    // }
 
-    public void resistGravity(){
-        elevatorIO.resistGravity();
-    }
+    // public void resistGravity(){
+    //     elevatorIO.resistGravity();
+    // }
 
-    public void stopElevator(){
-        elevatorIO.stopMotor();
-    }
+    // public void stopElevator(){
+    //     elevatorIO.stopMotor();
+    // }
 
-    public void resetlfPressed(){
-        elevatorIO.resetlfPressed();
-    }
+    // public void resetlfPressed(){
+    //     elevatorIO.resetlfPressed();
+    // }
 
+    public ElevatorIO getIO() {
+        return elevatorIO;
+    }
 
 }

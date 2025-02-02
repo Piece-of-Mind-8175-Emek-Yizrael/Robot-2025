@@ -21,8 +21,12 @@ public interface ElevatorIO {
     public default void setVoltage(double voltage) {}
     public default void setGoal(double goal) {}
     public default BooleanSupplier atGoal(){ return () ->  false; }
-    public default void stopMotor(){}
-    public default void resistGravity(){}
-    public default void resetlfPressed(){}
-    public default void setPidValues(){}
+    public default void stopMotor() {}
+    public default void resistGravity() {}
+    public default void resetlfPressed() {}
+    public default void setPidValues() {}
+    public default void setFeedForward(double voltage) {}
+    public default boolean isPressed(){ return false; }
+    public default void setVoltageWithResistGravity(double voltage) {}
+
 }
