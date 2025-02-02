@@ -26,16 +26,18 @@ public class ElevatorReal implements ElevatorIO{
     private POMDigitalInput foldSwitch;
     private ElevatorTuningPid pidConstants;
     private SoftLimitConfig softLimit;
-
+    private BooleanSupplier isCoralIn;
 
     
-    public ElevatorReal(){
+    public ElevatorReal(BooleanSupplier isCoralIn){
         motor = new POMSparkMax(ELEVATOR_ID);
         feedforward = new ElevatorFeedforward( KS, KG, KV);
         pidController = new ProfiledPIDController(KP, KI, KD, new TrapezoidProfile.Constraints(MAX_VELOCITY,MAX_ACCELERATION));
         // feedforward = new ElevatorFeedforward( pidConstants.getKs(), pidConstants.getKg(), pidConstants.getKv());
         // pidController = new ProfiledPIDController(pidConstants.getKp(), pidConstants.getKi(), pidConstants.getKd(), new TrapezoidProfile.Constraints(pidConstants.getMaxVelocity(),pidConstants.getMaxAcceleration()));
 
+        this.isCoralIn = isCoralIn;
+        
         foldSwitch = new POMDigitalInput(FOLD_SWITCH);
         pidController.setTolerance(TOLERANCE);//TODO chaeck this
 
@@ -43,6 +45,8 @@ public class ElevatorReal implements ElevatorIO{
         config.softLimit.forwardSoftLimit(FORWARD_SOFT_LIMIT);
         config.encoder.positionConversionFactor(POSITION_CONVERSION_FACTOR).velocityConversionFactor(POSITION_CONVERSION_FACTOR / 60.0);
         motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+        //TODO finish configure
     }
 
     @Override
@@ -63,6 +67,11 @@ public class ElevatorReal implements ElevatorIO{
     @Override
     public void setVoltage(double voltage) {
         motor.setVoltage(voltage);
+    }
+
+    @Override
+    public void setVoltageWithCoral(double voltage) {
+        motor.setVoltage(voltage + KG_OF_CORAL);
     }
 
     @Override
@@ -102,9 +111,19 @@ public class ElevatorReal implements ElevatorIO{
         feedforward = new ElevatorFeedforward(pidConstants.getKs(), pidConstants.getKg(), pidConstants.getKv());
     }
 
+    
+    private double getFeedForwardVelocity(double velocity){//TODO 
+        return velocity;
+    }
+
     @Override
     public void setFeedForward(double velocity){
-        motor.setVoltage(feedforward.calculate(velocity));
+        if(isCoralIn.getAsBoolean()){
+            setVoltageWithCoral(feedforward.calculate(velocity));
+        }
+        else{
+            motor.setVoltage(feedforward.calculate(velocity));
+        }
     }
 
     @Override

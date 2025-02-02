@@ -2,6 +2,8 @@ package frc.robot.subsystems.Elevator;
 
 public class ElevatorConstants {//TODO tune on robot
     public static final int ELEVATOR_ID = 16;
+    public static final int FOLD_SWITCH = 0;
+    
     public static final int KP = 0;
     public static final int KI = 0;
     public static final int KD = 0;
@@ -19,6 +21,8 @@ public class ElevatorConstants {//TODO tune on robot
 
     public static final double POSITION_CONVERSION_FACTOR = 0;
     
-    public static final int FOLD_SWITCH = 0;
+    
+    public static final double KG_OF_CORAL = 0;
+    
 
 }

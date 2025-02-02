@@ -30,18 +30,26 @@ public class ElevatorRealPid implements ElevatorIO{
     private POMDigitalInput foldSwitch;
     private ElevatorTuningPid pidConstants;
     private SoftLimitConfig softLimit;
+    private BooleanSupplier isCoralIn;
 
 
-    public ElevatorRealPid(){
+    public ElevatorRealPid(BooleanSupplier isCoralIn){
         motor = new POMSparkMax(ELEVATOR_ID);
+        foldSwitch = new POMDigitalInput(FOLD_SWITCH);
+
         feedforward = new ElevatorFeedforward(KS , KG, KV);
         //feedforward = new ElevatorFeedforward(pidConstants.getKs(), pidConstants.getKg(), pidConstants.getKv());//TODO
         controller = motor.getClosedLoopController();
-        foldSwitch = new POMDigitalInput(FOLD_SWITCH);
+        
+        this.isCoralIn = isCoralIn;
+
         SparkMaxConfig config = new SparkMaxConfig();
         config.softLimit.forwardSoftLimit(FORWARD_SOFT_LIMIT);
         config.encoder.positionConversionFactor(POSITION_CONVERSION_FACTOR).velocityConversionFactor(POSITION_CONVERSION_FACTOR / 60.0);
         motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+        //TODO finish configure
+
     }
 
     @Override
@@ -62,6 +70,11 @@ public class ElevatorRealPid implements ElevatorIO{
     @Override
     public void setVoltage(double voltage) {
         motor.setVoltage(voltage);
+    }
+
+    @Override
+    public void setVoltageWithCoral(double voltage) {
+        motor.setVoltage(voltage + KG_OF_CORAL);
     }
 
     @Override
@@ -98,9 +111,18 @@ public class ElevatorRealPid implements ElevatorIO{
         feedforward = new ElevatorFeedforward(pidConstants.getKs(), pidConstants.getKg(), pidConstants.getKv());
     }
 
+    private double getFeedForwardVelocity(double velocity){//TODO 
+        return velocity;
+    }
+
     @Override
     public void setFeedForward(double velocity){
-        motor.setVoltage(feedforward.calculate(velocity));
+        if(isCoralIn.getAsBoolean()){
+            setVoltageWithCoral(feedforward.calculate(velocity));
+        }
+        else{
+            motor.setVoltage(feedforward.calculate(velocity));
+        }
     }
 
     @Override
