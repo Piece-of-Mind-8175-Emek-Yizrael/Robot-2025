@@ -7,7 +7,11 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController.ArbFFUnits;
+import com.revrobotics.spark.config.SoftLimitConfig;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
@@ -25,6 +29,7 @@ public class ElevatorRealPid implements ElevatorIO{
     private double currentSetPoint;
     private POMDigitalInput foldSwitch;
     private ElevatorTuningPid pidConstants;
+    private SoftLimitConfig softLimit;
 
 
     public ElevatorRealPid(){
@@ -33,6 +38,10 @@ public class ElevatorRealPid implements ElevatorIO{
         //feedforward = new ElevatorFeedforward(pidConstants.getKs(), pidConstants.getKg(), pidConstants.getKv());//TODO
         controller = motor.getClosedLoopController();
         foldSwitch = new POMDigitalInput(FOLD_SWITCH);
+        SparkMaxConfig config = new SparkMaxConfig();
+        config.softLimit.forwardSoftLimit(FORWARD_SOFT_LIMIT);
+        config.encoder.positionConversionFactor(POSITION_CONVERSION_FACTOR).velocityConversionFactor(POSITION_CONVERSION_FACTOR / 60.0);
+        motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
     @Override

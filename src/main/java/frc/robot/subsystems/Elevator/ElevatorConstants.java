@@ -13,7 +13,11 @@ public class ElevatorConstants {//TODO tune on robot
 
     public static final double MAX_ACCELERATION = 0;
     public static final double MAX_VELOCITY = 0;
-    
+
+
+    public static final double FORWARD_SOFT_LIMIT = 0;
+
+    public static final double POSITION_CONVERSION_FACTOR = 0;
     
     public static final int FOLD_SWITCH = 0;
 

@@ -1,21 +1,15 @@
 package frc.robot.subsystems.Elevator;
 
-import static frc.robot.subsystems.Elevator.ElevatorConstants.ELEVATOR_ID;
-import static frc.robot.subsystems.Elevator.ElevatorConstants.FOLD_SWITCH;
-import static frc.robot.subsystems.Elevator.ElevatorConstants.KD;
-import static frc.robot.subsystems.Elevator.ElevatorConstants.KG;
-import static frc.robot.subsystems.Elevator.ElevatorConstants.KI;
-import static frc.robot.subsystems.Elevator.ElevatorConstants.KP;
-import static frc.robot.subsystems.Elevator.ElevatorConstants.KS;
-import static frc.robot.subsystems.Elevator.ElevatorConstants.KV;
-import static frc.robot.subsystems.Elevator.ElevatorConstants.MAX_ACCELERATION;
-import static frc.robot.subsystems.Elevator.ElevatorConstants.MAX_VELOCITY;
-import static frc.robot.subsystems.Elevator.ElevatorConstants.RESIST_GRAVITY;
-import static frc.robot.subsystems.Elevator.ElevatorConstants.TOLERANCE;
+import static frc.robot.subsystems.Elevator.ElevatorConstants.*;
+
 
 import java.util.function.BooleanSupplier;
 
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.config.SoftLimitConfig;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -31,6 +25,8 @@ public class ElevatorReal implements ElevatorIO{
     private ElevatorFeedforward feedforward;
     private POMDigitalInput foldSwitch;
     private ElevatorTuningPid pidConstants;
+    private SoftLimitConfig softLimit;
+
 
     
     public ElevatorReal(){
@@ -42,6 +38,11 @@ public class ElevatorReal implements ElevatorIO{
 
         foldSwitch = new POMDigitalInput(FOLD_SWITCH);
         pidController.setTolerance(TOLERANCE);//TODO chaeck this
+
+        SparkMaxConfig config = new SparkMaxConfig();
+        config.softLimit.forwardSoftLimit(FORWARD_SOFT_LIMIT);
+        config.encoder.positionConversionFactor(POSITION_CONVERSION_FACTOR).velocityConversionFactor(POSITION_CONVERSION_FACTOR / 60.0);
+        motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
     @Override
