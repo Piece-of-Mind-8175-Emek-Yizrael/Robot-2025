@@ -22,4 +22,6 @@ public interface LEDsIO {
 
     public default void blink(LEDPattern pattern, double seconds){}
 
+    public default void movingLine(Color color, int length){}
+
 }

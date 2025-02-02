@@ -76,15 +76,31 @@ public class LEDsIOReal implements LEDsIO{
         updateLEDs();
     }
 
+    @Override
+    public void movingLine(Color color, int length) {
+        for (int i = 0; i <= LENGTH-length; i++){
+            setRange(i, i+length, color);
+        }
+    }
+
     private void updateLEDs(){
         led.setData(ledBuffer);
     }
 
-    // private void setColor(int idx, Color color) {
-    //     int rgbFactor = 255;
-    //     ledBuffer.setRGB(idx, (int) (color.red*rgbFactor), (int) (color.green*rgbFactor), (int) (color.blue*rgbFactor));
-    //     updateLEDs();
-    // }
+    private void setColor(int idx, Color color) {
+        int rgbFactor = 255;
+        ledBuffer.setRGB(idx, (int) (color.red*rgbFactor), (int) (color.green*rgbFactor), (int) (color.blue*rgbFactor));
+        updateLEDs();
+    }
+
+    private void setRange(int startIdx, int endIDX, Color color) {
+        for (int i = startIdx; i <= endIDX; i++) {
+            setColor(i, color);
+        }
+    }
+
+
+    
 
     
 

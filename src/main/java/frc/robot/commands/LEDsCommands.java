@@ -27,5 +27,9 @@ public class LEDsCommands {
     public static Command blink(LEDs leds, LEDPattern pattern, double seconds) {
         return Commands.run(() -> leds.blink(pattern, seconds), leds);
     }
+
+    public static Command movingLine(LEDs leds, Color color, int length) {
+        return Commands.runOnce(() -> leds.movingLine(color, length), leds);
+    }
     
 }

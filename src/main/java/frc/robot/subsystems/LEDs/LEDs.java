@@ -33,6 +33,10 @@ public class LEDs extends SubsystemBase {
         ledsIO.blink(pattern, seconds);
     }
 
+    public void movingLine(Color color, int length) {
+        ledsIO.movingLine(color, length);
+    }
+
 
     @Override
     public void periodic() {
