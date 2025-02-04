@@ -113,7 +113,7 @@ public class ElevatorRealPid implements ElevatorIO{
     }
 
     private double getFeedForwardVelocity(double velocity){ 
-        return isCoralIn.getAsBoolean()? feedforward.calculate(velocity + KG_OF_CORAL) : feedforward.calculate(velocity);
+        return isCoralIn.getAsBoolean()? feedforward.calculate(velocity) + KG_OF_CORAL : feedforward.calculate(velocity);
     }
 
     @Override
