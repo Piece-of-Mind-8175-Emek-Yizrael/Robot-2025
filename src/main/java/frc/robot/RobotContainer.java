@@ -22,7 +22,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.POM_lib.Joysticks.PomXboxController;
+import frc.robot.commands.AlgaeOuttakeCommands;
 import frc.robot.commands.DriveCommands;
+import frc.robot.subsystems.AlgaeOuttake.AlgaeOuttake;
+import frc.robot.subsystems.AlgaeOuttake.AlgaeOuttakeIO;
+import frc.robot.subsystems.AlgaeOuttake.AlgaeOuttakeIOReal;
+import frc.robot.subsystems.AlgaeOuttake.AlgaeOuttakeIOSim;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon;
@@ -48,6 +53,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
         // Subsystems
         private final Drive drive;
+        private final AlgaeOuttake algaeOuttake;
 
         // Controller
         private final PomXboxController driverController = new PomXboxController(0);
@@ -64,6 +70,8 @@ public class RobotContainer {
                 switch (Constants.currentMode) {
                         case REAL:
                                 // Real robot, instantiate hardware IO implementations
+                                algaeOuttake = new AlgaeOuttake(new AlgaeOuttakeIOReal());
+
                                 drive = new Drive(
                                                 new GyroIOPigeon(),
                                                 new ModuleIOPOM(0),
@@ -79,6 +87,8 @@ public class RobotContainer {
                                                 new Pose2d(3, 3, new Rotation2d()));
                                 SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
 
+                                algaeOuttake = new AlgaeOuttake(new AlgaeOuttakeIOSim());
+
                                 drive = new Drive(
                                                 new GyroIOSim(this.driveSimulation.getGyroSimulation()),
                                                 new ModuleIOSim(this.driveSimulation.getModules()[0]),
@@ -89,6 +99,8 @@ public class RobotContainer {
 
                         default:
                                 // Replayed robot, disable IO implementations
+                                algaeOuttake = new AlgaeOuttake(new AlgaeOuttakeIO()  {});
+
                                 drive = new Drive(
                                                 new GyroIO() {
                                                 },
@@ -191,6 +203,9 @@ public class RobotContainer {
 
                 // Reset gyro to 0° when Y button is pressed
                 driverController.y().onTrue(drive.resetGyroCommand());
+
+                driverController.b().onTrue(AlgaeOuttakeCommands.openArm(algaeOuttake));
+                driverController.x().onTrue(AlgaeOuttakeCommands.closeArm(algaeOuttake));
         }
 
         public void displaSimFieldToAdvantageScope() {
