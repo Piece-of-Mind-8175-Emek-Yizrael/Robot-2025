@@ -45,7 +45,8 @@ public class ElevatorReal implements ElevatorIO{
         config.softLimit.forwardSoftLimit(FORWARD_SOFT_LIMIT);
         config.encoder.positionConversionFactor(POSITION_CONVERSION_FACTOR).velocityConversionFactor(POSITION_CONVERSION_FACTOR / 60.0);
         motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
+       
+        encoder.setPosition(0);
         //TODO finish configure
     }
 

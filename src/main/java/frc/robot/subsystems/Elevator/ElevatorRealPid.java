@@ -48,6 +48,7 @@ public class ElevatorRealPid implements ElevatorIO{
         config.encoder.positionConversionFactor(POSITION_CONVERSION_FACTOR).velocityConversionFactor(POSITION_CONVERSION_FACTOR / 60.0);
         motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
+        encoder.setPosition(0);
         //TODO finish configure
 
     }
