@@ -80,7 +80,7 @@ public class ElevatorRealPid implements ElevatorIO{
 
     @Override
     public void setGoal(double goal) {
-        double ffPower = feedforward.calculate(encoder.getPosition() - goal > 0 ? -1 : 1);
+        double ffPower = getFeedForwardVelocity(encoder.getPosition() - goal > 0 ? -1 : 1);
         controller.setReference(goal, ControlType.kPosition, ClosedLoopSlot.kSlot0,ffPower, ArbFFUnits.kVoltage);
         currentSetPoint = goal;
     }
@@ -92,12 +92,12 @@ public class ElevatorRealPid implements ElevatorIO{
 
     @Override
     public void stopMotor(){
-        setVoltage(0 + feedforward.calculate(0));//TODO check this 
+        setVoltage(0 + getFeedForwardVelocity(0));//TODO check this 
     }
     
     @Override
     public void resistGravity() {
-        setVoltage(feedforward.calculate(0));//TODO check this 
+        setVoltage(getFeedForwardVelocity(0));//TODO check this 
     }
 
     @Override
@@ -128,7 +128,7 @@ public class ElevatorRealPid implements ElevatorIO{
 
     @Override
     public void setVoltageWithResistGravity(double voltage) {
-        motor.setVoltage(feedforward.calculate(0) + voltage);
+        motor.setVoltage(getFeedForwardVelocity(0) + voltage);
     }
     
 }

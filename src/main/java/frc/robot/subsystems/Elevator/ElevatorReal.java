@@ -78,7 +78,7 @@ public class ElevatorReal implements ElevatorIO{
     @Override
     public void setGoal(double goal) {
         pidController.setGoal(goal);
-        setVoltage(pidController.calculate(encoder.getPosition()) + feedforward.calculate(pidController.getSetpoint().velocity));
+        setVoltage(getFeedForwardVelocity(encoder.getPosition()) + getFeedForwardVelocity(pidController.getSetpoint().velocity));
     }
 
     @Override
@@ -88,12 +88,12 @@ public class ElevatorReal implements ElevatorIO{
 
     @Override
     public void stopMotor(){
-        setVoltage(0 + feedforward.calculate(0));//TODO check this 
+        setVoltage(0 + getFeedForwardVelocity(0));//TODO check this 
     }
     
     @Override
     public void resistGravity() {
-        setVoltage(feedforward.calculate(0));//TODO check this 
+        setVoltage(getFeedForwardVelocity(0));//TODO check this 
     }
 
     @Override
@@ -129,7 +129,7 @@ public class ElevatorReal implements ElevatorIO{
 
     @Override
     public void setVoltageWithResistGravity(double voltage) {
-        motor.setVoltage(feedforward.calculate(0) + voltage);
+        motor.setVoltage(getFeedForwardVelocity(0) + voltage);
     }
     
 }
