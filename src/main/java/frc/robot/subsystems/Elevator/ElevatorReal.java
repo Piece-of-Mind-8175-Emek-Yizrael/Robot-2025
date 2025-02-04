@@ -9,6 +9,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.config.SoftLimitConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.controller.ElevatorFeedforward;
@@ -40,13 +41,19 @@ public class ElevatorReal implements ElevatorIO{
         
         foldSwitch = new POMDigitalInput(FOLD_SWITCH);
         pidController.setTolerance(TOLERANCE);//TODO chaeck this
-
+        
         SparkMaxConfig config = new SparkMaxConfig();
+
+        config.idleMode(IdleMode.kBrake).inverted(INVERTED)
+                               .smartCurrentLimit(CURRENT_LIMIT)
+                               .voltageCompensation(VOLTAGE_COMPENSATION);
+
         config.softLimit.forwardSoftLimit(FORWARD_SOFT_LIMIT);
         config.encoder.positionConversionFactor(POSITION_CONVERSION_FACTOR).velocityConversionFactor(POSITION_CONVERSION_FACTOR / 60.0);
         motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
        
         encoder.setPosition(0);
+
         //TODO finish configure
     }
 

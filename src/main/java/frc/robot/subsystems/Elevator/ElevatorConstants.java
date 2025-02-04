@@ -24,5 +24,10 @@ public class ElevatorConstants {//TODO tune on robot
     
     public static final double KG_OF_CORAL = 0;
     
+    public static final boolean INVERTED = true;//TODO check
+    
+    public static final int CURRENT_LIMIT = 40;
+    
+    public static final double VOLTAGE_COMPENSATION = 0;
 
 }

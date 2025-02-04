@@ -23,5 +23,9 @@ public class ElevatorCommands {
     public static Command moveDown(ElevatorSubsystem elevator, double voltage){
         return Commands.run(() -> elevator.getIO().setVoltageWithResistGravity(voltage), elevator).until(elevator.getIO()::isPressed);
     }
+
+    public static Command setSpeed(ElevatorSubsystem elevator, double speed){
+        return Commands.run(() -> elevator.getIO().setSpeed(speed), elevator);
+    }
     
 }

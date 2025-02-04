@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.POM_lib.Joysticks.PomXboxController;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.ElevatorCommands;
 import frc.robot.subsystems.Elevator.ElevatorIO;
 import frc.robot.subsystems.Elevator.ElevatorIOSim;
 import frc.robot.subsystems.Elevator.ElevatorReal;
@@ -71,7 +72,7 @@ public class RobotContainer {
                 switch (Constants.currentMode) {
                         case REAL:
                                 // Real robot, instantiate hardware IO implementations
-                                elevatorSubsystem = new ElevatorSubsystem(new ElevatorReal());
+                                elevatorSubsystem = new ElevatorSubsystem(new ElevatorReal(() -> false));
                                 drive = new Drive(
                                                 new GyroIOPigeon(),
                                                 new ModuleIOPOM(0),
@@ -204,6 +205,9 @@ public class RobotContainer {
                 // Reset gyro to 0° when Y button is pressed
                 driverController.y().onTrue(drive.resetGyroCommand());
 
+
+                driverController.leftTrigger().onTrue(ElevatorCommands.setSpeed(elevatorSubsystem, 0.2));
+                driverController.rightTrigger().onTrue(ElevatorCommands.stopElevator(elevatorSubsystem));
         }
 
         public void displaSimFieldToAdvantageScope() {
