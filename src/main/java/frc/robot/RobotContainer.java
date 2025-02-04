@@ -205,7 +205,7 @@ public class RobotContainer {
                 driverController.y().onTrue(drive.resetGyroCommand());
 
                 driverController.b().onTrue(AlgaeOuttakeCommands.openArm(algaeOuttake));
-                driverController.x().onTrue(AlgaeOuttakeCommands.closeArm(algaeOuttake));
+                driverController.a().onTrue(AlgaeOuttakeCommands.closeArm(algaeOuttake));
         }
 
         public void displaSimFieldToAdvantageScope() {
