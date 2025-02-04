@@ -13,6 +13,11 @@
 
 package frc.robot;
 
+import org.ironmaple.simulation.SimulatedArena;
+import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -23,6 +28,11 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.POM_lib.Joysticks.PomXboxController;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.TransferCommands;
+import frc.robot.subsystems.Transfer.Transfer;
+import frc.robot.subsystems.Transfer.TransferIO;
+import frc.robot.subsystems.Transfer.TransferIOReal;
+import frc.robot.subsystems.Transfer.TransferIOSim;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon;
@@ -30,11 +40,6 @@ import frc.robot.subsystems.drive.GyroIOSim;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOPOM;
 import frc.robot.subsystems.drive.ModuleIOSim;
-
-import org.ironmaple.simulation.SimulatedArena;
-import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
-import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -48,6 +53,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
         // Subsystems
         private final Drive drive;
+        private final Transfer transfer;
 
         // Controller
         private final PomXboxController driverController = new PomXboxController(0);
@@ -64,6 +70,8 @@ public class RobotContainer {
                 switch (Constants.currentMode) {
                         case REAL:
                                 // Real robot, instantiate hardware IO implementations
+                                transfer = new Transfer(new TransferIOReal());
+
                                 drive = new Drive(
                                                 new GyroIOPigeon(),
                                                 new ModuleIOPOM(0),
@@ -79,6 +87,8 @@ public class RobotContainer {
                                                 new Pose2d(3, 3, new Rotation2d()));
                                 SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
 
+                                transfer = new Transfer(new TransferIOSim(driveSimulation));
+                                
                                 drive = new Drive(
                                                 new GyroIOSim(this.driveSimulation.getGyroSimulation()),
                                                 new ModuleIOSim(this.driveSimulation.getModules()[0]),
@@ -100,6 +110,8 @@ public class RobotContainer {
                                                 },
                                                 new ModuleIO() {
                                                 });
+
+                                transfer = new Transfer(new TransferIO() {});
                                 break;
                 }
 
@@ -157,6 +169,7 @@ public class RobotContainer {
                                                 () -> driverController.getLeftY() * 0.27,
                                                 () -> driverController.getLeftX() * 0.27,
                                                 () -> driverController.getRightX() * 0.23));
+
                 // driverController.x().onTrue(Commands.runOnce(() ->
                 // moduleFL.setTurnPosition(new Rotation2d(Math.PI))));
                 // driverController.b().onTrue(
@@ -191,6 +204,8 @@ public class RobotContainer {
 
                 // Reset gyro to 0° when Y button is pressed
                 driverController.y().onTrue(drive.resetGyroCommand());
+
+                driverController.rightTrigger().onTrue(TransferCommands.coralOutake(transfer));
         }
 
         public void displaSimFieldToAdvantageScope() {

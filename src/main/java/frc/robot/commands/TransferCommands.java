@@ -14,7 +14,6 @@ import frc.robot.subsystems.Transfer.Transfer;
 public class TransferCommands{
           
     public static Command startTransfer(Transfer transfer) {
-        //runonce->setvoltage, waituntil iscoralin, wait intake time, run once stop motor
         return Commands.runOnce(() -> transfer.setVoltage(CORAL_INTAKE_SPEED), transfer).
         andThen(new WaitUntilCommand(transfer::isCoralIn)).
         andThen(new WaitCommand(CORAL_INTAKE_TIME)).
@@ -24,7 +23,7 @@ public class TransferCommands{
     
     
     public static Command coralOutake(Transfer transfer) {
-        return Commands.startEnd(() -> transfer.setVoltage(CORAL_OUTTAKE_SPEED), () -> transfer.stopMotor(),transfer).until(() -> transfer.isCoralIn());
+        return Commands.startEnd(() -> transfer.setVoltage(CORAL_OUTTAKE_SPEED), () -> transfer.stopMotor(),transfer).until(() -> !transfer.isCoralIn());
     }
 }
 
