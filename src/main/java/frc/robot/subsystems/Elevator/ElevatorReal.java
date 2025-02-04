@@ -114,17 +114,12 @@ public class ElevatorReal implements ElevatorIO{
 
     
     private double getFeedForwardVelocity(double velocity){ 
-        return feedforward.calculate(velocity);
+        return isCoralIn.getAsBoolean()? feedforward.calculate(velocity + KG_OF_CORAL) : feedforward.calculate(velocity);
     }
 
     @Override
     public void setFeedForward(double velocity){
-        if(isCoralIn.getAsBoolean()){
-            motor.setVoltage(getFeedForwardVelocity(velocity) + feedforward.calculate(KG_OF_CORAL));
-        }
-        else{
-            motor.setVoltage(getFeedForwardVelocity(velocity));
-        }
+        motor.setVoltage(getFeedForwardVelocity(velocity));
     }
 
     @Override
