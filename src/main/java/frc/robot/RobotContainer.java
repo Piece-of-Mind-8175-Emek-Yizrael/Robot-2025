@@ -204,8 +204,8 @@ public class RobotContainer {
                 // Reset gyro to 0° when Y button is pressed
                 driverController.y().onTrue(drive.resetGyroCommand());
 
-                driverController.b().onTrue(AlgaeOuttakeCommands.openArm(algaeOuttake));
-                driverController.a().onTrue(AlgaeOuttakeCommands.closeArm(algaeOuttake));
+                driverController.PovLeft().onTrue(AlgaeOuttakeCommands.openArm(algaeOuttake));
+                driverController.PovRight().onTrue(AlgaeOuttakeCommands.closeArm(algaeOuttake));
         }
 
         public void displaSimFieldToAdvantageScope() {

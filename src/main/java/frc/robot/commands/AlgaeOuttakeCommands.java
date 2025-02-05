@@ -12,11 +12,11 @@ import frc.robot.subsystems.AlgaeOuttake.AlgaeOuttake;
 public class AlgaeOuttakeCommands {
 
     public static Command openArm(AlgaeOuttake algaeOuttake){
-        return Commands.runOnce(()-> algaeOuttake.setDegrees(ARM_OPEN_DEGREE),algaeOuttake).andThen(new WaitCommand(ARM_OPEN_TIME));
+        return Commands.runOnce(()-> algaeOuttake.setDegrees(100),algaeOuttake).andThen(new WaitCommand(ARM_OPEN_TIME));
     }
 
     public static Command closeArm(AlgaeOuttake algaeOuttake){
-        return Commands.runOnce(()-> algaeOuttake.setDegrees(ARM_CLOSED_DEGREE),algaeOuttake).andThen(new WaitCommand(ARM_CLOSE_TIME));
+        return Commands.runOnce(()-> algaeOuttake.setDegrees(180),algaeOuttake).andThen(new WaitCommand(ARM_CLOSE_TIME));
     }
     
 }
