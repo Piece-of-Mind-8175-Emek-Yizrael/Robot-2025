@@ -14,7 +14,10 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Threads;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -40,6 +43,7 @@ import org.littletonrobotics.urcl.URCL;
 public class Robot extends LoggedRobot {
   private Command autonomousCommand;
   private RobotContainer robotContainer;
+  private AnalogInput temp = new AnalogInput(0);//TODO remomve
 
   public Robot() {
     // Record metadata;
@@ -106,6 +110,7 @@ public class Robot extends LoggedRobot {
     // the Command-based framework to work.
     CommandScheduler.getInstance().run();
 
+    SmartDashboard.putNumber("Transfer Sensor", temp.getValue());
     // Return to normal thread priority
     Threads.setCurrentThreadPriority(false, 10);
   }
@@ -150,7 +155,6 @@ public class Robot extends LoggedRobot {
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }
-
   }
 
   /** This function is called periodically during operator control. */

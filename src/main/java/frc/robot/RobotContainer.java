@@ -28,7 +28,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.POM_lib.Joysticks.PomXboxController;
+import frc.robot.commands.AlgaeOuttakeCommands;
 import frc.robot.commands.DriveCommands;
+import frc.robot.subsystems.AlgaeOuttake.AlgaeOuttake;
+import frc.robot.subsystems.AlgaeOuttake.AlgaeOuttakeIO;
+import frc.robot.subsystems.AlgaeOuttake.AlgaeOuttakeIOReal;
+import frc.robot.subsystems.AlgaeOuttake.AlgaeOuttakeIOSim;
 import frc.robot.commands.ElevatorCommands;
 import frc.robot.commands.LEDsCommands;
 import frc.robot.commands.TransferCommands;
@@ -65,6 +70,7 @@ import frc.robot.subsystems.drive.ModuleIOSim;
 public class RobotContainer {
         // Subsystems
         private final Drive drive;
+        private final AlgaeOuttake algaeOuttake;
         private final Transfer transfer;
 
         private final LEDs leds;
@@ -86,6 +92,7 @@ public class RobotContainer {
                 switch (Constants.currentMode) {
                         case REAL:
                                 // Real robot, instantiate hardware IO implementations
+                                algaeOuttake = new AlgaeOuttake(new AlgaeOuttakeIOReal());
                                 elevatorSubsystem = new ElevatorSubsystem(new ElevatorReal(() -> false));
                                 transfer = new Transfer(new TransferIOReal());
 
@@ -111,6 +118,8 @@ public class RobotContainer {
                                 elevatorSubsystem = new ElevatorSubsystem(new ElevatorIOSim());
                                 transfer = new Transfer(new TransferIOSim(driveSimulation));
 
+                                algaeOuttake = new AlgaeOuttake(new AlgaeOuttakeIOSim());
+
                                 drive = new Drive(
                                                 new GyroIOSim(this.driveSimulation.getGyroSimulation()),
                                                 new ModuleIOSim(this.driveSimulation.getModules()[0]),
@@ -123,6 +132,8 @@ public class RobotContainer {
 
                         default:
                                 // Replayed robot, disable IO implementations
+                                algaeOuttake = new AlgaeOuttake(new AlgaeOuttakeIO()  {});
+
                                 drive = new Drive(
                                                 new GyroIO() {
                                                 },
@@ -233,6 +244,8 @@ public class RobotContainer {
                 // Reset gyro to 0° when Y button is pressed
                 driverController.y().onTrue(drive.resetGyroCommand());
 
+                driverController.start().onTrue(AlgaeOuttakeCommands.openArm(algaeOuttake));
+                driverController.back().onTrue(AlgaeOuttakeCommands.closeArm(algaeOuttake));
                 // driverController.leftTrigger().onTrue(ElevatorCommands.setSpeed(elevatorSubsystem,
                 // 0.2));
                 // driverController.rightTrigger().onTrue(ElevatorCommands.stopElevator(elevatorSubsystem));
