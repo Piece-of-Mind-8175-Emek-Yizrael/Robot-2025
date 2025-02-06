@@ -4,10 +4,6 @@ import static frc.robot.subsystems.Elevator.ElevatorConstants.*;
 
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
-import edu.wpi.first.math.controller.ElevatorFeedforward;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
-
 public class ElevatorTuningPid {
 
     
@@ -19,6 +15,8 @@ public class ElevatorTuningPid {
     LoggedNetworkNumber ksTune = new LoggedNetworkNumber("ks", KS);
     LoggedNetworkNumber maxAccelerationTune = new LoggedNetworkNumber("max acceleration", MAX_ACCELERATION);
     LoggedNetworkNumber maxVelocityTune = new LoggedNetworkNumber("max velocity", MAX_VELOCITY);
+    LoggedNetworkNumber kgWithCoralTune = new LoggedNetworkNumber("kg with coral", KG_OF_CORAL);
+    LoggedNetworkNumber upperKgTune = new LoggedNetworkNumber("upper kg", UPPER_KG);
 
 
     public double getKp(){
@@ -38,6 +36,14 @@ public class ElevatorTuningPid {
 
     public double getKg(){
         return kgTune.get();
+    }
+
+    public double getKgOfCoral(){
+        return kgWithCoralTune.get();
+    }
+
+    public double getUpperKg(){
+        return upperKgTune.get();
     }
 
     public double getKs(){

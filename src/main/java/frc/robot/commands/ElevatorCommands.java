@@ -17,7 +17,7 @@ public class ElevatorCommands {
     }
 
     public static Command onlyFeedForward(ElevatorSubsystem elevator, double velocity){
-        return Commands.run(() -> elevator.getIO().setFeedForward(velocity), elevator).until(elevator.getIO().atGoal());
+        return Commands.run(() -> elevator.getIO().setFeedForward(velocity), elevator);
     }
 
     public static Command moveDown(ElevatorSubsystem elevator, double voltage){

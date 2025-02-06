@@ -4,6 +4,7 @@ import static frc.robot.subsystems.Elevator.ElevatorConstants.*;
 
 
 import java.util.function.BooleanSupplier;
+import java.util.logging.Logger;
 
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -14,20 +15,19 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import frc.robot.POM_lib.Motors.POMSparkMax;
 import frc.robot.POM_lib.sensors.POMDigitalInput;
 
 public class ElevatorReal implements ElevatorIO{
     POMSparkMax motor;
-    RelativeEncoder encoder = motor.getEncoder();
+    RelativeEncoder encoder;
     private ProfiledPIDController pidController;
     private ElevatorFeedforward feedforward;
     private POMDigitalInput foldSwitch;
     private ElevatorTuningPid pidConstants;
-    private SoftLimitConfig softLimit;
     private BooleanSupplier isCoralIn;
+    
 
     
     public ElevatorReal(BooleanSupplier isCoralIn){
@@ -37,6 +37,9 @@ public class ElevatorReal implements ElevatorIO{
         // feedforward = new ElevatorFeedforward( pidConstants.getKs(), pidConstants.getKg(), pidConstants.getKv());
         // pidController = new ProfiledPIDController(pidConstants.getKp(), pidConstants.getKi(), pidConstants.getKd(), new TrapezoidProfile.Constraints(pidConstants.getMaxVelocity(),pidConstants.getMaxAcceleration()));
 
+        pidConstants = new ElevatorTuningPid();
+
+        encoder = motor.getEncoder();
         this.isCoralIn = isCoralIn;
         
         foldSwitch = new POMDigitalInput(FOLD_SWITCH);
@@ -44,11 +47,11 @@ public class ElevatorReal implements ElevatorIO{
         
         SparkMaxConfig config = new SparkMaxConfig();
 
-        config.idleMode(IdleMode.kBrake).inverted(INVERTED)
+        config.idleMode(IdleMode.kCoast).inverted(INVERTED)
                                .smartCurrentLimit(CURRENT_LIMIT)
                                .voltageCompensation(VOLTAGE_COMPENSATION);
 
-        config.softLimit.forwardSoftLimit(FORWARD_SOFT_LIMIT);
+        // config.softLimit.forwardSoftLimit(FORWARD_SOFT_LIMIT);
         config.encoder.positionConversionFactor(POSITION_CONVERSION_FACTOR).velocityConversionFactor(POSITION_CONVERSION_FACTOR / 60.0);
         motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
        
@@ -65,6 +68,7 @@ public class ElevatorReal implements ElevatorIO{
         inputs.elevatorAppliedVolts = motor.getAppliedOutput() * motor.getBusVoltage(); //FIXME Wont Return Motor Voltage
         inputs.foldSwitch = foldSwitch.get();
         setPidValues();
+        resetlfPressed();
     }
 
     @Override
@@ -85,7 +89,7 @@ public class ElevatorReal implements ElevatorIO{
     @Override
     public void setGoal(double goal) {
         pidController.setGoal(goal);
-        setVoltage(getFeedForwardVelocity(encoder.getPosition()) + getFeedForwardVelocity(pidController.getSetpoint().velocity));
+        setVoltage(getFeedForwardVelocity(pidController.getSetpoint().velocity) + pidController.calculate(encoder.getPosition()));
     }
 
     @Override
@@ -117,12 +121,23 @@ public class ElevatorReal implements ElevatorIO{
         pidController.setD(pidConstants.getKd());
         pidController.setConstraints(new TrapezoidProfile.Constraints(pidConstants.getMaxVelocity(), pidConstants.getMaxAcceleration()));
         feedforward = new ElevatorFeedforward(pidConstants.getKs(), pidConstants.getKg(), pidConstants.getKv());
+
     }
 
     
     private double getFeedForwardVelocity(double velocity){ 
-        return isCoralIn.getAsBoolean()? feedforward.calculate(velocity) + KG_OF_CORAL : feedforward.calculate(velocity);
+        org.littletonrobotics.junction.Logger.recordOutput("real kG", feedforward.getKg());
+        double voltage = feedforward.calculate(velocity);
+        if(isCoralIn.getAsBoolean()) {
+            voltage += pidConstants.getKgOfCoral();
+        }
+        
+        if(encoder.getPosition() >= UPPER_POSITION){
+            voltage += pidConstants.getUpperKg();
+        }
+        return voltage;
     }
+
 
     @Override
     public void setFeedForward(double velocity){
