@@ -19,6 +19,7 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -29,6 +30,12 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.POM_lib.Joysticks.PomXboxController;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.ElevatorCommands;
+import frc.robot.subsystems.Elevator.ElevatorConstants;
+import frc.robot.subsystems.Elevator.ElevatorIO;
+import frc.robot.subsystems.Elevator.ElevatorIOSim;
+import frc.robot.subsystems.Elevator.ElevatorReal;
+import frc.robot.subsystems.Elevator.ElevatorSubsystem;
 import frc.robot.commands.TransferCommands;
 import frc.robot.subsystems.Transfer.Transfer;
 import frc.robot.subsystems.Transfer.TransferIO;
@@ -65,7 +72,9 @@ public class RobotContainer {
         // Dashboard inputs
         private final LoggedDashboardChooser<Command> autoChooser;
 
-        private SwerveDriveSimulation driveSimulation = null;
+        private SwerveDriveSimulation driveSimulation;
+
+        private ElevatorSubsystem elevatorSubsystem;
 
         /**
          * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -74,6 +83,7 @@ public class RobotContainer {
                 switch (Constants.currentMode) {
                         case REAL:
                                 // Real robot, instantiate hardware IO implementations
+                                elevatorSubsystem = new ElevatorSubsystem(new ElevatorReal(() -> false));
                                 transfer = new Transfer(new TransferIOReal());
 
                                 drive = new Drive(
@@ -92,7 +102,10 @@ public class RobotContainer {
                                 driveSimulation = new SwerveDriveSimulation(Drive.maplesimConfig,
                                                 new Pose2d(3, 3, new Rotation2d()));
                                 SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
+                                // elevatorSubsystem = new ElevatorSubsystem(new ElevatorIOSim());
+                                // Logger.recordOutput("Intake Pose", new Pose3d());//FIXME temp
 
+                                elevatorSubsystem = new ElevatorSubsystem(new ElevatorIOSim());
                                 transfer = new Transfer(new TransferIOSim(driveSimulation));
                                 
                                 drive = new Drive(
@@ -118,6 +131,7 @@ public class RobotContainer {
                                                 },
                                                 new ModuleIO() {
                                                 });
+                                elevatorSubsystem = new ElevatorSubsystem(new ElevatorIO() {});
 
                                 transfer = new Transfer(new TransferIO() {});
                                 leds = new LEDs(new LEDsIO() {});
@@ -172,13 +186,12 @@ public class RobotContainer {
          */
         private void configureButtonBindings() {
                 // Default command, normal field-relative drive
-                drive.setDefaultCommand(
-                                DriveCommands.joystickDrive(
-                                                drive,
-                                                () -> driverController.getLeftY() * 0.27,
-                                                () -> driverController.getLeftX() * 0.27,
-                                                () -> driverController.getRightX() * 0.23));
-
+                // drive.setDefaultCommand(
+                //                 DriveCommands.joystickDrive(
+                //                                 drive,
+                //                                 () -> driverController.getLeftY() * 0.27,
+                //                                 () -> driverController.getLeftX() * 0.27,
+                //                                 () -> driverController.getRightX() * 0.23));
                 // driverController.x().onTrue(Commands.runOnce(() ->
                 // moduleFL.setTurnPosition(new Rotation2d(Math.PI))));
                 // driverController.b().onTrue(
@@ -199,14 +212,14 @@ public class RobotContainer {
                 // ])));
 
                 // Lock to 0° when A button is held
-                driverController
-                                .a()
-                                .whileTrue(
-                                                DriveCommands.joystickDriveAtAngle(
-                                                                drive,
-                                                                () -> -driverController.getLeftY(),
-                                                                () -> -driverController.getLeftX(),
-                                                                () -> new Rotation2d()));
+                // driverController
+                //                 .a()
+                //                 .whileTrue(
+                //                                 DriveCommands.joystickDriveAtAngle(
+                //                                                 drive,
+                //                                                 () -> -driverController.getLeftY(),
+                //                                                 () -> -driverController.getLeftX(),
+                //                                                 () -> new Rotation2d()));
 
                 // Switch to X pattern when X button is pressed
                 driverController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
@@ -214,8 +227,14 @@ public class RobotContainer {
                 // Reset gyro to 0° when Y button is pressed
                 driverController.y().onTrue(drive.resetGyroCommand());
 
-                driverController.PovLeft().onTrue(TransferCommands.coralOutake(transfer));
-                driverController.PovRight().onTrue(TransferCommands.startTransfer(transfer));
+
+                // driverController.leftTrigger().onTrue(ElevatorCommands.setSpeed(elevatorSubsystem, 0.2));
+                // driverController.rightTrigger().onTrue(ElevatorCommands.stopElevator(elevatorSubsystem));
+                driverController.PovUp().onTrue(ElevatorCommands.goToPosition(elevatorSubsystem, ElevatorConstants.L3_POSITION));
+                driverController.PovLeft().onTrue(ElevatorCommands.goToPosition(elevatorSubsystem, ElevatorConstants.L2_POSITION));
+                driverController.PovUp().or(driverController.PovLeft()).onFalse(ElevatorCommands.goToPosition(elevatorSubsystem, 0).andThen(ElevatorCommands.closeUntilSwitch(elevatorSubsystem)));
+                driverController.LeftTrigger().onTrue(TransferCommands.coralOutake(transfer));
+                driverController.rughtTrigger().onTrue(TransferCommands.startTransfer(transfer));
 
         }
 
