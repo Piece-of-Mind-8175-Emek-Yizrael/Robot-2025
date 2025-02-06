@@ -4,7 +4,7 @@ public class ElevatorConstants {//TODO tune on robot
     public static final int ELEVATOR_ID = 16;
     public static final int FOLD_SWITCH = 1;
     
-    public static final double KP = 0.5;
+    public static final double KP = 1.2;
     public static final double KI = 0;
     public static final double KD = 0;
     public static final double KS = 0.19;
@@ -12,13 +12,17 @@ public class ElevatorConstants {//TODO tune on robot
     public static final double UPPER_KG = 0.15;
     public static final double KV = 0;
     public static final double RESIST_GRAVITY = 0;
-    public static final double TOLERANCE = 0.4;
+    public static final double TOLERANCE = 0.15;
 
-    public static final double MAX_ACCELERATION = 20;
-    public static final double MAX_VELOCITY = 20;
+    public static final double MAX_ACCELERATION = 60;
+    public static final double MAX_VELOCITY = 50;
 
 
     public static final double FORWARD_SOFT_LIMIT = 0;
+    public static final double L2_POSITION = 30;
+    public static final double L3_POSITION = 55.2;
+    
+    public static final double CLOSE_ELEVATOR_SPEED = -0.3;
 
     public static final double POSITION_CONVERSION_FACTOR = 1;
     

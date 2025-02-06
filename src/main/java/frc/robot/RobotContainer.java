@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.POM_lib.Joysticks.PomXboxController;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.ElevatorCommands;
+import frc.robot.subsystems.Elevator.ElevatorConstants;
 import frc.robot.subsystems.Elevator.ElevatorIO;
 import frc.robot.subsystems.Elevator.ElevatorIOSim;
 import frc.robot.subsystems.Elevator.ElevatorReal;
@@ -208,8 +209,9 @@ public class RobotContainer {
 
                 // driverController.leftTrigger().onTrue(ElevatorCommands.setSpeed(elevatorSubsystem, 0.2));
                 // driverController.rightTrigger().onTrue(ElevatorCommands.stopElevator(elevatorSubsystem));
-                driverController.LB().onTrue(ElevatorCommands.goToPosition(elevatorSubsystem, 40));
-                driverController.RB().onTrue(ElevatorCommands.goToPosition(elevatorSubsystem, 2));
+                driverController.PovUp().onTrue(ElevatorCommands.goToPosition(elevatorSubsystem, ElevatorConstants.L3_POSITION));
+                driverController.PovLeft().onTrue(ElevatorCommands.goToPosition(elevatorSubsystem, ElevatorConstants.L2_POSITION));
+                driverController.PovUp().or(driverController.PovLeft()).onFalse(ElevatorCommands.goToPosition(elevatorSubsystem, 0).andThen(ElevatorCommands.closeUntilSwitch(elevatorSubsystem)));
         }
 
         public void displaSimFieldToAdvantageScope() {

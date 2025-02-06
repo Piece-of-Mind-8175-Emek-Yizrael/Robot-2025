@@ -107,11 +107,21 @@ public class ElevatorReal implements ElevatorIO{
         setVoltage(getFeedForwardVelocity(0));//TODO check this 
     }
 
+    boolean lastSwitchState = false;
     @Override
     public void resetlfPressed() {
         if(foldSwitch.get()){
             encoder.setPosition(0);
+            if(!lastSwitchState){
+                motor.configure(new SparkMaxConfig().idleMode(IdleMode.kBrake), ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+            }
+            lastSwitchState = true;
         }
+        else if(lastSwitchState){
+            motor.configure(new SparkMaxConfig().idleMode(IdleMode.kCoast), ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+            lastSwitchState = false;
+        }
+
     }
 
     @Override

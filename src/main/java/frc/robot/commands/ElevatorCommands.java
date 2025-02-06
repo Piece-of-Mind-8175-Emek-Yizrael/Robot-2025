@@ -1,5 +1,7 @@
 package frc.robot.commands;
 
+import static frc.robot.subsystems.Elevator.ElevatorConstants.CLOSE_ELEVATOR_SPEED;
+
 import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -20,8 +22,8 @@ public class ElevatorCommands {
         return Commands.run(() -> elevator.getIO().setFeedForward(velocity), elevator);
     }
 
-    public static Command moveDown(ElevatorSubsystem elevator, double voltage){
-        return Commands.run(() -> elevator.getIO().setVoltageWithResistGravity(voltage), elevator).until(elevator.getIO()::isPressed);
+    public static Command closeUntilSwitch(ElevatorSubsystem elevator){
+        return Commands.run(() -> elevator.getIO().setVoltageWithResistGravity(CLOSE_ELEVATOR_SPEED), elevator).until(elevator.getIO()::isPressed);
     }
 
     public static Command setSpeed(ElevatorSubsystem elevator, double speed){
