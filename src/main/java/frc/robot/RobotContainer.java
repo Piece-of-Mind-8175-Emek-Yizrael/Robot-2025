@@ -29,11 +29,12 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.POM_lib.Joysticks.PomXboxController;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.LEDsCommands;
-import frc.robot.subsystems.LEDs.LEDs;
-import frc.robot.subsystems.LEDs.LEDsIO;
-import frc.robot.subsystems.LEDs.LEDsIOReal;
-import frc.robot.subsystems.LEDs.LEDsIOSim;
+import frc.robot.commands.TransferCommands;
+import frc.robot.subsystems.Transfer.Transfer;
+import frc.robot.subsystems.Transfer.TransferIO;
+import frc.robot.subsystems.Transfer.TransferIOReal;
+import frc.robot.subsystems.Transfer.TransferIOSim;
+
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon;
@@ -54,6 +55,7 @@ import frc.robot.subsystems.drive.ModuleIOSim;
 public class RobotContainer {
         // Subsystems
         private final Drive drive;
+        private final Transfer transfer;
 
         private final LEDs leds;
 
@@ -72,6 +74,8 @@ public class RobotContainer {
                 switch (Constants.currentMode) {
                         case REAL:
                                 // Real robot, instantiate hardware IO implementations
+                                transfer = new Transfer(new TransferIOReal());
+
                                 drive = new Drive(
                                                 new GyroIOPigeon(),
                                                 new ModuleIOPOM(0),
@@ -89,6 +93,8 @@ public class RobotContainer {
                                                 new Pose2d(3, 3, new Rotation2d()));
                                 SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
 
+                                transfer = new Transfer(new TransferIOSim(driveSimulation));
+                                
                                 drive = new Drive(
                                                 new GyroIOSim(this.driveSimulation.getGyroSimulation()),
                                                 new ModuleIOSim(this.driveSimulation.getModules()[0]),
@@ -112,6 +118,8 @@ public class RobotContainer {
                                                 },
                                                 new ModuleIO() {
                                                 });
+
+                                transfer = new Transfer(new TransferIO() {});
                                 leds = new LEDs(new LEDsIO() {});
                                 break;
                 }
@@ -170,6 +178,7 @@ public class RobotContainer {
                                                 () -> driverController.getLeftY() * 0.27,
                                                 () -> driverController.getLeftX() * 0.27,
                                                 () -> driverController.getRightX() * 0.23));
+
                 // driverController.x().onTrue(Commands.runOnce(() ->
                 // moduleFL.setTurnPosition(new Rotation2d(Math.PI))));
                 // driverController.b().onTrue(
@@ -205,9 +214,8 @@ public class RobotContainer {
                 // Reset gyro to 0° when Y button is pressed
                 driverController.y().onTrue(drive.resetGyroCommand());
 
-                driverController.PovUp().whileTrue(LEDsCommands.blink(leds, Color.kPurple, 0.25));
-                driverController.PovDown().onTrue(LEDsCommands.setAll(leds, Color.kOrange));
-                driverController.PovLeft().onTrue(LEDsCommands.setParts(leds, Color.kRed, Color.kBlue, Color.kGreen));
+                driverController.PovLeft().onTrue(TransferCommands.coralOutake(transfer));
+                driverController.PovRight().onTrue(TransferCommands.startTransfer(transfer));
 
         }
 
