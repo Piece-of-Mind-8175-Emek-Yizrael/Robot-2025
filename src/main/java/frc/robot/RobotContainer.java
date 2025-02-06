@@ -206,8 +206,10 @@ public class RobotContainer {
                 driverController.y().onTrue(drive.resetGyroCommand());
 
 
-                driverController.leftTrigger().onTrue(ElevatorCommands.setSpeed(elevatorSubsystem, 0.2));
-                driverController.rightTrigger().onTrue(ElevatorCommands.stopElevator(elevatorSubsystem));
+                // driverController.leftTrigger().onTrue(ElevatorCommands.setSpeed(elevatorSubsystem, 0.2));
+                // driverController.rightTrigger().onTrue(ElevatorCommands.stopElevator(elevatorSubsystem));
+                driverController.LB().whileTrue(ElevatorCommands.goToPosition(elevatorSubsystem, 15));
+                driverController.RB().whileTrue(ElevatorCommands.goToPosition(elevatorSubsystem, 5));
         }
 
         public void displaSimFieldToAdvantageScope() {
