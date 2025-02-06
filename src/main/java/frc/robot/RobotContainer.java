@@ -205,7 +205,8 @@ public class RobotContainer {
                 // Reset gyro to 0° when Y button is pressed
                 driverController.y().onTrue(drive.resetGyroCommand());
 
-                driverController.rightTrigger().onTrue(TransferCommands.coralOutake(transfer));
+                driverController.PovLeft().onTrue(TransferCommands.coralOutake(transfer));
+                driverController.PovRight().onTrue(TransferCommands.startTransfer(transfer));
         }
 
         public void displaSimFieldToAdvantageScope() {
