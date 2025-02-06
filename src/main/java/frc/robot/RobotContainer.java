@@ -19,7 +19,6 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -31,17 +30,21 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.POM_lib.Joysticks.PomXboxController;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.ElevatorCommands;
+import frc.robot.commands.LEDsCommands;
+import frc.robot.commands.TransferCommands;
 import frc.robot.subsystems.Elevator.ElevatorConstants;
 import frc.robot.subsystems.Elevator.ElevatorIO;
 import frc.robot.subsystems.Elevator.ElevatorIOSim;
 import frc.robot.subsystems.Elevator.ElevatorReal;
 import frc.robot.subsystems.Elevator.ElevatorSubsystem;
-import frc.robot.commands.TransferCommands;
+import frc.robot.subsystems.LEDs.LEDs;
+import frc.robot.subsystems.LEDs.LEDsIO;
+import frc.robot.subsystems.LEDs.LEDsIOReal;
+import frc.robot.subsystems.LEDs.LEDsIOSim;
 import frc.robot.subsystems.Transfer.Transfer;
 import frc.robot.subsystems.Transfer.TransferIO;
 import frc.robot.subsystems.Transfer.TransferIOReal;
 import frc.robot.subsystems.Transfer.TransferIOSim;
-
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon;
@@ -107,7 +110,7 @@ public class RobotContainer {
 
                                 elevatorSubsystem = new ElevatorSubsystem(new ElevatorIOSim());
                                 transfer = new Transfer(new TransferIOSim(driveSimulation));
-                                
+
                                 drive = new Drive(
                                                 new GyroIOSim(this.driveSimulation.getGyroSimulation()),
                                                 new ModuleIOSim(this.driveSimulation.getModules()[0]),
@@ -131,10 +134,13 @@ public class RobotContainer {
                                                 },
                                                 new ModuleIO() {
                                                 });
-                                elevatorSubsystem = new ElevatorSubsystem(new ElevatorIO() {});
+                                elevatorSubsystem = new ElevatorSubsystem(new ElevatorIO() {
+                                });
 
-                                transfer = new Transfer(new TransferIO() {});
-                                leds = new LEDs(new LEDsIO() {});
+                                transfer = new Transfer(new TransferIO() {
+                                });
+                                leds = new LEDs(new LEDsIO() {
+                                });
                                 break;
                 }
 
@@ -187,11 +193,11 @@ public class RobotContainer {
         private void configureButtonBindings() {
                 // Default command, normal field-relative drive
                 // drive.setDefaultCommand(
-                //                 DriveCommands.joystickDrive(
-                //                                 drive,
-                //                                 () -> driverController.getLeftY() * 0.27,
-                //                                 () -> driverController.getLeftX() * 0.27,
-                //                                 () -> driverController.getRightX() * 0.23));
+                // DriveCommands.joystickDrive(
+                // drive,
+                // () -> driverController.getLeftY() * 0.27,
+                // () -> driverController.getLeftX() * 0.27,
+                // () -> driverController.getRightX() * 0.23));
                 // driverController.x().onTrue(Commands.runOnce(() ->
                 // moduleFL.setTurnPosition(new Rotation2d(Math.PI))));
                 // driverController.b().onTrue(
@@ -213,13 +219,13 @@ public class RobotContainer {
 
                 // Lock to 0° when A button is held
                 // driverController
-                //                 .a()
-                //                 .whileTrue(
-                //                                 DriveCommands.joystickDriveAtAngle(
-                //                                                 drive,
-                //                                                 () -> -driverController.getLeftY(),
-                //                                                 () -> -driverController.getLeftX(),
-                //                                                 () -> new Rotation2d()));
+                // .a()
+                // .whileTrue(
+                // DriveCommands.joystickDriveAtAngle(
+                // drive,
+                // () -> -driverController.getLeftY(),
+                // () -> -driverController.getLeftX(),
+                // () -> new Rotation2d()));
 
                 // Switch to X pattern when X button is pressed
                 driverController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
@@ -227,15 +233,18 @@ public class RobotContainer {
                 // Reset gyro to 0° when Y button is pressed
                 driverController.y().onTrue(drive.resetGyroCommand());
 
-
-                // driverController.leftTrigger().onTrue(ElevatorCommands.setSpeed(elevatorSubsystem, 0.2));
+                // driverController.leftTrigger().onTrue(ElevatorCommands.setSpeed(elevatorSubsystem,
+                // 0.2));
                 // driverController.rightTrigger().onTrue(ElevatorCommands.stopElevator(elevatorSubsystem));
-                driverController.PovUp().onTrue(ElevatorCommands.goToPosition(elevatorSubsystem, ElevatorConstants.L3_POSITION));
-                driverController.PovLeft().onTrue(ElevatorCommands.goToPosition(elevatorSubsystem, ElevatorConstants.L2_POSITION));
-                driverController.PovUp().or(driverController.PovLeft()).onFalse(ElevatorCommands.goToPosition(elevatorSubsystem, 0).andThen(ElevatorCommands.closeUntilSwitch(elevatorSubsystem)));
-                driverController.LeftTrigger().onTrue(TransferCommands.coralOutake(transfer));
-                driverController.rughtTrigger().onTrue(TransferCommands.startTransfer(transfer));
-
+                driverController.PovUp().onTrue(
+                                ElevatorCommands.goToPosition(elevatorSubsystem, ElevatorConstants.L3_POSITION));
+                driverController.PovLeft().onTrue(
+                                ElevatorCommands.goToPosition(elevatorSubsystem, ElevatorConstants.L2_POSITION));
+                driverController.PovUp().or(driverController.PovLeft())
+                                .onFalse(ElevatorCommands.goToPosition(elevatorSubsystem, 0)
+                                                .andThen(ElevatorCommands.closeUntilSwitch(elevatorSubsystem)));
+                driverController.leftTrigger().onTrue(TransferCommands.coralOutake(transfer));
+                leds.setDefaultCommand(LEDsCommands.setAll(leds, Color.kPurple));
         }
 
         public void displaSimFieldToAdvantageScope() {
