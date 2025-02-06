@@ -164,12 +164,12 @@ public class RobotContainer {
          */
         private void configureButtonBindings() {
                 // Default command, normal field-relative drive
-                drive.setDefaultCommand(
-                                DriveCommands.joystickDrive(
-                                                drive,
-                                                () -> driverController.getLeftY() * 0.27,
-                                                () -> driverController.getLeftX() * 0.27,
-                                                () -> driverController.getRightX() * 0.23));
+                // drive.setDefaultCommand(
+                //                 DriveCommands.joystickDrive(
+                //                                 drive,
+                //                                 () -> driverController.getLeftY() * 0.27,
+                //                                 () -> driverController.getLeftX() * 0.27,
+                //                                 () -> driverController.getRightX() * 0.23));
                 // driverController.x().onTrue(Commands.runOnce(() ->
                 // moduleFL.setTurnPosition(new Rotation2d(Math.PI))));
                 // driverController.b().onTrue(
@@ -190,14 +190,14 @@ public class RobotContainer {
                 // ])));
 
                 // Lock to 0° when A button is held
-                driverController
-                                .a()
-                                .whileTrue(
-                                                DriveCommands.joystickDriveAtAngle(
-                                                                drive,
-                                                                () -> -driverController.getLeftY(),
-                                                                () -> -driverController.getLeftX(),
-                                                                () -> new Rotation2d()));
+                // driverController
+                //                 .a()
+                //                 .whileTrue(
+                //                                 DriveCommands.joystickDriveAtAngle(
+                //                                                 drive,
+                //                                                 () -> -driverController.getLeftY(),
+                //                                                 () -> -driverController.getLeftX(),
+                //                                                 () -> new Rotation2d()));
 
                 // Switch to X pattern when X button is pressed
                 driverController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
@@ -208,8 +208,8 @@ public class RobotContainer {
 
                 // driverController.leftTrigger().onTrue(ElevatorCommands.setSpeed(elevatorSubsystem, 0.2));
                 // driverController.rightTrigger().onTrue(ElevatorCommands.stopElevator(elevatorSubsystem));
-                driverController.LB().whileTrue(ElevatorCommands.goToPosition(elevatorSubsystem, 15));
-                driverController.RB().whileTrue(ElevatorCommands.goToPosition(elevatorSubsystem, 5));
+                driverController.LB().onTrue(ElevatorCommands.goToPosition(elevatorSubsystem, 40));
+                driverController.RB().onTrue(ElevatorCommands.goToPosition(elevatorSubsystem, 2));
         }
 
         public void displaSimFieldToAdvantageScope() {
