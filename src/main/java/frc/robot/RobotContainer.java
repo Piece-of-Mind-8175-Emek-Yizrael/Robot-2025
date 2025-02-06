@@ -54,10 +54,10 @@ public class RobotContainer {
         // Subsystems
         private final Drive drive;
         private final AlgaeOuttake algaeOuttake;
-
+        
         // Controller
         private final PomXboxController driverController = new PomXboxController(0);
-
+        
         // Dashboard inputs
         private final LoggedDashboardChooser<Command> autoChooser;
 
@@ -71,7 +71,7 @@ public class RobotContainer {
                         case REAL:
                                 // Real robot, instantiate hardware IO implementations
                                 algaeOuttake = new AlgaeOuttake(new AlgaeOuttakeIOReal());
-
+                                
                                 drive = new Drive(
                                                 new GyroIOPigeon(),
                                                 new ModuleIOPOM(0),
@@ -79,8 +79,8 @@ public class RobotContainer {
                                                 new ModuleIOPOM(2),
                                                 new ModuleIOPOM(3));
                                 break;
-
-                        case SIM:
+                                
+                                case SIM:
                                 // Sim robot, instantiate physics sim IO implementations
 
                                 driveSimulation = new SwerveDriveSimulation(Drive.maplesimConfig,
@@ -88,12 +88,12 @@ public class RobotContainer {
                                 SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
 
                                 algaeOuttake = new AlgaeOuttake(new AlgaeOuttakeIOSim());
-
+                                
                                 drive = new Drive(
-                                                new GyroIOSim(this.driveSimulation.getGyroSimulation()),
-                                                new ModuleIOSim(this.driveSimulation.getModules()[0]),
-                                                new ModuleIOSim(this.driveSimulation.getModules()[1]),
-                                                new ModuleIOSim(this.driveSimulation.getModules()[2]),
+                                        new GyroIOSim(this.driveSimulation.getGyroSimulation()),
+                                        new ModuleIOSim(this.driveSimulation.getModules()[0]),
+                                        new ModuleIOSim(this.driveSimulation.getModules()[1]),
+                                        new ModuleIOSim(this.driveSimulation.getModules()[2]),
                                                 new ModuleIOSim(this.driveSimulation.getModules()[3]));
                                 break;
 
@@ -114,7 +114,7 @@ public class RobotContainer {
                                                 });
                                 break;
                 }
-
+                                                
                 SendableChooser<Command> c = new SendableChooser<>();
 
                 // Set up auto routines
@@ -203,11 +203,12 @@ public class RobotContainer {
 
                 // Reset gyro to 0° when Y button is pressed
                 driverController.y().onTrue(drive.resetGyroCommand());
-
                 driverController.PovLeft().onTrue(AlgaeOuttakeCommands.openArm(algaeOuttake));
                 driverController.PovRight().onTrue(AlgaeOuttakeCommands.closeArm(algaeOuttake));
-        }
+                driverController.b().whileTrue(Rumble());
 
+        }
+        
         public void displaSimFieldToAdvantageScope() {
                 if (Constants.currentMode != Constants.Mode.SIM)
                         return;
@@ -216,14 +217,18 @@ public class RobotContainer {
                                 "FieldSimulation/RobotPosition", driveSimulation.getSimulatedDriveTrainPose());
                 Logger.recordOutput(
                                 "FieldSimulation/Notes", SimulatedArena.getInstance().getGamePiecesArrayByType("Note"));
-        }
-
-        /**
-         * Use this to pass the autonomous command to the main {@link Robot} class.
+                        }
+                        
+                        /**
+                         * Use this to pass the autonomous command to the main {@link Robot} class.
          *
          * @return the command to run in autonomous
          */
         public Command getAutonomousCommand() {
                 return autoChooser.get();
+        }
+
+        public Command Rumble(){
+                return Commands.runEnd(()->driverController.Rumble(1), ()-> driverController.Rumble(0));
         }
 }

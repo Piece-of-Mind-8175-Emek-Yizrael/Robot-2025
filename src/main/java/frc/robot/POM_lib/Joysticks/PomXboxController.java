@@ -3,9 +3,12 @@ package frc.robot.POM_lib.Joysticks;
 import static frc.robot.POM_lib.Joysticks.JoystickConstants.*;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+
+import java.lang.ModuleLayer.Controller;
 import java.util.function.BooleanSupplier;
 
 public class PomXboxController implements PomController {
@@ -15,6 +18,10 @@ public class PomXboxController implements PomController {
   public PomXboxController(int port) {
     controller = new CommandXboxController(port);
     this.port = port;
+  }
+ 
+  public void Rumble(double force){
+    controller.setRumble(RumbleType.kBothRumble, force);
   }
 
   @Override
