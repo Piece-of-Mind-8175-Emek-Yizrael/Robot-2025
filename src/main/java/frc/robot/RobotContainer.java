@@ -23,6 +23,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -31,6 +32,7 @@ import frc.robot.POM_lib.Joysticks.PomXboxController;
 import frc.robot.commands.AlgaeOuttakeCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.ElevatorCommands;
+import frc.robot.commands.LEDsCommands;
 import frc.robot.commands.TransferCommands;
 import frc.robot.subsystems.AlgaeOuttake.AlgaeOuttake;
 import frc.robot.subsystems.AlgaeOuttake.AlgaeOuttakeIO;
@@ -41,6 +43,10 @@ import frc.robot.subsystems.Elevator.ElevatorIO;
 import frc.robot.subsystems.Elevator.ElevatorIOSim;
 import frc.robot.subsystems.Elevator.ElevatorReal;
 import frc.robot.subsystems.Elevator.ElevatorSubsystem;
+import frc.robot.subsystems.LEDs.LEDs;
+import frc.robot.subsystems.LEDs.LEDsIO;
+import frc.robot.subsystems.LEDs.LEDsIOReal;
+import frc.robot.subsystems.LEDs.LEDsIOSim;
 import frc.robot.subsystems.Transfer.Transfer;
 import frc.robot.subsystems.Transfer.TransferIO;
 import frc.robot.subsystems.Transfer.TransferIOReal;
@@ -68,7 +74,7 @@ public class RobotContainer {
         private final AlgaeOuttake algaeOuttake;
         private final Transfer transfer;
 
-        // private final LEDs leds;
+         private final LEDs leds;
 
         // Controller
         private final PomXboxController driverController = new PomXboxController(0);
@@ -98,7 +104,7 @@ public class RobotContainer {
                                                 new ModuleIOPOM(2),
                                                 new ModuleIOPOM(3));
 
-                                // leds = new LEDs(new LEDsIOReal());
+                                 leds = new LEDs(new LEDsIOReal());
                                 break;
 
                         case SIM:
@@ -122,7 +128,7 @@ public class RobotContainer {
                                                 new ModuleIOSim(this.driveSimulation.getModules()[2]),
                                                 new ModuleIOSim(this.driveSimulation.getModules()[3]));
 
-                                // leds = new LEDs(new LEDsIOSim());
+                                 leds = new LEDs(new LEDsIOSim());
                                 break;
 
                         default:
@@ -145,8 +151,8 @@ public class RobotContainer {
 
                                 transfer = new Transfer(new TransferIO() {
                                 });
-                                // leds = new LEDs(new LEDsIO() {
-                                // });
+                                 leds = new LEDs(new LEDsIO() {
+                                 });
                                 break;
                 }
 
@@ -253,7 +259,10 @@ public class RobotContainer {
                                                 .andThen(ElevatorCommands.closeUntilSwitch(elevatorSubsystem)));
                 driverController.leftTrigger().onTrue(TransferCommands.coralOutake(transfer));
                 new Trigger(elevatorSubsystem.getIO()::isPressed).onTrue(TransferCommands.startTransfer(transfer));
-                //leds.setDefaultCommand(LEDsCommands.setAll(leds, Color.kPurple));
+
+                driverController.LB().whileTrue(LEDsCommands.blink(leds, Color.kPurple, 0.5));
+                driverController.LB().onFalse(LEDsCommands.setAll(leds, Color.kRed));
+
         }
 
         public void displaSimFieldToAdvantageScope() {
