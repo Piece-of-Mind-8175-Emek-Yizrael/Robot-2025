@@ -23,7 +23,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
@@ -149,6 +148,35 @@ public class DriveCommands {
         drive).beforeStarting(Commands.runOnce(drive::resetKinematics, drive));
   }
 
+  public static Command joystickDriveClosedLoopVel(
+      Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier omegaSupplier) {
+    return Commands.run(
+        () -> {
+          // Get linear velocity
+          Translation2d linearVelocity = getLinearVelocityFromJoysticks(xSupplier.getAsDouble(),
+              ySupplier.getAsDouble());
+
+          // Apply rotation deadband
+          double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
+
+          // Square rotation value for more precise control
+          omega = Math.copySign(omega * omega, omega);
+
+          // Convert to field relative speeds & send command
+          ChassisSpeeds speeds = new ChassisSpeeds(
+              linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
+              linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
+              omega * drive.getMaxAngularSpeedRadPerSec());
+          boolean isFlipped = DriverStation.getAlliance().isPresent()
+              && DriverStation.getAlliance().get() == Alliance.Red;
+          speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+              speeds,
+              isFlipped ? drive.getRotation().plus(new Rotation2d(Math.PI)) : drive.getRotation());
+          drive.runVelocity(speeds, false);
+        },
+        drive).beforeStarting(Commands.runOnce(drive::resetKinematics, drive));
+  }
+
   /**
    * Field relative drive command using joystick for linear control and PID for
    * angular control.
@@ -198,9 +226,9 @@ public class DriveCommands {
         .beforeStarting(() -> angleController.reset(drive.getRotation().getRadians()));
   }
 
-  public static Command driveBackSlow(Drive drive){
-    ChassisSpeeds speeds = new ChassisSpeeds(ALGAE_OUTTAKE_DRIVE_BACK_SPEED,0,0);
-    return Commands.runEnd(() -> drive.runVelocity(speeds, true),() -> drive.stop(), drive);
+  public static Command driveBackSlow(Drive drive) {
+    ChassisSpeeds speeds = new ChassisSpeeds(ALGAE_OUTTAKE_DRIVE_BACK_SPEED, 0, 0);
+    return Commands.runEnd(() -> drive.runVelocity(speeds, true), () -> drive.stop(), drive);
   }
 
   /**

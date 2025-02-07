@@ -8,10 +8,6 @@ import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeCoralOnField;
 
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.system.plant.LinearSystemId;
-import edu.wpi.first.wpilibj.simulation.FlywheelSim;
-
 public class TransferIOSim implements TransferIO {
 
     // FlywheelSim flywheel;
@@ -19,8 +15,9 @@ public class TransferIOSim implements TransferIO {
     SwerveDriveSimulation swerveDriveSimulation;
 
     public TransferIOSim(SwerveDriveSimulation swerveDriveSimulation) {
-        // flywheel = new FlywheelSim(LinearSystemId.createFlywheelSystem(DCMotor.getNeo550(1), 0, 50),
-        //         DCMotor.getNeo550(1), 50.0, 0.1);
+        // flywheel = new
+        // FlywheelSim(LinearSystemId.createFlywheelSystem(DCMotor.getNeo550(1), 0, 50),
+        // DCMotor.getNeo550(1), 50.0, 0.1);
         intakeSimulation = IntakeSimulation.InTheFrameIntake("Coral", swerveDriveSimulation, Meters.of(0.7),
                 IntakeSide.BACK, 1);
         intakeSimulation.startIntake();
@@ -28,7 +25,8 @@ public class TransferIOSim implements TransferIO {
 
     @Override
     public void setSpeed(double speed) {
-        // double flywheelAngularVelocity = speed * flywheel.getGearbox().freeSpeedRadPerSec * flywheel.getGearing();
+        // double flywheelAngularVelocity = speed *
+        // flywheel.getGearbox().freeSpeedRadPerSec * flywheel.getGearing();
         // flywheel.setAngularVelocity(flywheelAngularVelocity);
         if (intakeSimulation.obtainGamePieceFromIntake()) {
 

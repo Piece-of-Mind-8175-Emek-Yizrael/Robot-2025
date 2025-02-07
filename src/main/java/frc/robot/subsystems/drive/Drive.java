@@ -68,7 +68,6 @@ import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.util.LocalADStarAK;
 
-
 public class Drive extends SubsystemBase {
   static final Lock odometryLock = new ReentrantLock();
   private final GyroIO gyroIO;
@@ -158,16 +157,17 @@ public class Drive extends SubsystemBase {
       .withCustomModuleTranslations(moduleTranslations)
       .withGyro(COTS.ofPigeon2())
       .withSwerveModule(new SwerveModuleSimulationConfig(
-        DCMotor.getKrakenX60(1),
-        DCMotor.getNEO(1),
-        DriveConstants.driveMotorReduction,
-        DriveConstants.turnMotorReduction,
-        Volts.of(0.2),
-        Volts.of(0.2),
-        Inches.of(2),
-        KilogramSquareMeters.of(0.004),
-        DriveConstants.wheelCOF))
-        .withBumperSize(Meters.of(0.7), Meters.of(0.7));
+          DCMotor.getKrakenX60(1),
+          DCMotor.getNEO(1),
+          DriveConstants.driveMotorReduction,
+          DriveConstants.turnMotorReduction,
+          Volts.of(0.2),
+          Volts.of(0.2),
+          Inches.of(2),
+          KilogramSquareMeters.of(0.004),
+          DriveConstants.wheelCOF))
+      .withBumperSize(Meters.of(0.7), Meters.of(0.7));
+
   @Override
   public void periodic() {
 
@@ -206,6 +206,7 @@ public class Drive extends SubsystemBase {
                 - lastModulePositions[moduleIndex].distanceMeters,
             modulePositions[moduleIndex].angle);
         lastModulePositions[moduleIndex] = modulePositions[moduleIndex];
+        Logger.recordOutput("Module " + moduleIndex + " distance meters", modulePositions[moduleIndex].distanceMeters);
       }
 
       // Update gyro angle
@@ -434,20 +435,20 @@ public class Drive extends SubsystemBase {
       double a = MathUtil.applyDeadband(Math.hypot(x.getAsDouble(), y.getAsDouble()), 0.15);
       Logger.recordOutput("wanted angle", angle.getRadians());
       modules[0].runSetpoint(new SwerveModuleState(a / 4.0, angle), true);
-      
+
     });
   }
-  public Command testSteeringAngleCommand(Rotation2d angle) {
-    return this.run(() -> { 
 
-      // double a = MathUtil.applyDeadband(Math.hypot(x.getAsDouble(), y.getAsDouble()), 0.15);
+  public Command testSteeringAngleCommand(Rotation2d angle) {
+    return this.run(() -> {
+
+      // double a = MathUtil.applyDeadband(Math.hypot(x.getAsDouble(),
+      // y.getAsDouble()), 0.15);
       Logger.recordOutput("wanted angle", angle.getRadians());
       modules[0].runSetpoint(new SwerveModuleState(4.0, angle), true);
-      
+
     });
   }
-
-
 
   public void PushSwerveData() {
     SmartDashboard.putData("Swerve",

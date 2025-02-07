@@ -13,8 +13,6 @@
 
 package frc.robot;
 
-import static frc.robot.POM_lib.Joysticks.JoystickConstants.X;
-import static frc.robot.POM_lib.Joysticks.JoystickConstants.Y;
 import static frc.robot.subsystems.AlgaeOuttake.AlgaeOuttakeConstants.ALGAE_OUTTAKE_ELEVATOR_POSITION;
 
 import org.ironmaple.simulation.SimulatedArena;
@@ -24,10 +22,9 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -36,7 +33,6 @@ import frc.robot.POM_lib.Joysticks.PomXboxController;
 import frc.robot.commands.AlgaeOuttakeCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.ElevatorCommands;
-import frc.robot.commands.LEDsCommands;
 import frc.robot.commands.TransferCommands;
 import frc.robot.subsystems.AlgaeOuttake.AlgaeOuttake;
 import frc.robot.subsystems.AlgaeOuttake.AlgaeOuttakeIO;
@@ -63,6 +59,9 @@ import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOPOM;
 import frc.robot.subsystems.drive.ModuleIOSim;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathPlannerPath;
+
 /**
  * This class is where the bulk of the robot should be declared. Since
  * Command-based is a
@@ -78,7 +77,7 @@ public class RobotContainer {
         private final AlgaeOuttake algaeOuttake;
         private final Transfer transfer;
 
-         private final LEDs leds;
+        private final LEDs leds;
 
         // Controller
         private final PomXboxController driverController = new PomXboxController(0);
@@ -108,7 +107,7 @@ public class RobotContainer {
                                                 new ModuleIOPOM(2),
                                                 new ModuleIOPOM(3));
 
-                                 leds = new LEDs(new LEDsIOReal());
+                                leds = new LEDs(new LEDsIOReal());
                                 break;
 
                         case SIM:
@@ -132,12 +131,13 @@ public class RobotContainer {
                                                 new ModuleIOSim(this.driveSimulation.getModules()[2]),
                                                 new ModuleIOSim(this.driveSimulation.getModules()[3]));
 
-                                 leds = new LEDs(new LEDsIOSim());
+                                leds = new LEDs(new LEDsIOSim());
                                 break;
 
                         default:
                                 // Replayed robot, disable IO implementations
-                                algaeOuttake = new AlgaeOuttake(new AlgaeOuttakeIO()  {});
+                                algaeOuttake = new AlgaeOuttake(new AlgaeOuttakeIO() {
+                                });
 
                                 drive = new Drive(
                                                 new GyroIO() {
@@ -155,15 +155,15 @@ public class RobotContainer {
 
                                 transfer = new Transfer(new TransferIO() {
                                 });
-                                 leds = new LEDs(new LEDsIO() {
-                                 });
+                                leds = new LEDs(new LEDsIO() {
+                                });
                                 break;
                 }
 
-                SendableChooser<Command> c = new SendableChooser<>();
-
                 // Set up auto routines
-                autoChooser = new LoggedDashboardChooser<>("Auto Choices", c); // TODO use auto builder
+                autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser()); // TODO use
+                                                                                                            // auto
+                                                                                                            // builder
 
                 // Set up SysId routines
                 autoChooser.addOption(
@@ -208,12 +208,14 @@ public class RobotContainer {
          */
         private void configureButtonBindings() {
                 // Default command, normal field-relative drive
-                // drive.setDefaultCommand(
-                // DriveCommands.joystickDrive(
-                // drive,
-                // () -> driverController.getLeftY() * 0.27,
-                // () -> driverController.getLeftX() * 0.27,
-                // () -> driverController.getRightX() * 0.23));
+                drive.setDefaultCommand(
+                                DriveCommands.joystickDrive(
+                                                drive,
+                                                () -> driverController.getLeftY() * 0.25,
+                                                () -> driverController.getLeftX() * 0.25,
+                                                () -> driverController.getRightX() * 0.25));
+
+                driverController.b().onTrue(getPathCommand());
                 // driverController.x().onTrue(Commands.runOnce(() ->
                 // moduleFL.setTurnPosition(new Rotation2d(Math.PI))));
                 // driverController.b().onTrue(
@@ -264,11 +266,13 @@ public class RobotContainer {
                 new Trigger(elevatorSubsystem.getIO()::isPressed).onTrue(TransferCommands.startTransfer(transfer));
 
                 driverController.PovDown().whileTrue(DriveCommands.driveBackSlow(drive)
-                        .raceWith(ElevatorCommands.goToPosition(elevatorSubsystem, ALGAE_OUTTAKE_ELEVATOR_POSITION)));
-                
-                driverController.PovDown().onFalse(AlgaeOuttakeCommands.closeArm(algaeOuttake).alongWith(ElevatorCommands.closeElevator(elevatorSubsystem)));
-                
-                //leds.setDefaultCommand(LEDsCommands.setAll(leds, Color.kPurple));
+                                .raceWith(ElevatorCommands.goToPosition(elevatorSubsystem,
+                                                ALGAE_OUTTAKE_ELEVATOR_POSITION)));
+
+                driverController.PovDown().onFalse(AlgaeOuttakeCommands.closeArm(algaeOuttake)
+                                .alongWith(ElevatorCommands.closeElevator(elevatorSubsystem)));
+
+                // leds.setDefaultCommand(LEDsCommands.setAll(leds, Color.kPurple));
         }
 
         public void displaSimFieldToAdvantageScope() {
@@ -290,11 +294,28 @@ public class RobotContainer {
                 return autoChooser.get();
         }
 
+        public void startTransfer() {
+                TransferCommands.startTransfer(transfer).schedule();
+        }
+
         public void closeAlgaeArm() {
                 AlgaeOuttakeCommands.closeArm(algaeOuttake).schedule();
         }
 
-        public void startTransfer(){
-                TransferCommands.startTransfer(transfer).schedule();
+        public Command getPathCommand() {
+                try {
+                        // Load the path you want to follow using its name in the GUI
+                        PathPlannerPath path = PathPlannerPath.fromPathFile("Drive 1 meter path");
+
+                        // Create a path following command using AutoBuilder. This will also trigger
+                        // event markers.
+                        return (AutoBuilder.followPath(path).andThen(Commands.print("After command")))
+                                        .beforeStarting(() -> drive.setPose(path.getStartingDifferentialPose()))
+                                        .beforeStarting(Commands.print("Starts following path"));
+                } catch (Exception e) {
+                        DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
+                        return Commands.print("Exception creating path");
+                }
         }
+
 }

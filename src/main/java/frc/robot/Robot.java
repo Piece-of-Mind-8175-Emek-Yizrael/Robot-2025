@@ -15,13 +15,10 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.commands.TransferCommands;
-
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.seasonspecific.crescendo2024.CrescendoNoteOnField;
 import org.littletonrobotics.junction.LogFileUtil;
@@ -39,12 +36,18 @@ import org.littletonrobotics.urcl.URCL;
  * name of this class or
  * the package after creating this project, you must also update the
  * build.gradle file in the
+ * The VM is configured to automatically run this class, and to call the
+ * functions corresponding to
+ * each mode, as described in the TimedRobot documentation. If you change the
+ * name of this class or
+ * the package after creating this project, you must also update the
+ * build.gradle file in the
  * project.
  */
 public class Robot extends LoggedRobot {
   private Command autonomousCommand;
   private RobotContainer robotContainer;
-  private AnalogInput temp = new AnalogInput(0);//TODO remomve
+  private AnalogInput temp = new AnalogInput(0);// TODO remomve
 
   public Robot() {
     // Record metadata;
@@ -63,13 +66,22 @@ public class Robot extends LoggedRobot {
     // default:
     // Logger.recordMetadata("GitDirty", "Unknown");
     // break;
+    // case 0:
+    // Logger.recordMetadata("GitDirty", "All changes committed");
+    // break;
+    // case 1:
+    // Logger.recordMetadata("GitDirty", "Uncomitted changes");
+    // break;
+    // default:
+    // Logger.recordMetadata("GitDirty", "Unknown");
+    // break;
     // }
 
     // Set up data receivers & replay source
     switch (Constants.currentMode) {
       case REAL:
         // Running on a real robot, log to a USB stick ("/U/logs")
-        Logger.addDataReceiver(new WPILOGWriter());
+        Logger.addDataReceiver(new WPILOGWriter("/home/lvuser/logs"));
         Logger.addDataReceiver(new NT4Publisher());
         break;
 
@@ -120,6 +132,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void disabledInit() {
     // POMTalonFX.DisableSound();
+    // POMTalonFX.DisableSound();
   }
 
   /** This function is called periodically when disabled. */
@@ -127,6 +140,10 @@ public class Robot extends LoggedRobot {
   public void disabledPeriodic() {
   }
 
+  /**
+   * This autonomous runs the autonomous command selected by your
+   * {@link RobotContainer} class.
+   */
   /**
    * This autonomous runs the autonomous command selected by your
    * {@link RobotContainer} class.

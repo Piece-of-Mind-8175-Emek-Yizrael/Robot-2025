@@ -1,6 +1,7 @@
 package frc.robot.POM_lib.Motors;
 
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 public class POMSparkMax extends SparkMax implements POMMotor {
   public POMSparkMax(int id) {
@@ -18,8 +19,9 @@ public class POMSparkMax extends SparkMax implements POMMotor {
 
   @Override
   public void setDirection(Direction direction) {
-
-    setDirection(direction);
+    var config = new SparkMaxConfig();
+    config.inverted(direction == Direction.CounterClockWise);
+    super.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
   @Override

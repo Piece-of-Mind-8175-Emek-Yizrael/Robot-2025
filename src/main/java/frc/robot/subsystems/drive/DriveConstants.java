@@ -22,7 +22,8 @@ import edu.wpi.first.math.util.Units;
 
 public class DriveConstants {
         public static final double ALGAE_OUTTAKE_DRIVE_BACK_SPEED = -0.4;
-        public static final double maxSpeedMetersPerSec = 4.8;
+
+        public static final double maxSpeedMetersPerSec = 4;
         public static final double odometryFrequency = 100.0; // Hz
         public static final double trackWidth = 0.55735;
         public static final double wheelBase = 0.55735;
@@ -35,10 +36,10 @@ public class DriveConstants {
         };
 
         // Zeroed rotation values for each module, see setup instructions
-        public static final Rotation2d frontLeftZeroRotation = new Rotation2d(0.53 + 2.76 + 0.76);
-        public static final Rotation2d frontRightZeroRotation = new Rotation2d(-2.25 + 0.39 - Math.PI - 0.78);
-        public static final Rotation2d backLeftZeroRotation = new Rotation2d(-1.61);
-        public static final Rotation2d backRightZeroRotation = new Rotation2d(0.16);
+        public static final Rotation2d frontLeftZeroRotation = new Rotation2d(0.9715 + Math.PI);
+        public static final Rotation2d frontRightZeroRotation = new Rotation2d(0.39);
+        public static final Rotation2d backLeftZeroRotation = new Rotation2d(1.54 + Math.PI);
+        public static final Rotation2d backRightZeroRotation = new Rotation2d(3.05 + Math.PI);
 
         // Device CAN IDs
         public static final int pigeonCanId = 2;
@@ -64,12 +65,14 @@ public class DriveConstants {
         // Drive motor configuration
         public static final int driveMotorCurrentLimit = 50;
         public static final double wheelRadiusMeters = Units.inchesToMeters(2);
-        public static final double driveMotorReduction = 6.56; // Change to 5.96 (or 5.46) if using faster ration
+        public static final double driveMotorReduction = 5.96; // Change to 5.96 (or 5.46) if using faster ration
         public static final DCMotor driveGearbox = DCMotor.getKrakenX60(1);
 
         // Drive encoder configuration
-        public static final double driveEncoderPositionFactor = 2 * Math.PI / driveMotorReduction; // Rotor Rotations ->
-                                                                                                   // Wheel Radians
+        public static final double driveEncoderPositionFactor = 2 * Math.PI / driveMotorReduction / (3.19 / 16.523); // Rotor
+                                                                                                                     // Rotations
+                                                                                                                     // ->
+        // Wheel Radians
         public static final double driveEncoderVelocityFactor = (2 * Math.PI) / 60.0 / driveMotorReduction; // Rotor RPM
                                                                                                             // ->
                                                                                                             // Wheel
@@ -78,8 +81,8 @@ public class DriveConstants {
         // Drive PID configuration
         public static final double driveKp = 0.0;
         public static final double driveKd = 0.0;
-        public static final double driveKs = 0.0;
-        public static final double driveKv = 0.1;
+        public static final double driveKs = 0.1;
+        public static final double driveKv = 0.7;
         public static final double driveSimP = 0.05;
         public static final double driveSimD = 0.0;
         public static final double driveSimKs = 0.0;

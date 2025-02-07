@@ -116,12 +116,12 @@ public class ElevatorReal implements ElevatorIO {
             encoder.setPosition(0);
             if (!lastSwitchState) {
                 motor.configure(new SparkMaxConfig().idleMode(IdleMode.kBrake), ResetMode.kNoResetSafeParameters,
-                        PersistMode.kPersistParameters);
+                        PersistMode.kNoPersistParameters);
             }
             lastSwitchState = true;
         } else if (lastSwitchState) {
             motor.configure(new SparkMaxConfig().idleMode(IdleMode.kCoast), ResetMode.kNoResetSafeParameters,
-                    PersistMode.kPersistParameters);
+                    PersistMode.kNoPersistParameters);
             lastSwitchState = false;
         }
 
