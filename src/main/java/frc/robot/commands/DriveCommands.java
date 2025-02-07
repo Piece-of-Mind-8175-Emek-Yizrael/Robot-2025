@@ -36,6 +36,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
+import static frc.robot.subsystems.drive.DriveConstants.ALGAE_OUTTAKE_DRIVE_BACK_SPEED;
 
 public class DriveCommands {
   private static final double DEADBAND = 0.1;
@@ -147,6 +148,35 @@ public class DriveCommands {
         drive).beforeStarting(Commands.runOnce(drive::resetKinematics, drive));
   }
 
+  public static Command joystickDriveClosedLoopVel(
+      Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier omegaSupplier) {
+    return Commands.run(
+        () -> {
+          // Get linear velocity
+          Translation2d linearVelocity = getLinearVelocityFromJoysticks(xSupplier.getAsDouble(),
+              ySupplier.getAsDouble());
+
+          // Apply rotation deadband
+          double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
+
+          // Square rotation value for more precise control
+          omega = Math.copySign(omega * omega, omega);
+
+          // Convert to field relative speeds & send command
+          ChassisSpeeds speeds = new ChassisSpeeds(
+              linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
+              linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
+              omega * drive.getMaxAngularSpeedRadPerSec());
+          boolean isFlipped = DriverStation.getAlliance().isPresent()
+              && DriverStation.getAlliance().get() == Alliance.Red;
+          speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+              speeds,
+              isFlipped ? drive.getRotation().plus(new Rotation2d(Math.PI)) : drive.getRotation());
+          drive.runVelocity(speeds, false);
+        },
+        drive).beforeStarting(Commands.runOnce(drive::resetKinematics, drive));
+  }
+
   /**
    * Field relative drive command using joystick for linear control and PID for
    * angular control.
@@ -194,6 +224,11 @@ public class DriveCommands {
 
         // Reset PID controller when command starts
         .beforeStarting(() -> angleController.reset(drive.getRotation().getRadians()));
+  }
+
+  public static Command driveBackSlow(Drive drive) {
+    ChassisSpeeds speeds = new ChassisSpeeds(ALGAE_OUTTAKE_DRIVE_BACK_SPEED, 0, 0);
+    return Commands.runEnd(() -> drive.runVelocity(speeds, true), () -> drive.stop(), drive);
   }
 
   /**

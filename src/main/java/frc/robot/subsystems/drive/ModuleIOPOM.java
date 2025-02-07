@@ -84,8 +84,14 @@ public class ModuleIOPOM implements ModuleIO {
 
   private final VelocityVoltage velocityVoltageRequest = new VelocityVoltage(0.0);
 
+  // DashboardNumber driveKV;
+  // DashboardNumber driveKS;
+  // double lastKS = 0, lastKV = 0;
+
   public ModuleIOPOM(int module) {
     this.module = module;
+    // driveKV = new DashboardNumber("driveKv" + module, 0.9);
+    // driveKS = new DashboardNumber("driveKs" + module, 0.1);
 
     Rotation2d zeroRotation = switch (module) {
       case 0 -> frontLeftZeroRotation;
@@ -99,7 +105,7 @@ public class ModuleIOPOM implements ModuleIO {
 
     turnEncoder = new CANcoder(swerveBaseID + 2 + swerveModuleIDsCount * module);
     var encoderConfig = new CANcoderConfiguration();
-    encoderConfig.MagnetSensor.SensorDirection = module == 3 ? SensorDirectionValue.CounterClockwise_Positive
+    encoderConfig.MagnetSensor.SensorDirection = module == 1 ? SensorDirectionValue.CounterClockwise_Positive
         : SensorDirectionValue.Clockwise_Positive;
     encoderConfig.MagnetSensor.MagnetOffset = zeroRotation.getRotations();
     tryUntilOk(5, () -> turnEncoder.getConfigurator().apply(encoderConfig, 0.25));
@@ -112,12 +118,14 @@ public class ModuleIOPOM implements ModuleIO {
     Slot0Configs driveMotorGains = new Slot0Configs()
         .withKP(driveKp).withKD(driveKd).withKS(driveKs).withKV(driveKv);
     driveConfig.Slot0 = driveMotorGains;
+
     driveConfig.Feedback.SensorToMechanismRatio = driveEncoderPositionFactor;
+    driveConfig.Feedback.RotorToSensorRatio = 1.0;
     driveConfig.TorqueCurrent.PeakForwardTorqueCurrent = driveSlipCurrent;
     driveConfig.TorqueCurrent.PeakReverseTorqueCurrent = -driveSlipCurrent;
     driveConfig.CurrentLimits.StatorCurrentLimit = driveSlipCurrent;
     driveConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-    driveConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    driveConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     driveConfig.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = driveRampRate;
     driveConfig.OpenLoopRamps.VoltageOpenLoopRampPeriod = driveRampRate;
     driveConfig.ClosedLoopRamps.VoltageClosedLoopRampPeriod = driveRampRate;
@@ -216,6 +224,13 @@ public class ModuleIOPOM implements ModuleIO {
     if (!resetToAbsoluteTimer.isRunning()) {
       resetToAbsoluteTimer.start();
     }
+
+    // if (lastKS != (lastKS = driveKS.get()) || lastKV != (lastKV = driveKV.get()))
+    // {
+    // var driveConfig = new TalonFXConfiguration();
+    // driveConfig.Slot0 = new Slot0Configs().withKS(lastKS).withKV(lastKV);
+    // driveMotor.getConfigurator().apply(driveConfig);
+    // }
   }
 
   public void resetToAbsolute() {
@@ -240,6 +255,7 @@ public class ModuleIOPOM implements ModuleIO {
 
   @Override
   public void setDriveVelocity(double velocityRadPerSec) {
+    Logger.recordOutput(getModuleString() + "/drive request velocity", velocityRadPerSec);
     double velocityRotPerSec = Units.radiansToRotations(velocityRadPerSec);
     driveMotor.setControl(velocityVoltageRequest.withVelocity(velocityRotPerSec));
   }
