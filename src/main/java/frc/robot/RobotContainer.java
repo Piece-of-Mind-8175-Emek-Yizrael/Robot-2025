@@ -13,6 +13,10 @@
 
 package frc.robot;
 
+import static frc.robot.POM_lib.Joysticks.JoystickConstants.X;
+import static frc.robot.POM_lib.Joysticks.JoystickConstants.Y;
+import static frc.robot.subsystems.AlgaeOuttake.AlgaeOuttakeConstants.ALGAE_OUTTAKE_ELEVATOR_POSITION;
+
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.littletonrobotics.junction.Logger;
@@ -249,10 +253,15 @@ public class RobotContainer {
                 driverController.PovLeft().onTrue(
                                 ElevatorCommands.goToPosition(elevatorSubsystem, ElevatorConstants.L2_POSITION));
                 driverController.PovUp().or(driverController.PovLeft())
-                                .onFalse(ElevatorCommands.goToPosition(elevatorSubsystem, 0)
-                                                .andThen(ElevatorCommands.closeUntilSwitch(elevatorSubsystem)));
+                                .onFalse(ElevatorCommands.closeElevator(elevatorSubsystem));
                 driverController.leftTrigger().onTrue(TransferCommands.coralOutake(transfer));
                 new Trigger(elevatorSubsystem.getIO()::isPressed).onTrue(TransferCommands.startTransfer(transfer));
+
+                driverController.PovDown().whileTrue(DriveCommands.driveBackSlow(drive)
+                        .raceWith(ElevatorCommands.goToPosition(elevatorSubsystem, ALGAE_OUTTAKE_ELEVATOR_POSITION)));
+                
+                driverController.PovDown().onFalse(AlgaeOuttakeCommands.closeArm(algaeOuttake).alongWith(ElevatorCommands.closeElevator(elevatorSubsystem)));
+                
                 //leds.setDefaultCommand(LEDsCommands.setAll(leds, Color.kPurple));
         }
 

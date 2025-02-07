@@ -29,4 +29,9 @@ public class ElevatorCommands {
         return Commands.run(() -> elevator.getIO().setSpeed(speed), elevator);
     }
 
+    public static Command closeElevator(ElevatorSubsystem elevator) {
+        return ElevatorCommands.goToPosition(elevator, 0)
+            .andThen(ElevatorCommands.closeUntilSwitch(elevator));
+    }
+
 }
