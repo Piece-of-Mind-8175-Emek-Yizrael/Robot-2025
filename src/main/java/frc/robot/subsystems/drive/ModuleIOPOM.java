@@ -106,7 +106,7 @@ public class ModuleIOPOM implements ModuleIO {
 
     turnEncoder = new CANcoder(swerveBaseID + 2 + swerveModuleIDsCount * module);
     var encoderConfig = new CANcoderConfiguration();
-    encoderConfig.MagnetSensor.SensorDirection = module == 3 ? SensorDirectionValue.CounterClockwise_Positive
+    encoderConfig.MagnetSensor.SensorDirection = module == 1 ? SensorDirectionValue.CounterClockwise_Positive
         : SensorDirectionValue.Clockwise_Positive;
     encoderConfig.MagnetSensor.MagnetOffset = zeroRotation.getRotations();
     tryUntilOk(5, () -> turnEncoder.getConfigurator().apply(encoderConfig, 0.25));
@@ -126,7 +126,7 @@ public class ModuleIOPOM implements ModuleIO {
     driveConfig.TorqueCurrent.PeakReverseTorqueCurrent = -driveSlipCurrent;
     driveConfig.CurrentLimits.StatorCurrentLimit = driveSlipCurrent;
     driveConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-    driveConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    driveConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     driveConfig.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = driveRampRate;
     driveConfig.OpenLoopRamps.VoltageOpenLoopRampPeriod = driveRampRate;
     driveConfig.ClosedLoopRamps.VoltageClosedLoopRampPeriod = driveRampRate;
