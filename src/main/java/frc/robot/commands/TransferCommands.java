@@ -17,7 +17,7 @@ public class TransferCommands{
         return Commands.runOnce(() -> transfer.setVoltage(CORAL_INTAKE_VOLTAGE), transfer).
         andThen(new WaitUntilCommand(transfer::isCoralIn)).
         andThen(new WaitCommand(CORAL_INTAKE_TIME)).
-        andThen(Commands.runOnce(transfer::stopMotor, transfer));
+        andThen(Commands.runOnce(transfer::stopMotor, transfer)).unless(transfer::isCoralIn);
 
     }
     

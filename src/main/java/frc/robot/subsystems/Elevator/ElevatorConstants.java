@@ -21,7 +21,7 @@ public class ElevatorConstants {
     public static final double L2_POSITION = 30;
     public static final double L3_POSITION = 55.2;
 
-    public static final double CLOSE_ELEVATOR_SPEED = -0.3;
+    public static final double CLOSE_ELEVATOR_SPEED = -0.5;
 
     public static final double POSITION_CONVERSION_FACTOR = 1;
 

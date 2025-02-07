@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.commands.TransferCommands;
 
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.seasonspecific.crescendo2024.CrescendoNoteOnField;
@@ -132,6 +133,7 @@ public class Robot extends LoggedRobot {
    */
   @Override
   public void autonomousInit() {
+    enable();
     autonomousCommand = robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
@@ -148,6 +150,7 @@ public class Robot extends LoggedRobot {
   /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
+    enable();
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
@@ -188,5 +191,10 @@ public class Robot extends LoggedRobot {
 
     SimulatedArena.getInstance().simulationPeriodic();
     robotContainer.displaSimFieldToAdvantageScope();
+  }
+
+  public void enable() {
+    robotContainer.closeAlgaeArm();
+    robotContainer.startTransfer();
   }
 }
