@@ -24,7 +24,6 @@ public class LEDsIOReal implements LEDsIO{
         led.start();
 
     }
-
     
     @Override
     public void updateInputs(LEDsIOInputs inputs) {
