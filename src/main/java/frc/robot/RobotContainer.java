@@ -27,6 +27,7 @@ import frc.robot.POM_lib.Joysticks.PomXboxController;
 import frc.robot.POM_lib.Vision.POMAprilTagCamera;
 import frc.robot.POM_lib.Vision.TestCommad;
 import frc.robot.commands.DriveCommands;
+import frc.robot.subsystems.Vision.VisionIOReal;
 import frc.robot.subsystems.Vision.VisionIOSim;
 import frc.robot.subsystems.Vision.VisionSubsystem;
 import frc.robot.subsystems.drive.Drive;
@@ -36,6 +37,8 @@ import frc.robot.subsystems.drive.GyroIOSim;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOPOM;
 import frc.robot.subsystems.drive.ModuleIOSim;
+
+import static edu.wpi.first.units.Units.Degrees;
 
 import java.io.IOException;
 
@@ -59,7 +62,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
  */
 public class RobotContainer {
         // Subsystems
-        private final Drive drive;
+        private Drive drive;
 
         // Controller
         private final PomXboxController driverController = new PomXboxController(0);
@@ -68,8 +71,6 @@ public class RobotContainer {
         private final LoggedDashboardChooser<Command> autoChooser;
 
         private SwerveDriveSimulation driveSimulation = null;
-
-        private POMAprilTagCamera camera;
 
         private VisionSubsystem vision;
 
@@ -86,12 +87,18 @@ public class RobotContainer {
                                                 new ModuleIOPOM(1),
                                                 new ModuleIOPOM(2),
                                                 new ModuleIOPOM(3));
-                                try {
-                                        camera = new POMAprilTagCamera("photonvision", new Transform3d());
-                                } catch (IOException e) {
-                                        Logger.recordOutput("Vision/Tag", e.getMessage());
-                                }
-                                break;
+                                VisionIOReal[] cameras = {
+                                                new VisionIOReal("Left Front Camera",
+                                                                new Transform3d(0, 0.3, 0.3,
+                                                                                new Rotation3d(Degrees.of(0),
+                                                                                                Degrees.of(0),
+                                                                                                Degrees.of(68)))),
+                                                new VisionIOReal("Right Front Camera",
+                                                                new Transform3d(0, 0.3, 0.3,
+                                                                                new Rotation3d(Degrees.of(0),
+                                                                                                Degrees.of(0),
+                                                                                                Degrees.of(112)))), };
+                                vision = new VisionSubsystem(drive::addVisionMeasurement, cameras);
 
                         case SIM:
                                 // Sim robot, instantiate physics sim IO implementations
