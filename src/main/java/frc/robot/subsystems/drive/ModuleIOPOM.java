@@ -59,7 +59,6 @@ import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.POM_lib.Dashboard.DashboardNumber;
 import frc.robot.POM_lib.Motors.POMTalonFX;
 import frc.robot.util.SparkUtil;
 
@@ -271,7 +270,7 @@ public class ModuleIOPOM implements ModuleIO {
     var ks = Math.copySign(turnKs, error);
     Logger.recordOutput(getModuleString() + "/ks", ks);
     Logger.recordOutput(getModuleString() + "/error", error);
-    if (Math.abs(error) > 0.05) {
+    if (Math.abs(error) > 0.07) {
       turnController.setReference(setpoint.getRadians(), ControlType.kPosition,
           ClosedLoopSlot.kSlot0, ks, ArbFFUnits.kVoltage);
     } else {
