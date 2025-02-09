@@ -24,6 +24,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -35,6 +36,12 @@ import frc.robot.subsystems.Elevator.ElevatorIO;
 import frc.robot.subsystems.Elevator.ElevatorIOSim;
 import frc.robot.subsystems.Elevator.ElevatorReal;
 import frc.robot.subsystems.Elevator.ElevatorSubsystem;
+import frc.robot.commands.TransferCommands;
+import frc.robot.subsystems.Transfer.Transfer;
+import frc.robot.subsystems.Transfer.TransferIO;
+import frc.robot.subsystems.Transfer.TransferIOReal;
+import frc.robot.subsystems.Transfer.TransferIOSim;
+
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon;
@@ -55,6 +62,9 @@ import frc.robot.subsystems.drive.ModuleIOSim;
 public class RobotContainer {
         // Subsystems
         private final Drive drive;
+        private final Transfer transfer;
+
+        private final LEDs leds;
 
         // Controller
         private final PomXboxController driverController = new PomXboxController(0);
@@ -74,12 +84,16 @@ public class RobotContainer {
                         case REAL:
                                 // Real robot, instantiate hardware IO implementations
                                 elevatorSubsystem = new ElevatorSubsystem(new ElevatorReal(() -> false));
+                                transfer = new Transfer(new TransferIOReal());
+
                                 drive = new Drive(
                                                 new GyroIOPigeon(),
                                                 new ModuleIOPOM(0),
                                                 new ModuleIOPOM(1),
                                                 new ModuleIOPOM(2),
                                                 new ModuleIOPOM(3));
+
+                                leds = new LEDs(new LEDsIOReal());
                                 break;
 
                         case SIM:
@@ -92,12 +106,16 @@ public class RobotContainer {
                                 // Logger.recordOutput("Intake Pose", new Pose3d());//FIXME temp
 
                                 elevatorSubsystem = new ElevatorSubsystem(new ElevatorIOSim());
+                                transfer = new Transfer(new TransferIOSim(driveSimulation));
+                                
                                 drive = new Drive(
                                                 new GyroIOSim(this.driveSimulation.getGyroSimulation()),
                                                 new ModuleIOSim(this.driveSimulation.getModules()[0]),
                                                 new ModuleIOSim(this.driveSimulation.getModules()[1]),
                                                 new ModuleIOSim(this.driveSimulation.getModules()[2]),
                                                 new ModuleIOSim(this.driveSimulation.getModules()[3]));
+
+                                leds = new LEDs(new LEDsIOSim());
                                 break;
 
                         default:
@@ -114,6 +132,9 @@ public class RobotContainer {
                                                 new ModuleIO() {
                                                 });
                                 elevatorSubsystem = new ElevatorSubsystem(new ElevatorIO() {});
+
+                                transfer = new Transfer(new TransferIO() {});
+                                leds = new LEDs(new LEDsIO() {});
                                 break;
                 }
 
@@ -212,6 +233,9 @@ public class RobotContainer {
                 driverController.PovUp().onTrue(ElevatorCommands.goToPosition(elevatorSubsystem, ElevatorConstants.L3_POSITION));
                 driverController.PovLeft().onTrue(ElevatorCommands.goToPosition(elevatorSubsystem, ElevatorConstants.L2_POSITION));
                 driverController.PovUp().or(driverController.PovLeft()).onFalse(ElevatorCommands.goToPosition(elevatorSubsystem, 0).andThen(ElevatorCommands.closeUntilSwitch(elevatorSubsystem)));
+                driverController.LeftTrigger().onTrue(TransferCommands.coralOutake(transfer));
+                driverController.rughtTrigger().onTrue(TransferCommands.startTransfer(transfer));
+
         }
 
         public void displaSimFieldToAdvantageScope() {
