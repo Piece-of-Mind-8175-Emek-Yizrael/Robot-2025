@@ -13,6 +13,24 @@
 
 package frc.robot.commands;
 
+import static frc.robot.subsystems.drive.DriveConstants.maxAccMetersPerSecSquared;
+import static frc.robot.subsystems.drive.DriveConstants.maxAccRadiansPerSecSquared;
+import static frc.robot.subsystems.drive.DriveConstants.maxSpeedMetersPerSec;
+import static frc.robot.subsystems.drive.DriveConstants.maxSpeedRadiansPerSec;
+
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.Waypoint;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -30,12 +48,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
+import frc.robot.subsystems.drive.FieldConstants;
+import frc.robot.subsystems.drive.FieldConstants.Reef;
 
 public class DriveCommands {
   private static final double DEADBAND = 0.15;
@@ -43,6 +57,7 @@ public class DriveCommands {
   private static final double ANGLE_KD = 0.4;
   private static final double ANGLE_MAX_VELOCITY = 8.0;
   private static final double ANGLE_MAX_ACCELERATION = 20.0;
+  private static final double TOLERANCE = 0.08;
   private static final double FF_START_DELAY = 2.0; // Secs
   private static final double FF_RAMP_RATE = 0.1; // Volts/Sec
   private static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Rad/Sec
@@ -83,6 +98,7 @@ public class DriveCommands {
         ANGLE_KD,
         new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
     angleController.enableContinuousInput(-Math.PI, Math.PI);
+    angleController.setTolerance(TOLERANCE);
     return new Command() {
       Rotation2d target = new Rotation2d();
 
@@ -159,7 +175,7 @@ public class DriveCommands {
           double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
 
           // Square rotation value for more precise control
-          omega = Math.copySign(omega * omega, omega);
+          // omega = Math.copySign(omega * omega, omega);
 
           // Convert to field relative speeds & send command
           ChassisSpeeds speeds = new ChassisSpeeds(
@@ -196,6 +212,7 @@ public class DriveCommands {
         ANGLE_KD,
         new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
     angleController.enableContinuousInput(-Math.PI, Math.PI);
+    angleController.setTolerance(TOLERANCE);
 
     // Construct command
     return Commands.run(
@@ -250,6 +267,7 @@ public class DriveCommands {
         ANGLE_KD,
         new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
     angleController.enableContinuousInput(-Math.PI, Math.PI);
+    angleController.setTolerance(TOLERANCE);
 
     Rotation2d[] rot = new Rotation2d[] { new Rotation2d(0) }; // Array for accessing in lambda
     // Construct command
@@ -307,6 +325,7 @@ public class DriveCommands {
         ANGLE_KD,
         new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
     angleController.enableContinuousInput(-Math.PI, Math.PI);
+    angleController.setTolerance(TOLERANCE);
 
     Rotation2d[] lastAngle = new Rotation2d[] { drive.getRotation() };
 
@@ -331,6 +350,7 @@ public class DriveCommands {
               linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
               linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
               omega);
+
           boolean isFlipped = DriverStation.getAlliance().isPresent()
               && DriverStation.getAlliance().get() == Alliance.Red;
           drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, isFlipped
@@ -485,5 +505,69 @@ public class DriveCommands {
     double[] positions = new double[4];
     Rotation2d lastAngle = new Rotation2d();
     double gyroDelta = 0.0;
+  }
+
+  public class LocateToReefCommand extends Command {
+    Drive drive;
+    boolean toLeft;
+
+    public LocateToReefCommand(Drive drive, boolean toLeft) {
+      this.drive = drive;
+      this.toLeft = toLeft;
+      addRequirements(drive);
+    }
+
+    @Override
+    public void initialize() {
+      int closestReef = getClosestReef(drive.getPose());
+      if (closestReef == -1) {
+        return;
+      }
+      Pose2d destination = FieldConstants.Reef.centerFaces[closestReef];
+
+      // move the destination 16 cm parallel to the reef, left or right based on
+      // toLeft
+      double branchDist = 0.16;
+      if (toLeft) {
+        branchDist = -0.16;
+      }
+      Transform2d transform = new Transform2d(branchDist * Math.cos(destination.getRotation().getRadians()),
+          branchDist * Math.sin(destination.getRotation().getRadians()), new Rotation2d());
+
+      destination = destination.transformBy(transform);
+      List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
+          drive.getPose(),
+          destination);
+      PathPlannerPath path = new PathPlannerPath(waypoints,
+          new PathConstraints(maxSpeedMetersPerSec, maxAccMetersPerSecSquared, maxSpeedRadiansPerSec,
+              maxAccRadiansPerSecSquared),
+          null,
+          new GoalEndState(0, destination.getRotation()));
+      AutoBuilder.followPath(path).schedule();
+    }
+
+    @Override
+    public boolean isFinished() {
+      return true;
+    }
+
+    public int getClosestReef(Pose2d currentPose) {
+      // Get the closest reef to the robot
+      double minDistance = Double.MAX_VALUE;
+      int closestReef = 0;
+      for (int i = 0; i < FieldConstants.Reef.centerFaces.length; i++) {
+        double distance = currentPose.getTranslation().getDistance(FieldConstants.Reef.centerFaces[i].getTranslation());
+        if (distance < minDistance) {
+          minDistance = distance;
+          closestReef = i;
+        }
+      }
+      double allowedDist = 1.5;
+      if (minDistance > allowedDist) {
+        return -1;
+      }
+      return closestReef;
+    }
+
   }
 }

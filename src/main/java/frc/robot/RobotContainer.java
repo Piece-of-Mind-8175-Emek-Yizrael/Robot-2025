@@ -155,11 +155,11 @@ public class RobotContainer {
         private void configureButtonBindings() {
                 // Default command, normal field-relative drive
                 drive.setDefaultCommand(
-                                DriveCommands.joystickDrive(
+                                DriveCommands.joystickDriveClosedLoopVel(
                                                 drive,
-                                                () -> driverController.getLeftY() * 0.3,
-                                                () -> driverController.getLeftX() * 0.3,
-                                                () -> driverController.getRightX() * 0.3));
+                                                () -> driverController.getLeftY() * 0.5,
+                                                () -> driverController.getLeftX() * 0.5,
+                                                () -> driverController.getRightX() * 0.5));
 
                 driverController.b().onTrue(getPathCommand());
                 // driverController.x().onTrue(Commands.runOnce(() ->
