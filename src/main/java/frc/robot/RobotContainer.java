@@ -272,7 +272,7 @@ public class RobotContainer {
                 driverController.PovDown().onFalse(AlgaeOuttakeCommands.closeArm(algaeOuttake)
                                 .alongWith(ElevatorCommands.closeElevator(elevatorSubsystem)));
 
-                // leds.setDefaultCommand(LEDsCommands.setAll(leds, Color.kPurple));
+                //leds.setDefaultCommand(LEDsCommands.setAll(leds, Color.kPurple));
         }
 
         public void displaSimFieldToAdvantageScope() {

@@ -27,7 +27,7 @@ public class ElevatorConstants {
 
     public static double KG_OF_CORAL = 0.1;
 
-    public static final boolean INVERTED = false;
+    public static final boolean INVERTED = true;
 
     public static final int CURRENT_LIMIT = 40;
 
