@@ -12,6 +12,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.POM_lib.Motors.POMSparkMax;
 import frc.robot.POM_lib.sensors.POMDigitalInput;
 
@@ -112,17 +113,22 @@ public class ElevatorReal implements ElevatorIO {
 
     @Override
     public void resetlfPressed() {
-        if (foldSwitch.get()) {
-            encoder.setPosition(0);
-            if (!lastSwitchState) {
-                motor.configure(new SparkMaxConfig().idleMode(IdleMode.kBrake), ResetMode.kNoResetSafeParameters,
+        if (DriverStation.isEnabled()) {
+            if (foldSwitch.get()) {
+                encoder.setPosition(0);
+                if (!lastSwitchState) {
+                    motor.configure(new SparkMaxConfig().idleMode(IdleMode.kBrake), ResetMode.kNoResetSafeParameters,
+                            PersistMode.kNoPersistParameters);
+                }
+                lastSwitchState = true;
+            } else if (lastSwitchState) {
+                motor.configure(new SparkMaxConfig().idleMode(IdleMode.kCoast), ResetMode.kNoResetSafeParameters,
                         PersistMode.kNoPersistParameters);
+                lastSwitchState = false;
             }
-            lastSwitchState = true;
-        } else if (lastSwitchState) {
-            motor.configure(new SparkMaxConfig().idleMode(IdleMode.kCoast), ResetMode.kNoResetSafeParameters,
+        } else {
+            motor.configure(new SparkMaxConfig().idleMode(IdleMode.kBrake), ResetMode.kNoResetSafeParameters,
                     PersistMode.kNoPersistParameters);
-            lastSwitchState = false;
         }
 
     }
@@ -166,7 +172,7 @@ public class ElevatorReal implements ElevatorIO {
         motor.setVoltage(getFeedForwardVelocity(0) + voltage);
     }
 
-    public double getPosition(){
+    public double getPosition() {
         return encoder.getPosition();
     }
 

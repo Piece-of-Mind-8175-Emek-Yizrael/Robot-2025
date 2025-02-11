@@ -10,20 +10,17 @@ import static frc.robot.subsystems.Transfer.TransferConstants.CORAL_OUTTAKE_VOLT
 import static frc.robot.subsystems.Transfer.TransferConstants.CORAL_INTAKE_TIME;
 import frc.robot.subsystems.Transfer.Transfer;
 
+public class TransferCommands {
 
-public class TransferCommands{
-          
     public static Command startTransfer(Transfer transfer) {
-        return Commands.runOnce(() -> transfer.setVoltage(CORAL_INTAKE_VOLTAGE), transfer).
-        andThen(new WaitUntilCommand(transfer::isCoralIn)).
-        andThen(new WaitCommand(CORAL_INTAKE_TIME)).
-        andThen(Commands.runOnce(transfer::stopMotor, transfer)).unless(transfer::isCoralIn);
+        return Commands.runOnce(() -> transfer.setVoltage(CORAL_INTAKE_VOLTAGE), transfer)
+                .andThen(new WaitUntilCommand(transfer::isCoralIn)).andThen(new WaitCommand(CORAL_INTAKE_TIME))
+                .andThen(Commands.runOnce(transfer::stopMotor, transfer));
 
     }
-    
-    
+
     public static Command coralOutake(Transfer transfer) {
-        return Commands.startEnd(() -> transfer.setVoltage(CORAL_OUTTAKE_VOLTAGE), () -> transfer.stopMotor(),transfer).until(() -> !transfer.isCoralIn());
+        return Commands.startEnd(() -> transfer.setVoltage(CORAL_OUTTAKE_VOLTAGE), () -> transfer.stopMotor(), transfer)
+                .until(() -> !transfer.isCoralIn());
     }
 }
-

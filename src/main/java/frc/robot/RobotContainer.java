@@ -212,17 +212,18 @@ public class RobotContainer {
                 drive.setDefaultCommand(
                                 DriveCommands.joystickDrive(
                                                 drive,
-                                                () -> driverController.getLeftY() * 0.25,
-                                                () -> driverController.getLeftX() * 0.25,
-                                                () -> driverController.getRightX() * 0.25));
+                                                () -> -driverController.getLeftY() * 0.25,
+                                                () -> -driverController.getLeftX() * 0.25,
+                                                () -> -driverController.getRightX() * 0.25));
 
-                // driverController.b().onTrue(getPathCommand());
-                // driverController.x().onTrue(Commands.runOnce(() ->
+                // driverController.povRight().onTrue(getPathCommand());
+                // driverController.povLeft().onTrue(Commands.runOnce(() ->
                 // moduleFL.setTurnPosition(new Rotation2d(Math.PI))));
-                // driverController.b().onTrue(
+                // driverController.povRight().onTrue(
                 // Commands.runOnce(() -> moduleFL.setTurnPosition(new Rotation2d(1.5 *
                 // Math.PI))));
-                // driverController.y().whileTrue(Commands.run(() -> moduleFL.setTurnPosition(
+                // driverController.povUp().whileTrue(Commands.run(() ->
+                // moduleFL.setTurnPosition(
                 // new Rotation2d(driverController.getLeftX(), driverController.getLeftY()))));
 
                 // drive.setDefaultCommand(drive.testSteeringCommand(driverController::getLeftX,
@@ -247,39 +248,42 @@ public class RobotContainer {
                 // () -> new Rotation2d()));
 
                 // Switch to X pattern when X button is pressed
-                driverController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+                driverController.PovLeft().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
                 // Reset gyro to 0° when Y button is pressed
-                driverController.y().onTrue(drive.resetGyroCommand());
+                driverController.PovUp().onTrue(drive.resetGyroCommand());
 
                 driverController.start().onTrue(AlgaeOuttakeCommands.openArm(algaeOuttake));
                 driverController.back().onTrue(AlgaeOuttakeCommands.closeArm(algaeOuttake));
                 // driverController.leftTrigger().onTrue(ElevatorCommands.setSpeed(elevatorSubsystem,
                 // 0.2));
                 // driverController.rightTrigger().onTrue(ElevatorCommands.stopElevator(elevatorSubsystem));
-                driverController.PovUp().onTrue(
+                driverController.y().onTrue(
                                 ElevatorCommands.goToPosition(elevatorSubsystem, ElevatorConstants.L3_POSITION));
-                driverController.PovLeft().onTrue(
+                driverController.x().onTrue(
                                 ElevatorCommands.goToPosition(elevatorSubsystem, ElevatorConstants.L2_POSITION));
-                driverController.PovUp().or(driverController.PovLeft())
+                driverController.y().or(driverController.x())
                                 .onFalse(ElevatorCommands.closeElevator(elevatorSubsystem));
                 driverController.leftTrigger().onTrue(TransferCommands.coralOutake(transfer));
-                new Trigger(elevatorSubsystem.getIO()::isPressed).whileTrue(TransferCommands.startTransfer(transfer));
+                new Trigger(transfer::isCoralIn).onTrue(TransferCommands.startTransfer(transfer));
 
-                driverController.PovDown().whileTrue(ElevatorCommands.goToPosition(elevatorSubsystem, 11.5).withTimeout(0.8).andThen(DriveCommands.driveBackSlow(drive)
-                                .raceWith(ElevatorCommands.goToPositionWithoutPid(elevatorSubsystem,
-                                                ALGAE_OUTTAKE_ELEVATOR_POSITION))));
-                // driverController.PovDown().onTrue(ElevatorCommands.goToPosition(elevatorSubsystem, ALGAE_OUTTAKE_ELEVATOR_POSITION));
-                
+                driverController.a()
+                                .whileTrue(ElevatorCommands.goToPosition(elevatorSubsystem, 11.5).withTimeout(0.8)
+                                                .andThen(DriveCommands.driveBackSlow(drive)
+                                                                .raceWith(ElevatorCommands.goToPositionWithoutPid(
+                                                                                elevatorSubsystem,
+                                                                                ALGAE_OUTTAKE_ELEVATOR_POSITION))));
+                // driverController.PovDown().onTrue(ElevatorCommands.goToPosition(elevatorSubsystem,
+                // ALGAE_OUTTAKE_ELEVATOR_POSITION));
 
-                // driverController.PovDown().onTrue(ElevatorCommands.goToPositionWithoutPid(elevatorSubsystem, ALGAE_OUTTAKE_ELEVATOR_POSITION));
-                driverController.PovDown().onFalse(
-                        (ElevatorCommands.closeElevator(elevatorSubsystem)));
+                // driverController.PovDown().onTrue(ElevatorCommands.goToPositionWithoutPid(elevatorSubsystem,
+                // ALGAE_OUTTAKE_ELEVATOR_POSITION));
+                driverController.a().onFalse(
+                                (ElevatorCommands.closeElevator(elevatorSubsystem)));
                 // driverController.PovDown().onFalse(AlgaeOuttakeCommands.closeArm(algaeOuttake)
                 // .alongWith(ElevatorCommands.closeElevator(elevatorSubsystem)));
 
-
-                //leds.setDefaultCommand(LEDsCommands.setAll(leds, Color.kPurple));
+                // leds.setDefaultCommand(LEDsCommands.setAll(leds, Color.kPurple));
         }
 
         public void displaSimFieldToAdvantageScope() {

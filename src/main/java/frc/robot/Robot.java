@@ -212,6 +212,6 @@ public class Robot extends LoggedRobot {
 
   public void enable() {
     robotContainer.closeAlgaeArm();
-    robotContainer.startTransfer();
+    // robotContainer.startTransfer();
   }
 }
