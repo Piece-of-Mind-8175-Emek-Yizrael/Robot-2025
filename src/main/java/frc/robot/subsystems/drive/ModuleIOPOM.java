@@ -125,7 +125,7 @@ public class ModuleIOPOM implements ModuleIO {
     driveConfig.TorqueCurrent.PeakReverseTorqueCurrent = -driveSlipCurrent;
     driveConfig.CurrentLimits.StatorCurrentLimit = driveSlipCurrent;
     driveConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-    driveConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    driveConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     driveConfig.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = driveRampRate;
     driveConfig.OpenLoopRamps.VoltageOpenLoopRampPeriod = driveRampRate;
     driveConfig.ClosedLoopRamps.VoltageClosedLoopRampPeriod = driveRampRate;

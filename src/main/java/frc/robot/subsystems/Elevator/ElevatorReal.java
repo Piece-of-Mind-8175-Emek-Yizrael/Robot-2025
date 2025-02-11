@@ -166,4 +166,13 @@ public class ElevatorReal implements ElevatorIO {
         motor.setVoltage(getFeedForwardVelocity(0) + voltage);
     }
 
+    public double getPosition(){
+        return encoder.getPosition();
+    }
+
+    @Override
+    public void resetPID() {
+        pidController.reset(encoder.getPosition(), encoder.getVelocity());
+    }
+
 }

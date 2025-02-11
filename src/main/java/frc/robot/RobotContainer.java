@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.POM_lib.Joysticks.PomXboxController;
@@ -215,7 +216,7 @@ public class RobotContainer {
                                                 () -> driverController.getLeftX() * 0.25,
                                                 () -> driverController.getRightX() * 0.25));
 
-                driverController.b().onTrue(getPathCommand());
+                // driverController.b().onTrue(getPathCommand());
                 // driverController.x().onTrue(Commands.runOnce(() ->
                 // moduleFL.setTurnPosition(new Rotation2d(Math.PI))));
                 // driverController.b().onTrue(
@@ -263,14 +264,20 @@ public class RobotContainer {
                 driverController.PovUp().or(driverController.PovLeft())
                                 .onFalse(ElevatorCommands.closeElevator(elevatorSubsystem));
                 driverController.leftTrigger().onTrue(TransferCommands.coralOutake(transfer));
-                new Trigger(elevatorSubsystem.getIO()::isPressed).onTrue(TransferCommands.startTransfer(transfer));
+                new Trigger(elevatorSubsystem.getIO()::isPressed).whileTrue(TransferCommands.startTransfer(transfer));
 
-                driverController.PovDown().whileTrue(DriveCommands.driveBackSlow(drive)
-                                .raceWith(ElevatorCommands.goToPosition(elevatorSubsystem,
-                                                ALGAE_OUTTAKE_ELEVATOR_POSITION)));
+                driverController.PovDown().whileTrue(ElevatorCommands.goToPosition(elevatorSubsystem, 11.5).withTimeout(0.8).andThen(DriveCommands.driveBackSlow(drive)
+                                .raceWith(ElevatorCommands.goToPositionWithoutPid(elevatorSubsystem,
+                                                ALGAE_OUTTAKE_ELEVATOR_POSITION))));
+                // driverController.PovDown().onTrue(ElevatorCommands.goToPosition(elevatorSubsystem, ALGAE_OUTTAKE_ELEVATOR_POSITION));
+                
 
-                driverController.PovDown().onFalse(AlgaeOuttakeCommands.closeArm(algaeOuttake)
-                                .alongWith(ElevatorCommands.closeElevator(elevatorSubsystem)));
+                // driverController.PovDown().onTrue(ElevatorCommands.goToPositionWithoutPid(elevatorSubsystem, ALGAE_OUTTAKE_ELEVATOR_POSITION));
+                driverController.PovDown().onFalse(
+                        (ElevatorCommands.closeElevator(elevatorSubsystem)));
+                // driverController.PovDown().onFalse(AlgaeOuttakeCommands.closeArm(algaeOuttake)
+                // .alongWith(ElevatorCommands.closeElevator(elevatorSubsystem)));
+
 
                 //leds.setDefaultCommand(LEDsCommands.setAll(leds, Color.kPurple));
         }

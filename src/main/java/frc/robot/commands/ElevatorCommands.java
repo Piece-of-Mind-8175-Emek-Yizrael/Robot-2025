@@ -9,7 +9,7 @@ import frc.robot.subsystems.Elevator.ElevatorSubsystem;
 public class ElevatorCommands {
 
     public static Command goToPosition(ElevatorSubsystem elevator, double position) {
-        return Commands.run(() -> elevator.getIO().setGoal(position), elevator).until(elevator.getIO().atGoal());
+        return Commands.startRun(() -> elevator.getIO().resetPID(),() -> elevator.getIO().setGoal(position), elevator).until(elevator.getIO().atGoal());
     }
 
     public static Command stopElevator(ElevatorSubsystem elevator) {
@@ -25,9 +25,9 @@ public class ElevatorCommands {
                 .until(elevator.getIO()::isPressed);
     }
 
-    public static Command goToPositionWithoutPid(ElevatorSubsystem elevator) {
-        return Commands.run(() -> elevator.getIO().setVoltageWithResistGravity(CLOSE_ELEVATOR_SPEED), elevator)
-                .until(elevator.getIO()::isPressed);
+    public static Command goToPositionWithoutPid(ElevatorSubsystem elevator, double position) {
+        return Commands.run(() -> elevator.getIO().setVoltageWithResistGravity(Math.copySign(4, position - elevator.getIO().getPosition())), elevator)
+                .until(() -> (Math.abs(elevator.getIO().getPosition() - position) < 1));
     }
 
     public static Command setSpeed(ElevatorSubsystem elevator, double speed) {

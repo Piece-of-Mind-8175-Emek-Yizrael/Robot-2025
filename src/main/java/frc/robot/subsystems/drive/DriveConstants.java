@@ -21,7 +21,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 
 public class DriveConstants {
-        public static final double ALGAE_OUTTAKE_DRIVE_BACK_SPEED = -0.4;
+        public static final double ALGAE_OUTTAKE_DRIVE_BACK_SPEED = 0.02;
 
         public static final double maxSpeedMetersPerSec = 4;
         public static final double odometryFrequency = 100.0; // Hz
@@ -39,7 +39,7 @@ public class DriveConstants {
         public static final Rotation2d frontLeftZeroRotation = new Rotation2d(0.9715 + Math.PI);
         public static final Rotation2d frontRightZeroRotation = new Rotation2d(0.39);
         public static final Rotation2d backLeftZeroRotation = new Rotation2d(1.54 + Math.PI);
-        public static final Rotation2d backRightZeroRotation = new Rotation2d(3.05 + Math.PI);
+        public static final Rotation2d backRightZeroRotation = new Rotation2d(3.05 + 1.015 + Math.PI);
 
         // Device CAN IDs
         public static final int pigeonCanId = 2;

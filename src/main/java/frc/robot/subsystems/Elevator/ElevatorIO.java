@@ -29,5 +29,7 @@ public interface ElevatorIO {
     public default void setFeedForward(double voltage) {}
     public default boolean isPressed(){ return false; }
     public default void setVoltageWithResistGravity(double voltage) {}
+    public default double getPosition(){ return 0; }
+    public default void resetPID(){ }
 
 }
