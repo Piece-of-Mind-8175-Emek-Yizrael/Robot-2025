@@ -247,9 +247,15 @@ public class Drive extends SubsystemBase {
     Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
     Logger.recordOutput("SwerveChassisSpeeds/Setpoints", speeds);
 
-    // Send setpoints to modules
-    for (int i = 0; i < 4; i++) {
-      modules[i].runSetpoint(setpointStates[i], isOpenLoop);
+    if (speeds.omegaRadiansPerSecond + speeds.vxMetersPerSecond + speeds.vyMetersPerSecond < 0.01) {
+      for (int i = 0; i < 4; i++) {
+        modules[i].stop();
+      }
+    } else {
+      // Send setpoints to modules
+      for (int i = 0; i < 4; i++) {
+        modules[i].runSetpoint(setpointStates[i], isOpenLoop);
+      }
     }
 
     // Log optimized setpoints (runSetpoint mutates each state)
