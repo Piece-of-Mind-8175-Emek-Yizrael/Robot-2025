@@ -25,6 +25,11 @@ public class ElevatorCommands {
                 .until(elevator.getIO()::isPressed);
     }
 
+    public static Command goToPositionWithoutPid(ElevatorSubsystem elevator) {
+        return Commands.run(() -> elevator.getIO().setVoltageWithResistGravity(CLOSE_ELEVATOR_SPEED), elevator)
+                .until(elevator.getIO()::isPressed);
+    }
+
     public static Command setSpeed(ElevatorSubsystem elevator, double speed) {
         return Commands.run(() -> elevator.getIO().setSpeed(speed), elevator);
     }
