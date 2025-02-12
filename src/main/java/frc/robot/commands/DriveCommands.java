@@ -49,7 +49,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.subsystems.drive.FieldConstants;
-import frc.robot.subsystems.drive.FieldConstants.Reef;
 
 public class DriveCommands {
   private static final double DEADBAND = 0.15;
