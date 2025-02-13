@@ -14,6 +14,7 @@
 package frc.robot;
 
 import static frc.robot.subsystems.AlgaeOuttake.AlgaeOuttakeConstants.ALGAE_OUTTAKE_ELEVATOR_POSITION;
+import static frc.robot.subsystems.AlgaeOuttake.AlgaeOuttakeConstants.ALGAE_HIGH_OUTTAKE_ELEVATOR_POSITION;;
 
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
@@ -273,12 +274,19 @@ public class RobotContainer {
                                                                 .raceWith(ElevatorCommands.goToPositionWithoutPid(
                                                                                 elevatorSubsystem,
                                                                                 ALGAE_OUTTAKE_ELEVATOR_POSITION))));
+                driverController.b()
+                                .whileTrue(ElevatorCommands.goToPosition(elevatorSubsystem, 36.5).withTimeout(1.15)
+                                                .andThen(DriveCommands.driveBackSlow(drive)
+                                                                .raceWith(ElevatorCommands.goToPositionWithoutPid(
+                                                                                elevatorSubsystem,
+                                                                                ALGAE_HIGH_OUTTAKE_ELEVATOR_POSITION))));
+
                 // driverController.PovDown().onTrue(ElevatorCommands.goToPosition(elevatorSubsystem,
                 // ALGAE_OUTTAKE_ELEVATOR_POSITION));
 
                 // driverController.PovDown().onTrue(ElevatorCommands.goToPositionWithoutPid(elevatorSubsystem,
                 // ALGAE_OUTTAKE_ELEVATOR_POSITION));
-                driverController.a().onFalse(
+                driverController.a().or(driverController.b()).onFalse(
                                 (ElevatorCommands.closeElevator(elevatorSubsystem)));
                 // driverController.PovDown().onFalse(AlgaeOuttakeCommands.closeArm(algaeOuttake)
                 // .alongWith(ElevatorCommands.closeElevator(elevatorSubsystem)));
