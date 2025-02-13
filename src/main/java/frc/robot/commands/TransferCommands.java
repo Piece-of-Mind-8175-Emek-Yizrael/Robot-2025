@@ -13,14 +13,15 @@ import frc.robot.subsystems.Transfer.Transfer;
 public class TransferCommands {
 
     public static Command startTransfer(Transfer transfer) {
-        return Commands.runOnce(() -> transfer.setVoltage(CORAL_INTAKE_VOLTAGE), transfer)
-                .andThen(new WaitUntilCommand(transfer::isCoralIn)).andThen(new WaitCommand(CORAL_INTAKE_TIME))
+        return Commands.waitUntil(transfer::isCoralIn)
+                .andThen(() -> transfer.setVoltage(CORAL_INTAKE_VOLTAGE))
+                .andThen(Commands.waitUntil(() -> !transfer.isCoralIn()))
                 .andThen(Commands.runOnce(transfer::stopMotor, transfer));
 
     }
 
     public static Command coralOutake(Transfer transfer) {
         return Commands.startEnd(() -> transfer.setVoltage(CORAL_OUTTAKE_VOLTAGE), () -> transfer.stopMotor(), transfer)
-                .until(() -> !transfer.isCoralIn());
+                .withTimeout(CORAL_INTAKE_TIME);
     }
 }
