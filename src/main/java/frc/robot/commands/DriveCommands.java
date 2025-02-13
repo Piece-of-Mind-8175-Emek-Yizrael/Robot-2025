@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
@@ -506,7 +508,7 @@ public class DriveCommands {
     double gyroDelta = 0.0;
   }
 
-  public class LocateToReefCommand extends Command {
+  public static class LocateToReefCommand extends Command {
     Drive drive;
     boolean toLeft;
 
@@ -522,18 +524,9 @@ public class DriveCommands {
       if (closestReef == -1) {
         return;
       }
-      Pose2d destination = FieldConstants.Reef.centerFaces[closestReef];
+      Pose2d destination = toLeft ? FieldConstants.Reef.leftBranches[closestReef]
+          : FieldConstants.Reef.rightBranches[closestReef];
 
-      // move the destination 16 cm parallel to the reef, left or right based on
-      // toLeft
-      double branchDist = 0.16;
-      if (toLeft) {
-        branchDist = -0.16;
-      }
-      Transform2d transform = new Transform2d(branchDist * Math.cos(destination.getRotation().getRadians()),
-          branchDist * Math.sin(destination.getRotation().getRadians()), new Rotation2d());
-
-      destination = destination.transformBy(transform);
       List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
           drive.getPose(),
           destination);
@@ -542,7 +535,11 @@ public class DriveCommands {
               maxAccRadiansPerSecSquared),
           null,
           new GoalEndState(0, destination.getRotation()));
-      AutoBuilder.followPath(path).schedule();
+      path.preventFlipping = true;
+      Logger.recordOutput("current reef destination", destination);
+      Commands.run(() -> drive.runVelocity(new ChassisSpeeds(0.2, 0, 0), true)).withTimeout(0.15)
+          .andThen(AutoBuilder.followPath(path))
+          .schedule();
     }
 
     @Override
@@ -561,12 +558,16 @@ public class DriveCommands {
           closestReef = i;
         }
       }
-      double allowedDist = 1.5;
+      double allowedDist = 2.5;
       if (minDistance > allowedDist) {
         return -1;
       }
       return closestReef;
     }
 
+  }
+
+  public static Command locateToReefCommand(Drive drive, boolean toLeft) {
+    return new LocateToReefCommand(drive, toLeft);
   }
 }

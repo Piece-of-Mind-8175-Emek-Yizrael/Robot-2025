@@ -162,6 +162,8 @@ public class RobotContainer {
                                                 () -> driverController.getRightX() * 0.5));
 
                 driverController.b().onTrue(getPathCommand());
+                driverController.PovDown().onTrue(DriveCommands.locateToReefCommand(drive, true));
+                driverController.PovUp().onTrue(DriveCommands.locateToReefCommand(drive, false));
                 // driverController.x().onTrue(Commands.runOnce(() ->
                 // moduleFL.setTurnPosition(new Rotation2d(Math.PI))));
                 // driverController.b().onTrue(
