@@ -15,6 +15,7 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -24,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.POM_lib.Joysticks.PomXboxController;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.FieldConstants;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon;
 import frc.robot.subsystems.drive.GyroIOSim;
@@ -164,6 +166,11 @@ public class RobotContainer {
                 driverController.b().onTrue(getPathCommand());
                 driverController.PovDown().onTrue(DriveCommands.locateToReefCommand(drive, true));
                 driverController.PovUp().onTrue(DriveCommands.locateToReefCommand(drive, false));
+                driverController.PovLeft().onTrue(Commands
+                                .runOnce(() -> drive.setPose(new Pose2d(
+                                                Units.inchesToMeters(160.373),
+                                                Units.inchesToMeters(186.857),
+                                                Rotation2d.fromDegrees(-60))), drive));
                 // driverController.x().onTrue(Commands.runOnce(() ->
                 // moduleFL.setTurnPosition(new Rotation2d(Math.PI))));
                 // driverController.b().onTrue(
@@ -222,7 +229,8 @@ public class RobotContainer {
         public Command getPathCommand() {
                 try {
                         // Load the path you want to follow using its name in the GUI
-                        PathPlannerPath path = PathPlannerPath.fromPathFile("Drive 1 meter path");
+                        // PathPlannerPath path = PathPlannerPath.fromPathFile("Drive 1 meter path");
+                        PathPlannerPath path = PathPlannerPath.fromPathFile("Drive half meter");
 
                         // Create a path following command using AutoBuilder. This will also trigger
                         // event markers.

@@ -40,7 +40,7 @@ public class DriveConstants {
         public static final Rotation2d frontLeftZeroRotation = new Rotation2d(0.9715 + Math.PI);
         public static final Rotation2d frontRightZeroRotation = new Rotation2d(0.39);
         public static final Rotation2d backLeftZeroRotation = new Rotation2d(1.54 + Math.PI);
-        public static final Rotation2d backRightZeroRotation = new Rotation2d(3.05 + Math.PI);
+        public static final Rotation2d backRightZeroRotation = new Rotation2d(3.05 + 1.015 + Math.PI);
 
         // Device CAN IDs
         public static final int pigeonCanId = 2;
@@ -83,7 +83,7 @@ public class DriveConstants {
         public static final double driveKp = 0.1;
         public static final double driveKd = 0.0;
         public static final double driveKs = 0.25;
-        public static final double driveKv = 0.75;
+        public static final double driveKv = 1.2;
         public static final double driveSimP = 0.05;
         public static final double driveSimD = 0.0;
         public static final double driveSimKs = 0.0;
