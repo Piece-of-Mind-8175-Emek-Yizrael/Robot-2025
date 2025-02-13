@@ -148,10 +148,9 @@ public class Drive extends SubsystemBase {
 
     PushSwerveData();
     Field2d field = new Field2d();
-    for (int i = 0; i < 6; i += 2) {
+    for (int i = 0; i < 6; i += 1) {
       field.getObject("left" + i).setPose(FieldConstants.Reef.leftBranches[i]);
-      // field.getObject("right" + i).setPose(FieldConstants.Reef.rightBranches[i]);
-      field.getObject("middle" + i).setPose(FieldConstants.Reef.centerFaces[i]);
+      field.getObject("right" + i).setPose(FieldConstants.Reef.rightBranches[i]);
     }
     SmartDashboard.putData("Field", field);
   }

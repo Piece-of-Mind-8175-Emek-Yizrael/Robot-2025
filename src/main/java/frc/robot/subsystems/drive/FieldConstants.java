@@ -12,6 +12,8 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
@@ -82,52 +84,58 @@ public class FieldConstants {
                                                                                                        // driver station
                                                                                                        // in
                                                                                                        // clockwise
-                public static final double branchDist = 0.5; // Half the distance between branches
+                public static final double branchDist = 0.16; // Half the distance between branches
 
                 static {
                         // Initialize faces
                         centerFaces[0] = new Pose2d(
                                         Units.inchesToMeters(144.003),
                                         Units.inchesToMeters(158.500),
-                                        Rotation2d.fromDegrees(180));
+                                        Rotation2d.fromDegrees(0));
                         centerFaces[1] = new Pose2d(
                                         Units.inchesToMeters(160.373),
                                         Units.inchesToMeters(186.857),
-                                        Rotation2d.fromDegrees(120));
+                                        Rotation2d.fromDegrees(60));
                         centerFaces[2] = new Pose2d(
                                         Units.inchesToMeters(193.116),
                                         Units.inchesToMeters(186.858),
-                                        Rotation2d.fromDegrees(60));
+                                        Rotation2d.fromDegrees(120));
                         centerFaces[3] = new Pose2d(
                                         Units.inchesToMeters(209.489),
                                         Units.inchesToMeters(158.502),
-                                        Rotation2d.fromDegrees(0));
+                                        Rotation2d.fromDegrees(180));
                         centerFaces[4] = new Pose2d(
                                         Units.inchesToMeters(193.118),
                                         Units.inchesToMeters(130.145),
-                                        Rotation2d.fromDegrees(-60));
+                                        Rotation2d.fromDegrees(-120));
                         centerFaces[5] = new Pose2d(
                                         Units.inchesToMeters(160.375),
                                         Units.inchesToMeters(130.144),
-                                        Rotation2d.fromDegrees(-120));
+                                        Rotation2d.fromDegrees(-60));
 
                         for (int i = 0; i < 6; i++) {
                                 leftBranches[i] = new Pose2d(
-                                                centerFaces[i].transformBy(new Transform2d(branchDist
+                                                centerFaces[i].getX() - branchDist
                                                                 * Math.sin(centerFaces[i].getRotation().getRadians()),
-                                                                branchDist * Math.cos(centerFaces[i].getRotation()
-                                                                                .getRadians()),
-                                                                new Rotation2d())).getTranslation(),
-                                                centerFaces[i].getRotation());
+                                                centerFaces[i].getY() - branchDist
+                                                                * Math.cos(centerFaces[i].getRotation().getRadians()),
+                                                Rotation2d.fromDegrees(-i * 60));
                                 rightBranches[i] = new Pose2d(
-                                                centerFaces[i].transformBy(new Transform2d((-branchDist)
+                                                centerFaces[i].getX() + branchDist
                                                                 * Math.sin(centerFaces[i].getRotation().getRadians()),
-                                                                (-branchDist) * Math.cos(centerFaces[i].getRotation()
-                                                                                .getRadians()),
-                                                                new Rotation2d())).getTranslation(),
-                                                centerFaces[i].getRotation());
+                                                centerFaces[i].getY() + branchDist
+                                                                * Math.cos(centerFaces[i].getRotation().getRadians()),
+                                                Rotation2d.fromDegrees(-i * 60));
 
                         }
+                        // leftBranches[1] = new Pose2d(
+                        // branchDist * Math.sin(-2 * Math.PI / 3) + centerFaces[1].getX(),
+                        // branchDist * Math.cos(-2 * Math.PI / 3) + centerFaces[1].getY(),
+                        // new Rotation2d(-2 * Math.PI / 3));
+                        // SmartDashboard.putNumber("left1 x transform", new Transform2d(
+                        // branchDist * Math.sin(-2 * Math.PI / 3),
+                        // branchDist * Math.cos(-2 * Math.PI / 3),
+                        // new Rotation2d()).getX());
 
                         // Initialize branch positions
                         for (int face = 0; face < 6; face++) {
