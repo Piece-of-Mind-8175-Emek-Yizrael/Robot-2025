@@ -16,10 +16,10 @@ public class VisionIOSim extends VisionIOReal {
     private static VisionSystemSim visionSim;
 
   private final Supplier<Pose2d> poseSupplier;
-  private final PhotonCameraSim cameraSim;
+//  private final PhotonCameraSim cameraSim;
 
-    public VisionIOSim(String name, Transform3d robotToCamera, Supplier<Pose2d> poseSupplier){
-        super(name, robotToCamera);
+    public VisionIOSim(String lCamera, String rCamera, Transform3d rRobotToCamera, Transform3d lRobotToCamera, Supplier<Pose2d> poseSupplier){
+        super(lCamera, rCamera, rRobotToCamera, lRobotToCamera);
         this.poseSupplier = poseSupplier;
         if(visionSim == null){
             visionSim = new VisionSystemSim("main");
@@ -27,8 +27,8 @@ public class VisionIOSim extends VisionIOReal {
 
         }
         var cameraProperties = new SimCameraProperties();
-        cameraSim = new PhotonCameraSim(camera,cameraProperties);
-        visionSim.addCamera(cameraSim, robotToCamera);
+//        cameraSim = new PhotonCameraSim(camera,cameraProperties);
+//        visionSim.addCamera(cameraSim, robotToCamera);
     }
 
     @Override

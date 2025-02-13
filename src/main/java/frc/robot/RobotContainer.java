@@ -93,27 +93,27 @@ public class RobotContainer {
                                 }
                                 break;
 
-                        case SIM:
-                                // Sim robot, instantiate physics sim IO implementations
-
-                                driveSimulation = new SwerveDriveSimulation(Drive.maplesimConfig,
-                                                new Pose2d(3, 3, new Rotation2d()));
-                                SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
-
-                                drive = new Drive(
-                                                new GyroIOSim(this.driveSimulation.getGyroSimulation()),
-                                                new ModuleIOSim(this.driveSimulation.getModules()[0]),
-                                                new ModuleIOSim(this.driveSimulation.getModules()[1]),
-                                                new ModuleIOSim(this.driveSimulation.getModules()[2]),
-                                                new ModuleIOSim(this.driveSimulation.getModules()[3]));
-
-                                vision = new VisionSubsystem(drive::addVisionMeasurement,
-                                                new VisionIOSim("camera_0",
-                                                                new Transform3d(0.2, 0.0, 0.2,
-                                                                                new Rotation3d(0.0, 0.0, Math.PI)),
-                                                                driveSimulation::getSimulatedDriveTrainPose));
-
-                                break;
+//                        case SIM:
+//                                // Sim robot, instantiate physics sim IO implementations
+//
+//                                driveSimulation = new SwerveDriveSimulation(Drive.maplesimConfig,
+//                                                new Pose2d(3, 3, new Rotation2d()));
+//                                SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
+//
+//                                drive = new Drive(
+//                                                new GyroIOSim(this.driveSimulation.getGyroSimulation()),
+//                                                new ModuleIOSim(this.driveSimulation.getModules()[0]),
+//                                                new ModuleIOSim(this.driveSimulation.getModules()[1]),
+//                                                new ModuleIOSim(this.driveSimulation.getModules()[2]),
+//                                                new ModuleIOSim(this.driveSimulation.getModules()[3]));
+//
+//                                vision = new VisionSubsystem(drive::addVisionMeasurement,
+//                                                new VisionIOSim("camera_0",
+//                                                                new Transform3d(0.2, 0.0, 0.2,
+//                                                                                new Rotation3d(0.0, 0.0, Math.PI)),
+//                                                                driveSimulation::getSimulatedDriveTrainPose));
+//
+//                                break;
 
                         default:
                                 // Replayed robot, disable IO implementations

@@ -17,8 +17,21 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 
 public class VisionConstants {
+
+  public static Translation3d l_camera_translation = new Translation3d(11.5, 26.5, 14.0);
+  public static Translation3d r_camera_translation = new Translation3d(-11.5, 26.5, 14.0);
+
+  // THE ROTATION FOR THE LEFT AND RIGHT CAMERAS
+  public static Rotation3d l_camera_rotation = new Rotation3d(39, 0, 0);
+  public static Rotation3d r_camera_rotation = new Rotation3d(37, 0, 0);
+
+  // THE TRANSFORMATION FOR THE LEFT AND RIGHT CAMERAS
+  public static Transform3d l_camera_transform = new Transform3d(l_camera_translation, l_camera_rotation);
+  public static Transform3d r_camera_transform = new Transform3d(r_camera_translation, r_camera_rotation);
+
   // AprilTag layout
   public static AprilTagFieldLayout aprilTagLayout =
       AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
