@@ -27,6 +27,8 @@ import frc.robot.POM_lib.Joysticks.PomXboxController;
 import frc.robot.POM_lib.Vision.POMAprilTagCamera;
 import frc.robot.POM_lib.Vision.TestCommad;
 import frc.robot.commands.DriveCommands;
+import frc.robot.subsystems.Vision.VisionConstants;
+import frc.robot.subsystems.Vision.VisionIOReal;
 import frc.robot.subsystems.Vision.VisionIOSim;
 import frc.robot.subsystems.Vision.VisionSubsystem;
 import frc.robot.subsystems.drive.Drive;
@@ -88,6 +90,12 @@ public class RobotContainer {
                                                 new ModuleIOPOM(3));
                                 try {
                                         camera = new POMAprilTagCamera("photonvision", new Transform3d());
+                                        vision = new VisionSubsystem(drive::addVisionMeasurement,
+                                                new VisionIOReal("camera_l",
+                                                                VisionConstants.l_camera_transform),
+                                                new VisionIOReal("camera_r",
+                                                        VisionConstants.r_camera_transform));
+
                                 } catch (IOException e) {
                                         Logger.recordOutput("Vision/Tag", e.getMessage());
                                 }
@@ -218,12 +226,12 @@ public class RobotContainer {
                                                                 driverController.PovDown(),
                                                                 driverController.PovLeft(),
                                                                 driverController.PovRight()));
-
                 // Switch to X pattern when X button is pressed
                 driverController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
                 // Reset gyro to 0° when Y button is pressed
                 driverController.y().onTrue(drive.resetGyroCommand());
+
 
         }
 

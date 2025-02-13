@@ -13,27 +13,28 @@ import org.photonvision.PhotonCamera;
 
 /** IO implementation for real PhotonVision hardware. */
 public class VisionIOReal implements VisionIO {
-  protected final PhotonCamera l_camera;
-  protected final PhotonCamera r_camera;
-  protected final Transform3d lRobotToCamera;
-  protected final Transform3d rRobotToCamera;
+  protected final PhotonCamera camera;
+  protected final Transform3d robotToCamera;
 
-
-  public VisionIOReal(String lCamera, String rCamera, Transform3d rRobotToCamera, Transform3d lRobotToCamera) {
-      l_camera = new PhotonCamera(lCamera);
-      r_camera = new PhotonCamera(rCamera);
-      this.lRobotToCamera = rRobotToCamera;
-      this.rRobotToCamera = lRobotToCamera;
+  /**
+   * Creates a new VisionIOPhotonVision.
+   *
+   * @param name The configured name of the camera.
+   * @param rotationSupplier The 3D position of the camera relative to the robot.
+   */
+  public VisionIOReal(String name, Transform3d robotToCamera) {
+    camera = new PhotonCamera(name);
+    this.robotToCamera = robotToCamera;
   }
 
   @Override
   public void updateInputs(VisionIOInputs inputs) {
-    inputs.connected = r_camera.isConnected() && l_camera.isConnected();
+    inputs.connected = camera.isConnected();
 
     // Read new camera observations
     Set<Short> tagIds = new HashSet<>();
     List<PoseObservation> poseObservations = new LinkedList<>();
-    for (var result : r_camera.getAllUnreadResults()) {
+    for (var result : camera.getAllUnreadResults()) {
       // Update latest target observation
       if (result.hasTargets()) {
         inputs.latestTargetObservation =
@@ -50,7 +51,7 @@ public class VisionIOReal implements VisionIO {
 
         // Calculate robot pose
         Transform3d fieldToCamera = multitagResult.estimatedPose.best;
-        Transform3d fieldToRobot = fieldToCamera.plus(rRobotToCamera.inverse());
+        Transform3d fieldToRobot = fieldToCamera.plus(robotToCamera.inverse());
         Pose3d robotPose = new Pose3d(fieldToRobot.getTranslation(), fieldToRobot.getRotation());
 
         // Calculate average tag distance
@@ -82,7 +83,7 @@ public class VisionIOReal implements VisionIO {
               new Transform3d(tagPose.get().getTranslation(), tagPose.get().getRotation());
           Transform3d cameraToTarget = target.bestCameraToTarget;
           Transform3d fieldToCamera = fieldToTarget.plus(cameraToTarget.inverse());
-          Transform3d fieldToRobot = fieldToCamera.plus(rRobotToCamera.inverse());
+          Transform3d fieldToRobot = fieldToCamera.plus(robotToCamera.inverse());
           Pose3d robotPose = new Pose3d(fieldToRobot.getTranslation(), fieldToRobot.getRotation());
 
           // Add tag ID
@@ -97,73 +98,6 @@ public class VisionIOReal implements VisionIO {
                   1, // Tag count
                   cameraToTarget.getTranslation().getNorm(), // Average tag distance
                   PoseObservationType.PHOTONVISION)); // Observation type
-        }
-      }
-    }
-    for (var result : l_camera.getAllUnreadResults()) {
-      // Update latest target observation
-      if (result.hasTargets()) {
-        inputs.latestTargetObservation =
-                new TargetObservation(
-                        Rotation2d.fromDegrees(result.getBestTarget().getYaw()),
-                        Rotation2d.fromDegrees(result.getBestTarget().getPitch()));
-      } else {
-        inputs.latestTargetObservation = new TargetObservation(new Rotation2d(), new Rotation2d());
-      }
-
-      // Add pose observation
-      if (result.multitagResult.isPresent()) { // Multitag result
-        var multitagResult = result.multitagResult.get();
-
-        // Calculate robot pose
-        Transform3d fieldToCamera = multitagResult.estimatedPose.best;
-        Transform3d fieldToRobot = fieldToCamera.plus(lRobotToCamera.inverse());
-        Pose3d robotPose = new Pose3d(fieldToRobot.getTranslation(), fieldToRobot.getRotation());
-
-        // Calculate average tag distance
-        double totalTagDistance = 0.0;
-        for (var target : result.targets) {
-          totalTagDistance += target.bestCameraToTarget.getTranslation().getNorm();
-        }
-
-        // Add tag IDs
-        tagIds.addAll(multitagResult.fiducialIDsUsed);
-
-        // Add observation
-        poseObservations.add(
-                new PoseObservation(
-                        result.getTimestampSeconds(), // Timestamp
-                        robotPose, // 3D pose estimate
-                        multitagResult.estimatedPose.ambiguity, // Ambiguity
-                        multitagResult.fiducialIDsUsed.size(), // Tag count
-                        totalTagDistance / result.targets.size(), // Average tag distance
-                        PoseObservationType.PHOTONVISION)); // Observation type
-
-      } else if (!result.targets.isEmpty()) { // Single tag result
-        var target = result.targets.get(0);
-
-        // Calculate robot pose
-        var tagPose = aprilTagLayout.getTagPose(target.fiducialId);
-        if (tagPose.isPresent()) {
-          Transform3d fieldToTarget =
-                  new Transform3d(tagPose.get().getTranslation(), tagPose.get().getRotation());
-          Transform3d cameraToTarget = target.bestCameraToTarget;
-          Transform3d fieldToCamera = fieldToTarget.plus(cameraToTarget.inverse());
-          Transform3d fieldToRobot = fieldToCamera.plus(lRobotToCamera.inverse());
-          Pose3d robotPose = new Pose3d(fieldToRobot.getTranslation(), fieldToRobot.getRotation());
-
-          // Add tag ID
-          tagIds.add((short) target.fiducialId);
-
-          // Add observation
-          poseObservations.add(
-                  new PoseObservation(
-                          result.getTimestampSeconds(), // Timestamp
-                          robotPose, // 3D pose estimate
-                          target.poseAmbiguity, // Ambiguity
-                          1, // Tag count
-                          cameraToTarget.getTranslation().getNorm(), // Average tag distance
-                          PoseObservationType.PHOTONVISION)); // Observation type
         }
       }
     }
