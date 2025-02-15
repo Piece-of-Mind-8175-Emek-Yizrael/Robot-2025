@@ -26,6 +26,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -91,6 +92,8 @@ public class RobotContainer {
         private SwerveDriveSimulation driveSimulation;
 
         private ElevatorSubsystem elevatorSubsystem;
+
+        private EventLoop eventLoop = new EventLoop();  
 
         /**
          * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -268,6 +271,8 @@ public class RobotContainer {
                 // driverController.leftTrigger().onTrue(ElevatorCommands.setSpeed(elevatorSubsystem,
                 // 0.2));
                 // driverController.rightTrigger().onTrue(ElevatorCommands.stopElevator(elevatorSubsystem));
+
+                
 
                 operatorController.a()
                                 .whileTrue(ElevatorCommands.goToPosition(elevatorSubsystem, 11.5).withTimeout(0.8)
