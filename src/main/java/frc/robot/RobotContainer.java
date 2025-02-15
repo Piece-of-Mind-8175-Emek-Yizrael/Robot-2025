@@ -82,6 +82,7 @@ public class RobotContainer {
 
         // Controller
         private final PomXboxController driverController = new PomXboxController(0);
+        private final PomXboxController operatorController = new PomXboxController(1);
 
         // Dashboard inputs
         private final LoggedDashboardChooser<Command> autoChooser;
@@ -208,6 +209,9 @@ public class RobotContainer {
          * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
          */
         private void configureButtonBindings() {
+
+                // driver controller buttens
+
                 // Default command, normal field-relative drive
                 drive.setDefaultCommand(
                                 DriveCommands.joystickDrive(
@@ -253,33 +257,52 @@ public class RobotContainer {
                 // Reset gyro to 0° when Y button is pressed
                 driverController.PovUp().onTrue(drive.resetGyroCommand());
 
-                driverController.start().onTrue(AlgaeOuttakeCommands.openArm(algaeOuttake));
-                driverController.back().onTrue(AlgaeOuttakeCommands.closeArm(algaeOuttake));
+
+
+                // operator controller buttens
+
+                operatorController.start().onTrue(AlgaeOuttakeCommands.openArm(algaeOuttake));
+                operatorController.back().onTrue(AlgaeOuttakeCommands.closeArm(algaeOuttake));
+
                 // driverController.leftTrigger().onTrue(ElevatorCommands.setSpeed(elevatorSubsystem,
                 // 0.2));
                 // driverController.rightTrigger().onTrue(ElevatorCommands.stopElevator(elevatorSubsystem));
-                driverController.y().onTrue(
-                                ElevatorCommands.goToPosition(elevatorSubsystem, ElevatorConstants.L3_POSITION));
-                driverController.x().onTrue(
-                                ElevatorCommands.goToPosition(elevatorSubsystem, ElevatorConstants.L2_POSITION));
-                driverController.y().or(driverController.x())
-                                .onFalse(ElevatorCommands.closeElevator(elevatorSubsystem));
-                driverController.leftTrigger().onTrue(TransferCommands.coralOutake(transfer));
-                new Trigger(transfer::isCoralIn).onTrue(TransferCommands.startTransfer(transfer));
 
-                driverController.a()
+                operatorController.a()
                                 .whileTrue(ElevatorCommands.goToPosition(elevatorSubsystem, 11.5).withTimeout(0.8)
                                                 .andThen(DriveCommands.driveBackSlow(drive)
                                                                 .raceWith(ElevatorCommands.goToPositionWithoutPid(
                                                                                 elevatorSubsystem,
                                                                                 ALGAE_OUTTAKE_ELEVATOR_POSITION))));
+
+
+                operatorController.y().onTrue(
+                                ElevatorCommands.goToPosition(elevatorSubsystem, ElevatorConstants.L3_POSITION));
+                operatorController.x().onTrue
+                                (ElevatorCommands.closeElevator(elevatorSubsystem));
+                operatorController.b().onTrue(
+                                ElevatorCommands.goToPosition(elevatorSubsystem, ElevatorConstants.L2_POSITION));
+                
+                operatorController.PovDown().whileTrue(TransferCommands.intakeCoral(transfer));
+                
+                operatorController.PovUp().whileTrue(TransferCommands.coralOutake(transfer));
+
+                operatorController.leftTrigger().whileTrue(ElevatorCommands.closeElevatorManual(elevatorSubsystem));
+
+                operatorController.rightTrigger().whileTrue(ElevatorCommands.openElevatorManual(elevatorSubsystem));
+                
+                // driverController.y().or(driverController.x())
+                //                 .onFalse(ElevatorCommands.closeElevator(elevatorSubsystem));
+                // driverController.leftTrigger().whileTrue(TransferCommands.coralOutake(transfer));       
+                // new Trigger(transfer::isCoralIn).onTrue(TransferCommands.startTransfer(transfer));
+
                 // driverController.PovDown().onTrue(ElevatorCommands.goToPosition(elevatorSubsystem,
                 // ALGAE_OUTTAKE_ELEVATOR_POSITION));
 
                 // driverController.PovDown().onTrue(ElevatorCommands.goToPositionWithoutPid(elevatorSubsystem,
                 // ALGAE_OUTTAKE_ELEVATOR_POSITION));
-                driverController.a().onFalse(
-                                (ElevatorCommands.closeElevator(elevatorSubsystem)));
+                // operatorController.a().onFalse(
+                //                 (ElevatorCommands.closeElevator(elevatorSubsystem)));
                 // driverController.PovDown().onFalse(AlgaeOuttakeCommands.closeArm(algaeOuttake)
                 // .alongWith(ElevatorCommands.closeElevator(elevatorSubsystem)));
 
@@ -305,9 +328,9 @@ public class RobotContainer {
                 return autoChooser.get();
         }
 
-        public void startTransfer() {
-                TransferCommands.startTransfer(transfer).schedule();
-        }
+        // public void startTransfer() {
+        //         TransferCommands.startTransfer(transfer).schedule();
+        // }
 
         public void closeAlgaeArm() {
                 AlgaeOuttakeCommands.closeArm(algaeOuttake).schedule();

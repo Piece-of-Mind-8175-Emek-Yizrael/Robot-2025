@@ -39,4 +39,14 @@ public class ElevatorCommands {
             .andThen(ElevatorCommands.closeUntilSwitch(elevator));
     }
 
+    public static Command closeElevatorManual(ElevatorSubsystem elevator){
+        return Commands.run(() -> elevator.getIO().setVoltage(-1) , elevator);
+    }
+
+    public static Command openElevatorManual(ElevatorSubsystem elevator){
+        return Commands.run(() -> elevator.getIO().setVoltage(2) , elevator);
+    }
+
+
+
 }

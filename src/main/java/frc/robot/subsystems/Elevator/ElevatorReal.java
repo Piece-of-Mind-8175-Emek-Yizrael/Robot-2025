@@ -72,6 +72,10 @@ public class ElevatorReal implements ElevatorIO {
         resetlfPressed();
     }
 
+    private void resetEncoder(){
+        encoder.setPosition(0);
+    }
+
     @Override
     public void setSpeed(double speed) {
         motor.set(speed);
@@ -111,26 +115,52 @@ public class ElevatorReal implements ElevatorIO {
 
     boolean lastSwitchState = false;
 
+    // @Override
+    // public void resetlfPressed() {
+    //     if (DriverStation.isEnabled()) {
+    //         if (foldSwitch.get()) {
+    //             encoder.setPosition(0);
+    //             if (!lastSwitchState) {
+    //                 motor.configure(new SparkMaxConfig().idleMode(IdleMode.kBrake), ResetMode.kNoResetSafeParameters,
+    //                         PersistMode.kNoPersistParameters);
+    //             }
+    //             lastSwitchState = true;
+    //         } else if (lastSwitchState) {
+    //             motor.configure(new SparkMaxConfig().idleMode(IdleMode.kCoast), ResetMode.kNoResetSafeParameters,
+    //                     PersistMode.kNoPersistParameters);
+    //             lastSwitchState = false;
+    //         }
+    //     } else {
+    //         motor.configure(new SparkMaxConfig().idleMode(IdleMode.kBrake), ResetMode.kNoResetSafeParameters,
+    //                 PersistMode.kNoPersistParameters);
+    //     }
+
+    // }
+
     @Override
     public void resetlfPressed() {
-        if (DriverStation.isEnabled()) {
-            if (foldSwitch.get()) {
-                encoder.setPosition(0);
-                if (!lastSwitchState) {
-                    motor.configure(new SparkMaxConfig().idleMode(IdleMode.kBrake), ResetMode.kNoResetSafeParameters,
-                            PersistMode.kNoPersistParameters);
-                }
-                lastSwitchState = true;
-            } else if (lastSwitchState) {
+        if(DriverStation.isEnabled()){
+            if(foldSwitch.get()){
                 motor.configure(new SparkMaxConfig().idleMode(IdleMode.kCoast), ResetMode.kNoResetSafeParameters,
-                        PersistMode.kNoPersistParameters);
-                lastSwitchState = false;
+                     PersistMode.kNoPersistParameters);
+                resetEncoder();
             }
-        } else {
-            motor.configure(new SparkMaxConfig().idleMode(IdleMode.kBrake), ResetMode.kNoResetSafeParameters,
-                    PersistMode.kNoPersistParameters);
+            else{
+                motor.configure(new SparkMaxConfig().idleMode(IdleMode.kBrake), ResetMode.kNoResetSafeParameters,
+                     PersistMode.kNoPersistParameters);
+            }
         }
-
+        else{
+            if(foldSwitch.get()){
+                motor.configure(new SparkMaxConfig().idleMode(IdleMode.kCoast), ResetMode.kNoResetSafeParameters,
+                     PersistMode.kNoPersistParameters);
+                resetEncoder();
+            }
+            else{
+                motor.configure(new SparkMaxConfig().idleMode(IdleMode.kBrake), ResetMode.kNoResetSafeParameters,
+                     PersistMode.kNoPersistParameters);
+            }
+        }
     }
 
     @Override
