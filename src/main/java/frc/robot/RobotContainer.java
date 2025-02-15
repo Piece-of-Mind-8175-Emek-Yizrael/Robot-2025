@@ -285,6 +285,8 @@ public class RobotContainer {
                                 ElevatorCommands.goToPosition(elevatorSubsystem, ElevatorConstants.L2_POSITION));
                 
                 operatorController.PovDown().whileTrue(TransferCommands.intakeCoral(transfer));
+
+                operatorController.PovRight().whileTrue(TransferCommands.takeCoralIn(transfer));
                 
                 operatorController.PovUp().whileTrue(TransferCommands.coralOutake(transfer));
 

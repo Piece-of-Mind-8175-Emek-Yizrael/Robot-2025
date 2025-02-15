@@ -33,4 +33,8 @@ public class TransferCommands {
     public static Command intakeCoral(Transfer transfer){
         return Commands.startEnd(() -> transfer.setVoltage(3), () -> transfer.stopMotor() ,transfer);
     }
+
+    public static Command takeCoralIn(Transfer transfer){
+        return Commands.startEnd(() -> transfer.setVoltage(-3) , transfer :: stopMotor, transfer);
+    }
 }
