@@ -21,7 +21,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 
 public class DriveConstants {
-        public static final double ALGAE_OUTTAKE_DRIVE_BACK_SPEED = 0.02;
+        public static final double ALGAE_OUTTAKE_DRIVE_BACK_SPEED = 0.03;
 
         public static final double maxSpeedMetersPerSec = 4;
         public static final double odometryFrequency = 100.0; // Hz

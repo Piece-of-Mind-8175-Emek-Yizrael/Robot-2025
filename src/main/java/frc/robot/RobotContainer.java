@@ -14,6 +14,7 @@
 package frc.robot;
 
 import static frc.robot.subsystems.AlgaeOuttake.AlgaeOuttakeConstants.ALGAE_OUTTAKE_ELEVATOR_POSITION;
+import static frc.robot.subsystems.AlgaeOuttake.AlgaeOuttakeConstants.ALGAE_HIGH_OUTTAKE_ELEVATOR_POSITION;;
 
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
@@ -353,3 +354,22 @@ public class RobotContainer {
         }
 
 }
+
+        
+        
+        
+        
+        
+
+        
+
+        
+        
+
+        
+        
+        
+        
+        
+
+        
