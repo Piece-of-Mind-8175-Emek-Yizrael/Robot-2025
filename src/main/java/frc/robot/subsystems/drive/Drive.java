@@ -13,18 +13,33 @@
 
 package frc.robot.subsystems.drive;
 
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.KilogramSquareMeters;
 import static edu.wpi.first.units.Units.Kilograms;
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.subsystems.drive.DriveConstants.driveBaseRadius;
 import static frc.robot.subsystems.drive.DriveConstants.maxSpeedMetersPerSec;
 import static frc.robot.subsystems.drive.DriveConstants.moduleTranslations;
 import static frc.robot.subsystems.drive.DriveConstants.ppConfig;
 
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
+
+import org.ironmaple.simulation.drivesims.COTS;
+import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
+import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
+import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.PathPlannerLogging;
+
 import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
@@ -52,14 +67,6 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.util.LocalADStarAK;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
-import org.ironmaple.simulation.drivesims.COTS;
-import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
-import org.littletonrobotics.junction.AutoLogOutput;
-import org.littletonrobotics.junction.Logger;
 
 public class Drive extends SubsystemBase {
   static final Lock odometryLock = new ReentrantLock();
@@ -149,8 +156,17 @@ public class Drive extends SubsystemBase {
       .withRobotMass(Kilograms.of(35.0))
       .withCustomModuleTranslations(moduleTranslations)
       .withGyro(COTS.ofPigeon2())
-      .withSwerveModule(
-          COTS.ofSwerveX(DCMotor.getKrakenX60(1), DCMotor.getNEO(1), 0.8098, 6));
+      .withSwerveModule(new SwerveModuleSimulationConfig(
+          DCMotor.getKrakenX60(1),
+          DCMotor.getNEO(1),
+          DriveConstants.driveMotorReduction,
+          DriveConstants.turnMotorReduction,
+          Volts.of(0.2),
+          Volts.of(0.2),
+          Inches.of(2),
+          KilogramSquareMeters.of(0.004),
+          DriveConstants.wheelCOF))
+      .withBumperSize(Meters.of(0.7), Meters.of(0.7));
 
   @Override
   public void periodic() {
@@ -190,6 +206,7 @@ public class Drive extends SubsystemBase {
                 - lastModulePositions[moduleIndex].distanceMeters,
             modulePositions[moduleIndex].angle);
         lastModulePositions[moduleIndex] = modulePositions[moduleIndex];
+        Logger.recordOutput("Module " + moduleIndex + " distance meters", modulePositions[moduleIndex].distanceMeters);
       }
 
       // Update gyro angle
@@ -230,9 +247,15 @@ public class Drive extends SubsystemBase {
     Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
     Logger.recordOutput("SwerveChassisSpeeds/Setpoints", speeds);
 
-    // Send setpoints to modules
-    for (int i = 0; i < 4; i++) {
-      modules[i].runSetpoint(setpointStates[i], isOpenLoop);
+    if (Math.abs(speeds.omegaRadiansPerSecond + speeds.vxMetersPerSecond + speeds.vyMetersPerSecond) < 0.01) {
+      for (int i = 0; i < 4; i++) {
+        modules[i].stop();
+      }
+    } else {
+      // Send setpoints to modules
+      for (int i = 0; i < 4; i++) {
+        modules[i].runSetpoint(setpointStates[i], isOpenLoop);
+      }
     }
 
     // Log optimized setpoints (runSetpoint mutates each state)
@@ -418,20 +441,20 @@ public class Drive extends SubsystemBase {
       double a = MathUtil.applyDeadband(Math.hypot(x.getAsDouble(), y.getAsDouble()), 0.15);
       Logger.recordOutput("wanted angle", angle.getRadians());
       modules[0].runSetpoint(new SwerveModuleState(a / 4.0, angle), true);
-      
+
     });
   }
-  public Command testSteeringAngleCommand(Rotation2d angle) {
-    return this.run(() -> { 
 
-      // double a = MathUtil.applyDeadband(Math.hypot(x.getAsDouble(), y.getAsDouble()), 0.15);
+  public Command testSteeringAngleCommand(Rotation2d angle) {
+    return this.run(() -> {
+
+      // double a = MathUtil.applyDeadband(Math.hypot(x.getAsDouble(),
+      // y.getAsDouble()), 0.15);
       Logger.recordOutput("wanted angle", angle.getRadians());
       modules[0].runSetpoint(new SwerveModuleState(4.0, angle), true);
-      
+
     });
   }
-
-
 
   public void PushSwerveData() {
     SmartDashboard.putData("Swerve",

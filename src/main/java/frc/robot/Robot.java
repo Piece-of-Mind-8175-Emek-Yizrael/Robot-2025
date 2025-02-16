@@ -14,11 +14,11 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Threads;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.POM_lib.Motors.POMTalonFX;
-
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.seasonspecific.crescendo2024.CrescendoNoteOnField;
 import org.littletonrobotics.junction.LogFileUtil;
@@ -30,14 +30,24 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import org.littletonrobotics.urcl.URCL;
 
 /**
- * The VM is configured to automatically run this class, and to call the functions corresponding to
- * each mode, as described in the TimedRobot documentation. If you change the name of this class or
- * the package after creating this project, you must also update the build.gradle file in the
+ * The VM is configured to automatically run this class, and to call the
+ * functions corresponding to
+ * each mode, as described in the TimedRobot documentation. If you change the
+ * name of this class or
+ * the package after creating this project, you must also update the
+ * build.gradle file in the
+ * The VM is configured to automatically run this class, and to call the
+ * functions corresponding to
+ * each mode, as described in the TimedRobot documentation. If you change the
+ * name of this class or
+ * the package after creating this project, you must also update the
+ * build.gradle file in the
  * project.
  */
 public class Robot extends LoggedRobot {
   private Command autonomousCommand;
   private RobotContainer robotContainer;
+  private AnalogInput temp = new AnalogInput(0);// TODO remomve
 
   public Robot() {
     // Record metadata;
@@ -47,22 +57,31 @@ public class Robot extends LoggedRobot {
     // Logger.recordMetadata("GitDate", BuildConstants.GIT_DATE);
     // Logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
     // switch (BuildConstants.DIRTY) {
-    //   case 0:
-    //     Logger.recordMetadata("GitDirty", "All changes committed");
-    //     break;
-    //   case 1:
-    //     Logger.recordMetadata("GitDirty", "Uncomitted changes");
-    //     break;
-    //   default:
-    //     Logger.recordMetadata("GitDirty", "Unknown");
-    //     break;
+    // case 0:
+    // Logger.recordMetadata("GitDirty", "All changes committed");
+    // break;
+    // case 1:
+    // Logger.recordMetadata("GitDirty", "Uncomitted changes");
+    // break;
+    // default:
+    // Logger.recordMetadata("GitDirty", "Unknown");
+    // break;
+    // case 0:
+    // Logger.recordMetadata("GitDirty", "All changes committed");
+    // break;
+    // case 1:
+    // Logger.recordMetadata("GitDirty", "Uncomitted changes");
+    // break;
+    // default:
+    // Logger.recordMetadata("GitDirty", "Unknown");
+    // break;
     // }
 
     // Set up data receivers & replay source
     switch (Constants.currentMode) {
       case REAL:
         // Running on a real robot, log to a USB stick ("/U/logs")
-        Logger.addDataReceiver(new WPILOGWriter());
+        Logger.addDataReceiver(new WPILOGWriter("/home/lvuser/logs"));
         Logger.addDataReceiver(new NT4Publisher());
         break;
 
@@ -104,6 +123,7 @@ public class Robot extends LoggedRobot {
     // the Command-based framework to work.
     CommandScheduler.getInstance().run();
 
+    SmartDashboard.putNumber("Transfer Sensor", temp.getValue());
     // Return to normal thread priority
     Threads.setCurrentThreadPriority(false, 10);
   }
@@ -111,16 +131,26 @@ public class Robot extends LoggedRobot {
   /** This function is called once when the robot is disabled. */
   @Override
   public void disabledInit() {
-    POMTalonFX.DisableSound();
+    // POMTalonFX.DisableSound();
+    // POMTalonFX.DisableSound();
   }
 
   /** This function is called periodically when disabled. */
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+  }
 
-  /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
+  /**
+   * This autonomous runs the autonomous command selected by your
+   * {@link RobotContainer} class.
+   */
+  /**
+   * This autonomous runs the autonomous command selected by your
+   * {@link RobotContainer} class.
+   */
   @Override
   public void autonomousInit() {
+    enable();
     autonomousCommand = robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
@@ -131,23 +161,26 @@ public class Robot extends LoggedRobot {
 
   /** This function is called periodically during autonomous. */
   @Override
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {
+  }
 
   /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
+    enable();
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
-    if (autonomousCommand != null) { 
+    if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }
   }
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+  }
 
   /** This function is called once when test mode is enabled. */
   @Override
@@ -158,7 +191,8 @@ public class Robot extends LoggedRobot {
 
   /** This function is called periodically during test mode. */
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
+  }
 
   /** This function is called once when the robot is first started up. */
   @Override
@@ -174,5 +208,10 @@ public class Robot extends LoggedRobot {
 
     SimulatedArena.getInstance().simulationPeriodic();
     robotContainer.displaSimFieldToAdvantageScope();
+  }
+
+  public void enable() {
+    robotContainer.closeAlgaeArm();
+    // robotContainer.startTransfer();
   }
 }
