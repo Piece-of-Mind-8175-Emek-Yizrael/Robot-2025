@@ -311,11 +311,11 @@ public class RobotContainer {
                 
                 //manual elevator control
                 //fast
-                operatorController.leftTrigger().whileTrue(ElevatorCommands.closeElevatorManual(elevatorSubsystem, -2.5));
+                operatorController.leftTrigger().whileTrue(ElevatorCommands.closeElevatorManual(elevatorSubsystem, -2));
                 
-                operatorController.rightTrigger().whileTrue(ElevatorCommands.openElevatorManual(elevatorSubsystem, 2));
+                operatorController.rightTrigger().whileTrue(ElevatorCommands.openElevatorManual(elevatorSubsystem, 2.5));
 
-                //slow
+                //slow not working
                 operatorController.leftYUp().whileTrue(ElevatorCommands.closeElevatorManual(elevatorSubsystem, -1));
                 
                 operatorController.leftYUp().whileTrue(ElevatorCommands.openElevatorManual(elevatorSubsystem, 2));
