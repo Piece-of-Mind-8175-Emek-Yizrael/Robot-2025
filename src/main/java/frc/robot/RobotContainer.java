@@ -57,7 +57,7 @@ public class RobotContainer {
         private final Drive drive;
         private final Transfer transfer;
 
-        private final LEDs leds;
+        //private final LEDs leds;
 
         // Controller
         private final PomXboxController driverController = new PomXboxController(0);
@@ -83,7 +83,7 @@ public class RobotContainer {
                                                 new ModuleIOPOM(2),
                                                 new ModuleIOPOM(3));
 
-                                leds = new LEDs(new LEDsIOReal());
+                                //leds = new LEDs(new LEDsIOReal());
                                 break;
 
                         case SIM:
@@ -102,7 +102,7 @@ public class RobotContainer {
                                                 new ModuleIOSim(this.driveSimulation.getModules()[2]),
                                                 new ModuleIOSim(this.driveSimulation.getModules()[3]));
 
-                                leds = new LEDs(new LEDsIOSim());
+                                //leds = new LEDs(new LEDsIOSim());
                                 break;
 
                         default:
@@ -120,7 +120,7 @@ public class RobotContainer {
                                                 });
 
                                 transfer = new Transfer(new TransferIO() {});
-                                leds = new LEDs(new LEDsIO() {});
+                                //leds = new LEDs(new LEDsIO() {});
                                 break;
                 }
 
@@ -214,8 +214,8 @@ public class RobotContainer {
                 // Reset gyro to 0° when Y button is pressed
                 driverController.y().onTrue(drive.resetGyroCommand());
 
-                driverController.PovLeft().onTrue(TransferCommands.coralOutake(transfer));
-                driverController.PovRight().onTrue(TransferCommands.startTransfer(transfer));
+                // driverController.PovLeft().onTrue(TransferCommands.coralOutake(transfer));
+                // driverController.PovRight().onTrue(TransferCommands.startTransfer(transfer));
 
         }
 

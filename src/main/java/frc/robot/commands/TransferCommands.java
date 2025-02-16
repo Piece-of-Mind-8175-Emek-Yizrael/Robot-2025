@@ -13,17 +13,28 @@ import frc.robot.subsystems.Transfer.Transfer;
 
 public class TransferCommands{
           
-    public static Command startTransfer(Transfer transfer) {
-        return Commands.runOnce(() -> transfer.setVoltage(CORAL_INTAKE_VOLTAGE), transfer).
-        andThen(new WaitUntilCommand(transfer::isCoralIn)).
-        andThen(new WaitCommand(CORAL_INTAKE_TIME)).
-        andThen(Commands.runOnce(transfer::stopMotor, transfer));
+    // public static Command startTransfer(Transfer transfer) {
+    //     return Commands.runOnce(() -> transfer.setVoltage(CORAL_INTAKE_VOLTAGE), transfer).
+    //     andThen(new WaitUntilCommand(transfer::isCoralIn)).
+    //     andThen(new WaitCommand(CORAL_INTAKE_TIME)).
+    //     andThen(Commands.runOnce(transfer::stopMotor, transfer));
 
-    }
-    
-    
+    // }
+     
+    // public static Command coralOutake(Transfer transfer) {
+    //     return Commands.startEnd(() -> transfer.setVoltage(CORAL_OUTTAKE_VOLTAGE), () -> transfer.stopMotor(),transfer).until(() -> !transfer.isCoralIn());
+    // }
+
     public static Command coralOutake(Transfer transfer) {
-        return Commands.startEnd(() -> transfer.setVoltage(CORAL_OUTTAKE_VOLTAGE), () -> transfer.stopMotor(),transfer).until(() -> !transfer.isCoralIn());
+        return Commands.startEnd(() -> transfer.getIO().setVoltage(CORAL_OUTTAKE_VOLTAGE), () -> transfer.getIO().stopMotor(), transfer);
+    }
+
+    public static Command intakeCoral(Transfer transfer){
+        return Commands.startEnd(() -> transfer.getIO().setVoltage(3), () -> transfer.getIO().stopMotor() ,transfer);
+    }
+
+    public static Command takeCoralIn(Transfer transfer){
+        return Commands.startEnd(() -> transfer.getIO().setVoltage(-3) , transfer.getIO() :: stopMotor, transfer);
     }
 }
 
