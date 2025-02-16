@@ -160,8 +160,8 @@ public class RobotContainer {
 
                                 transfer = new Transfer(new TransferIO() {
                                 });
-                                leds = new LEDs(new LEDsIO() {
-                                });
+                                //leds = new LEDs(new LEDsIO() {
+                                //});
                                 break;
                 }
 
