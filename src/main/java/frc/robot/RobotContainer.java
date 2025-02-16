@@ -202,36 +202,21 @@ public class RobotContainer {
                 configureButtonBindings();
         }
 
+        
         private void configureButtonBindings() {
 
                 // driver controller buttens
 
                 // Default command, normal field-relative drive
-                if(isRelative){
-                        drive.setDefaultCommand(
-                                        DriveCommands.joystickDrive(
-                                                        drive,
-                                                        () -> -driverController.getLeftY() * 0.25,
-                                                        () -> -driverController.getLeftX() * 0.25,
-                                                        () -> -driverController.getRightX() * 0.25));
-                                                }
-                else{
-                        drive.setDefaultCommand(
-                                        DriveCommands.joystickDriveRobotRelative(
-                                                        drive,
-                                                        () -> -driverController.getLeftY() * 0.25,
-                                                        () -> -driverController.getLeftX() * 0.25,
-                                                        () -> -driverController.getRightX() * 0.25));
-
-                }
-                driverController.a().onTrue(isRelativeCommand());
-
-                driverController.leftTrigger().whileTrue(DriveCommands.joystickDrive(
-                        drive,
-                        () -> -driverController.getLeftY() * 0.15,
-                        () -> -driverController.getLeftX() * 0.15,
-                        () -> -driverController.getRightX() * 0.15));
-
+                drive.setDefaultCommand(
+                                DriveCommands.joystickDrive(
+                                                drive,
+                                                () -> -driverController.getLeftY() * 0.3,
+                                                () -> -driverController.getLeftX() * 0.3,
+                                                () -> -driverController.getRightX() * 0.25));
+                                                
+                
+                
                 // driverController.povRight().onTrue(getPathCommand());
                 // driverController.povLeft().onTrue(Commands.runOnce(() ->
                 // moduleFL.setTurnPosition(new Rotation2d(Math.PI))));
@@ -270,11 +255,11 @@ public class RobotContainer {
                 driverController.PovUp().onTrue(drive.resetGyroCommand());
 
 
-                // driverController.a().whileFalse(DriveCommands.joystickDriveRobotRelative(
-                //         drive,
-                //         () -> -driverController.getLeftY() * 0.4,
-                //         () -> -driverController.getLeftX() * 0.4,
-                //         () -> -driverController.getRightX() * 0.4));
+                driverController.a().whileFalse(DriveCommands.joystickDriveRobotRelative(
+                        drive,
+                        () -> -driverController.getLeftY() * 0.3,
+                        () -> -driverController.getLeftX() * 0.3,
+                        () -> -driverController.getRightX() * 0.25));
 
                 // operator controller buttens
 
