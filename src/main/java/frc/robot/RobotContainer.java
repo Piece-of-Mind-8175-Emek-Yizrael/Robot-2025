@@ -210,7 +210,7 @@ public class RobotContainer {
          * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing
          * it to a {@link
          * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-         */
+         *
         private void configureButtonBindings() {
 
                 // driver controller buttens
@@ -219,14 +219,16 @@ public class RobotContainer {
                 drive.setDefaultCommand(
                                 DriveCommands.joystickDrive(
                                                 drive,
-                                                () -> -driverController.getLeftY() * 0.25,
-                                                () -> -driverController.getLeftX() * 0.25,
-                                                () -> -driverController.getRightX() * 0.25));
+                                                () -> -driverController.getLeftY() * 0.4,
+                                                () -> -driverController.getLeftX() * 0.4,
+                                                () -> -driverController.getRightX() * 0.4));
+
+                driverController.b().whileTrue(DriveCommands.joystickDrive(drive, () -> -driverController.getLeftY() * 0.2, () -> -driverController.getLeftX() * 0.2, () -> -driverController.getRightX() * 0.2));                                
 
                 // driverController.povRight().onTrue(getPathCommand());
                 // driverController.povLeft().onTrue(Commands.runOnce(() ->
                 // moduleFL.setTurnPosition(new Rotation2d(Math.PI))));
-                // driverController.povRight().onTrue(
+                // driverController.povRight().onTrue( 
                 // Commands.runOnce(() -> moduleFL.setTurnPosition(new Rotation2d(1.5 *
                 // Math.PI))));
                 // driverController.povUp().whileTrue(Commands.run(() ->
@@ -265,8 +267,8 @@ public class RobotContainer {
                 // operator controller buttens
 
                 //algae arm open & close
-                operatorController.start().onTrue(AlgaeOuttakeCommands.openArm(algaeOuttake));
-                operatorController.back().onTrue(AlgaeOuttakeCommands.closeArm(algaeOuttake));
+                operatorController.RB().onTrue(AlgaeOuttakeCommands.openArm(algaeOuttake));
+                operatorController.LB().onTrue(AlgaeOuttakeCommands.closeArm(algaeOuttake));
                 
                 //outake algae
                 operatorController.a()
