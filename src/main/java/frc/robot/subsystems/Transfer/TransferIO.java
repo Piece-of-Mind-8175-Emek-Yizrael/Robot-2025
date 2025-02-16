@@ -29,4 +29,6 @@ public interface TransferIO {
   public default void setGoal(double goal) {}
 
   public default BooleanSupplier atGoal() { return () -> false; }
+
+  public default void setVoltageWithPid(double voltage) {}
 }

@@ -291,6 +291,10 @@ public class RobotContainer {
                 
                 //rutern the coral back
                 operatorController.PovRight().whileTrue(TransferCommands.takeCoralIn(transfer));
+
+                //intake coral with pid
+
+                operatorController.PovLeft().onTrue(TransferCommands.intakeCoralWithPid(transfer, 0.3));
                 
                 //manual elevator control
                 operatorController.leftTrigger().whileTrue(ElevatorCommands.closeElevatorManual(elevatorSubsystem));

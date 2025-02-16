@@ -102,4 +102,9 @@ public class TransferIOReal implements TransferIO{
             pidController.setConstraints(new TrapezoidProfile.Constraints(pidConstants.getMaxVelocity(), pidConstants.getMaxAcceleration()));
         }
 
+        @Override
+        public void setVoltageWithPid(double voltage){
+            motor.setVoltage(pidController.calculate(voltage));
+        }
+
 }
