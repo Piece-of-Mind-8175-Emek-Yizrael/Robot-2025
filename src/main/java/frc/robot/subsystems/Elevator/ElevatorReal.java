@@ -57,7 +57,6 @@ public class ElevatorReal implements ElevatorIO {
 
         encoder.setPosition(0);
 
-        // TODO finish configure
     }
 
     @Override
