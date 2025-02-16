@@ -93,7 +93,6 @@ public class RobotContainer {
 
         private ElevatorSubsystem elevatorSubsystem;
 
-        private EventLoop eventLoop = new EventLoop();  
 
         /**
          * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -265,40 +264,44 @@ public class RobotContainer {
 
                 // operator controller buttens
 
+                //algae arm open & close
                 operatorController.start().onTrue(AlgaeOuttakeCommands.openArm(algaeOuttake));
                 operatorController.back().onTrue(AlgaeOuttakeCommands.closeArm(algaeOuttake));
+                
+                //outake algae
+                operatorController.a()
+                .whileTrue(ElevatorCommands.goToPosition(elevatorSubsystem, 11.5).withTimeout(0.8)
+                .andThen(DriveCommands.driveBackSlow(drive)
+                .raceWith(ElevatorCommands.goToPositionWithoutPid(
+                        elevatorSubsystem,
+                        ALGAE_OUTTAKE_ELEVATOR_POSITION))));
+                        
+                //L2, L3, close with pid
+                operatorController.y().onTrue(
+                        ElevatorCommands.goToPosition(elevatorSubsystem, ElevatorConstants.L3_POSITION));
+                operatorController.x().onTrue
+                (ElevatorCommands.closeElevator(elevatorSubsystem));
+                operatorController.b().onTrue(
+                        ElevatorCommands.goToPosition(elevatorSubsystem, ElevatorConstants.L2_POSITION));
+                
+                //intake coral
+                operatorController.PovDown().whileTrue(TransferCommands.intakeCoral(transfer));
+                
+                operatorController.PovUp().whileTrue(TransferCommands.coralOutake(transfer));
+                
+                //rutern the coral back
+                operatorController.PovRight().whileTrue(TransferCommands.takeCoralIn(transfer));
+                
+                //manual elevator control
+                operatorController.leftTrigger().whileTrue(ElevatorCommands.closeElevatorManual(elevatorSubsystem));
+                
+                operatorController.rightTrigger().whileTrue(ElevatorCommands.openElevatorManual(elevatorSubsystem));
 
+                
                 // driverController.leftTrigger().onTrue(ElevatorCommands.setSpeed(elevatorSubsystem,
                 // 0.2));
                 // driverController.rightTrigger().onTrue(ElevatorCommands.stopElevator(elevatorSubsystem));
-
-                
-
-                operatorController.a()
-                                .whileTrue(ElevatorCommands.goToPosition(elevatorSubsystem, 11.5).withTimeout(0.8)
-                                                .andThen(DriveCommands.driveBackSlow(drive)
-                                                                .raceWith(ElevatorCommands.goToPositionWithoutPid(
-                                                                                elevatorSubsystem,
-                                                                                ALGAE_OUTTAKE_ELEVATOR_POSITION))));
-
-
-                operatorController.y().onTrue(
-                                ElevatorCommands.goToPosition(elevatorSubsystem, ElevatorConstants.L3_POSITION));
-                operatorController.x().onTrue
-                                (ElevatorCommands.closeElevator(elevatorSubsystem));
-                operatorController.b().onTrue(
-                                ElevatorCommands.goToPosition(elevatorSubsystem, ElevatorConstants.L2_POSITION));
-                
-                operatorController.PovDown().whileTrue(TransferCommands.intakeCoral(transfer));
-
-                operatorController.PovRight().whileTrue(TransferCommands.takeCoralIn(transfer));
-                
-                operatorController.PovUp().whileTrue(TransferCommands.coralOutake(transfer));
-
-                operatorController.leftTrigger().whileTrue(ElevatorCommands.closeElevatorManual(elevatorSubsystem));
-
-                operatorController.rightTrigger().whileTrue(ElevatorCommands.openElevatorManual(elevatorSubsystem));
-                
+                                        
                 // driverController.y().or(driverController.x())
                 //                 .onFalse(ElevatorCommands.closeElevator(elevatorSubsystem));
                 // driverController.leftTrigger().whileTrue(TransferCommands.coralOutake(transfer));       
