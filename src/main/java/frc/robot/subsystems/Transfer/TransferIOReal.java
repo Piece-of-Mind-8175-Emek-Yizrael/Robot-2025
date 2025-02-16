@@ -94,6 +94,14 @@ public class TransferIOReal implements TransferIO{
             return transferSensor.get();
         }
 
+        public double getPosition(){
+            return encoder.getPosition();
+        }
+
+        public void resetPID(){
+            pidController.reset(encoder.getPosition(), encoder.getVelocity());
+        }
+
         @Override
         public void setPidValues(){
             pidController.setP(pidConstants.getKp());
