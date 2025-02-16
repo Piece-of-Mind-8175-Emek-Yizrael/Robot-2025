@@ -89,6 +89,7 @@ public class RobotContainer {
 
         private ElevatorSubsystem elevatorSubsystem;
 
+        private boolean isRelative;
 
         /**
          * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -101,6 +102,7 @@ public class RobotContainer {
                                 elevatorSubsystem = new ElevatorSubsystem(new ElevatorReal(() -> false));
                                 transfer = new Transfer(new TransferIOReal());
 
+                                isRelative = true;
                                 drive = new Drive(
                                                 new GyroIOPigeon(),
                                                 new ModuleIOPOM(0),
@@ -293,9 +295,17 @@ public class RobotContainer {
                 operatorController.PovLeft().onTrue(TransferCommands.intakeCoralWithPid(transfer, 0.3));
                 
                 //manual elevator control
-                operatorController.leftTrigger().whileTrue(ElevatorCommands.closeElevatorManual(elevatorSubsystem));
+                //fast
+                operatorController.leftTrigger().whileTrue(ElevatorCommands.closeElevatorManual(elevatorSubsystem, -2.5));
                 
-                operatorController.rightTrigger().whileTrue(ElevatorCommands.openElevatorManual(elevatorSubsystem));
+                operatorController.rightTrigger().whileTrue(ElevatorCommands.openElevatorManual(elevatorSubsystem, 2));
+
+                //slow
+                operatorController.leftYUp().whileTrue(ElevatorCommands.closeElevatorManual(elevatorSubsystem, -1));
+                
+                operatorController.leftYUp().whileTrue(ElevatorCommands.openElevatorManual(elevatorSubsystem, 2));
+
+
 
                 
                 // driverController.leftTrigger().onTrue(ElevatorCommands.setSpeed(elevatorSubsystem,
@@ -362,6 +372,22 @@ public class RobotContainer {
                         return Commands.print("Exception creating path");
                 }
         }
+
+        public Command isRelativeCommand(){
+                isRelative = !isRelative;
+                return Commands.none();
+        }
+
+        public void slowSpeedCommand(){
+                drive.setDefaultCommand(
+                                        DriveCommands.joystickDrive(
+                                                        drive,
+                                                        () -> -driverController.getLeftY() * 0.25,
+                                                        () -> -driverController.getLeftX() * 0.25,
+                                                        () -> -driverController.getRightX() * 0.25));
+        }
+
+        
 
 }
 
