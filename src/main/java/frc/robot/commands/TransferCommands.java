@@ -38,4 +38,5 @@ public class TransferCommands{
     public static Command intakeCoralWithPid(Transfer transfer, double velocity){
         return Commands.run(() -> transfer.getIO().setVoltageWithPid(velocity), transfer).until(transfer.getIO().atGoal());
     }
+    
 }
