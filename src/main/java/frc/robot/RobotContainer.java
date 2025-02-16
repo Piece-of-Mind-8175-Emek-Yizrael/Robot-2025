@@ -13,8 +13,7 @@
 
 package frc.robot;
 
-import static frc.robot.subsystems.AlgaeOuttake.AlgaeOuttakeConstants.ALGAE_OUTTAKE_ELEVATOR_POSITION;
-import static frc.robot.subsystems.AlgaeOuttake.AlgaeOuttakeConstants.ALGAE_HIGH_OUTTAKE_ELEVATOR_POSITION;;
+import static frc.robot.subsystems.AlgaeOuttake.AlgaeOuttakeConstants.*;
 
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
@@ -26,11 +25,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.POM_lib.Joysticks.PomXboxController;
 import frc.robot.commands.AlgaeOuttakeCommands;
@@ -222,8 +218,7 @@ public class RobotContainer {
                                                 () -> -driverController.getLeftY() * 0.4,
                                                 () -> -driverController.getLeftX() * 0.4,
                                                 () -> -driverController.getRightX() * 0.4));
-
-                driverController.b().whileTrue(DriveCommands.joystickDrive(drive, () -> -driverController.getLeftY() * 0.2, () -> -driverController.getLeftX() * 0.2, () -> -driverController.getRightX() * 0.2));                                
+                                                
 
                 // driverController.povRight().onTrue(getPathCommand());
                 // driverController.povLeft().onTrue(Commands.runOnce(() ->
@@ -263,6 +258,11 @@ public class RobotContainer {
                 driverController.PovUp().onTrue(drive.resetGyroCommand());
 
 
+                driverController.a().whileFalse(DriveCommands.joystickDriveRobotRelative(
+                        drive,
+                        () -> -driverController.getLeftY() * 0.4,
+                        () -> -driverController.getLeftX() * 0.4,
+                        () -> -driverController.getRightX() * 0.4));
 
                 // operator controller buttens
 

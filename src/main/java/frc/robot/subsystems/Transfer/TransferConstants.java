@@ -8,7 +8,7 @@ public final class TransferConstants {
     public static final double CORAL_INTAKE_TIME = 0;
 
     //TODO tune the pid
-    public static final double KP = 0;
+    public static final double KP = 0.2;
     public static final double KI = 0;
     public static final double KD = 0;
     public static final double MAX_ACCELERATION = 0;
