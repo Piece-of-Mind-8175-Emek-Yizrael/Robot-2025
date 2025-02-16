@@ -310,9 +310,17 @@ public class RobotContainer {
                 operatorController.PovLeft().onTrue(TransferCommands.intakeCoralWithPid(transfer, 0.3));
                 
                 //manual elevator control
-                operatorController.leftTrigger().whileTrue(ElevatorCommands.closeElevatorManual(elevatorSubsystem));
+                //fast
+                operatorController.leftTrigger().whileTrue(ElevatorCommands.closeElevatorManual(elevatorSubsystem, -2.5));
                 
-                operatorController.rightTrigger().whileTrue(ElevatorCommands.openElevatorManual(elevatorSubsystem));
+                operatorController.rightTrigger().whileTrue(ElevatorCommands.openElevatorManual(elevatorSubsystem, 2));
+
+                //slow
+                operatorController.leftYUp().whileTrue(ElevatorCommands.closeElevatorManual(elevatorSubsystem, -1));
+                
+                operatorController.leftYUp().whileTrue(ElevatorCommands.openElevatorManual(elevatorSubsystem, 2));
+
+
 
                 
                 // driverController.leftTrigger().onTrue(ElevatorCommands.setSpeed(elevatorSubsystem,
