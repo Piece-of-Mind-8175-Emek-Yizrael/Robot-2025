@@ -89,6 +89,7 @@ public class RobotContainer {
 
         private ElevatorSubsystem elevatorSubsystem;
 
+        private boolean isRelative;
 
         /**
          * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -101,6 +102,7 @@ public class RobotContainer {
                                 elevatorSubsystem = new ElevatorSubsystem(new ElevatorReal(() -> false));
                                 transfer = new Transfer(new TransferIOReal());
 
+                                isRelative = true;
                                 drive = new Drive(
                                                 new GyroIOPigeon(),
                                                 new ModuleIOPOM(0),
@@ -199,26 +201,35 @@ public class RobotContainer {
                 configureButtonBindings();
         }
 
-        /**
-         * Use this method to define your button->command mappings. Buttons can be
-         * created by
-         * instantiating a {@link GenericHID} or one of its subclasses ({@link
-         * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing
-         * it to a {@link
-         * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-         *
         private void configureButtonBindings() {
 
                 // driver controller buttens
 
                 // Default command, normal field-relative drive
-                drive.setDefaultCommand(
-                                DriveCommands.joystickDrive(
-                                                drive,
-                                                () -> -driverController.getLeftY() * 0.4,
-                                                () -> -driverController.getLeftX() * 0.4,
-                                                () -> -driverController.getRightX() * 0.4));
-                                                
+                if(isRelative){
+                        drive.setDefaultCommand(
+                                        DriveCommands.joystickDrive(
+                                                        drive,
+                                                        () -> -driverController.getLeftY() * 0.25,
+                                                        () -> -driverController.getLeftX() * 0.25,
+                                                        () -> -driverController.getRightX() * 0.25));
+                                                }
+                else{
+                        drive.setDefaultCommand(
+                                        DriveCommands.joystickDriveRobotRelative(
+                                                        drive,
+                                                        () -> -driverController.getLeftY() * 0.25,
+                                                        () -> -driverController.getLeftX() * 0.25,
+                                                        () -> -driverController.getRightX() * 0.25));
+
+                }
+                driverController.a().onTrue(isRelativeCommand());
+
+                driverController.leftTrigger().whileTrue(DriveCommands.joystickDrive(
+                        drive,
+                        () -> -driverController.getLeftY() * 0.15,
+                        () -> -driverController.getLeftX() * 0.15,
+                        () -> -driverController.getRightX() * 0.15));
 
                 // driverController.povRight().onTrue(getPathCommand());
                 // driverController.povLeft().onTrue(Commands.runOnce(() ->
@@ -258,11 +269,11 @@ public class RobotContainer {
                 driverController.PovUp().onTrue(drive.resetGyroCommand());
 
 
-                driverController.a().whileFalse(DriveCommands.joystickDriveRobotRelative(
-                        drive,
-                        () -> -driverController.getLeftY() * 0.4,
-                        () -> -driverController.getLeftX() * 0.4,
-                        () -> -driverController.getRightX() * 0.4));
+                // driverController.a().whileFalse(DriveCommands.joystickDriveRobotRelative(
+                //         drive,
+                //         () -> -driverController.getLeftY() * 0.4,
+                //         () -> -driverController.getLeftX() * 0.4,
+                //         () -> -driverController.getRightX() * 0.4));
 
                 // operator controller buttens
 
@@ -368,6 +379,22 @@ public class RobotContainer {
                         return Commands.print("Exception creating path");
                 }
         }
+
+        public Command isRelativeCommand(){
+                isRelative = !isRelative;
+                return Commands.none();
+        }
+
+        public void slowSpeedCommand(){
+                drive.setDefaultCommand(
+                                        DriveCommands.joystickDrive(
+                                                        drive,
+                                                        () -> -driverController.getLeftY() * 0.25,
+                                                        () -> -driverController.getLeftX() * 0.25,
+                                                        () -> -driverController.getRightX() * 0.25));
+        }
+
+        
 
 }
 
