@@ -14,6 +14,7 @@
 package frc.robot;
 
 import static frc.robot.subsystems.AlgaeOuttake.AlgaeOuttakeConstants.*;
+import static frc.robot.subsystems.Elevator.ElevatorConstants.*;
 
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
@@ -311,14 +312,14 @@ public class RobotContainer {
                 
                 //manual elevator control
                 //fast
-                operatorController.leftTrigger().whileTrue(ElevatorCommands.closeElevatorManual(elevatorSubsystem, -2));
+                operatorController.leftTrigger().whileTrue(ElevatorCommands.closeElevatorManual(elevatorSubsystem, MANUAL_FAST_CLOSE));
                 
-                operatorController.rightTrigger().whileTrue(ElevatorCommands.openElevatorManual(elevatorSubsystem, 2.5));
+                operatorController.rightTrigger().whileTrue(ElevatorCommands.openElevatorManual(elevatorSubsystem, MANUAL_FAST_OPEN));
 
-                //slow not working
-                operatorController.leftYUp().whileTrue(ElevatorCommands.closeElevatorManual(elevatorSubsystem, -1));
+                //slow FIXME not working
+                operatorController.leftYUp().whileTrue(ElevatorCommands.closeElevatorManual(elevatorSubsystem, MANUAL_SLOW_CLOSE));
                 
-                operatorController.leftYUp().whileTrue(ElevatorCommands.openElevatorManual(elevatorSubsystem, 2));
+                operatorController.leftYUp().whileTrue(ElevatorCommands.openElevatorManual(elevatorSubsystem, MANUAL_SLOW_OPEN));
 
 
 
