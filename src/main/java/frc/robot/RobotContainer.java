@@ -199,14 +199,7 @@ public class RobotContainer {
                 configureButtonBindings();
         }
 
-        /**
-         * Use this method to define your button->command mappings. Buttons can be
-         * created by
-         * instantiating a {@link GenericHID} or one of its subclasses ({@link
-         * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing
-         * it to a {@link
-         * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-         *
+        
         private void configureButtonBindings() {
 
                 // driver controller buttens
@@ -215,11 +208,12 @@ public class RobotContainer {
                 drive.setDefaultCommand(
                                 DriveCommands.joystickDrive(
                                                 drive,
-                                                () -> -driverController.getLeftY() * 0.4,
-                                                () -> -driverController.getLeftX() * 0.4,
-                                                () -> -driverController.getRightX() * 0.4));
+                                                () -> -driverController.getLeftY() * 0.3,
+                                                () -> -driverController.getLeftX() * 0.3,
+                                                () -> -driverController.getRightX() * 0.25));
                                                 
-
+                
+                
                 // driverController.povRight().onTrue(getPathCommand());
                 // driverController.povLeft().onTrue(Commands.runOnce(() ->
                 // moduleFL.setTurnPosition(new Rotation2d(Math.PI))));
@@ -260,9 +254,9 @@ public class RobotContainer {
 
                 driverController.a().whileFalse(DriveCommands.joystickDriveRobotRelative(
                         drive,
-                        () -> -driverController.getLeftY() * 0.4,
-                        () -> -driverController.getLeftX() * 0.4,
-                        () -> -driverController.getRightX() * 0.4));
+                        () -> -driverController.getLeftY() * 0.3,
+                        () -> -driverController.getLeftX() * 0.3,
+                        () -> -driverController.getRightX() * 0.25));
 
                 // operator controller buttens
 

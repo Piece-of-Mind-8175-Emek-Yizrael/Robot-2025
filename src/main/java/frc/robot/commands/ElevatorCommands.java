@@ -40,7 +40,7 @@ public class ElevatorCommands {
     }
 
     public static Command closeElevatorManual(ElevatorSubsystem elevator){
-        return Commands.run(() -> elevator.getIO().setVoltage(-1) , elevator);
+        return Commands.run(() -> elevator.getIO().setVoltage(-2.5) , elevator);
     }
 
     public static Command openElevatorManual(ElevatorSubsystem elevator){
