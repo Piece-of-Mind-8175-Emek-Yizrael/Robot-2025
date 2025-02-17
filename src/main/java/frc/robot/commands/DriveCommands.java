@@ -34,6 +34,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import static frc.robot.subsystems.drive.DriveConstants.ALGAE_OUTTAKE_DRIVE_BACK_SPEED;
@@ -123,9 +124,10 @@ public class DriveCommands {
       Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier omegaSupplier) {
     return Commands.run(
         () -> {
+
+         
           // Get linear velocity
-          Translation2d linearVelocity = getLinearVelocityFromJoysticks(xSupplier.getAsDouble(),
-              ySupplier.getAsDouble());
+          Translation2d linearVelocity = getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
 
           // Apply rotation deadband
           double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);

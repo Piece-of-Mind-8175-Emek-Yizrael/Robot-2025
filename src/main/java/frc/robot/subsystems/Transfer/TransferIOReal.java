@@ -58,7 +58,8 @@ public class TransferIOReal implements TransferIO{
             inputs.transferSensorInput = transferSensor.get();
             setPidValues();
             resetEncoder();
-            Logger.recordOutput("Transfer/Spark Switch",motor.getForwardLimitSwitch().isPressed());
+            Logger.recordOutput("Transfer/Spark FW Switch",motor.getForwardLimitSwitch().isPressed());
+            Logger.recordOutput("Transfer/Spark RV Switch",motor.getReverseLimitSwitch().isPressed());
         }
 
         @Override
