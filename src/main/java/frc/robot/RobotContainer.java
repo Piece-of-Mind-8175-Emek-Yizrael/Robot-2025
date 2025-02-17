@@ -13,6 +13,13 @@
 
 package frc.robot;
 
+import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathPlannerPath;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
@@ -24,6 +31,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.POM_lib.Joysticks.PomXboxController;
 import frc.robot.commands.DriveCommands;
+import frc.robot.subsystems.Vision.VisionIOReal;
+import frc.robot.subsystems.Vision.VisionSubsystem;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.FieldConstants;
 import frc.robot.subsystems.drive.GyroIO;
@@ -32,14 +41,6 @@ import frc.robot.subsystems.drive.GyroIOSim;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOPOM;
 import frc.robot.subsystems.drive.ModuleIOSim;
-
-import org.ironmaple.simulation.SimulatedArena;
-import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
-import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
-
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.PathPlannerPath;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -52,7 +53,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
  */
 public class RobotContainer {
         // Subsystems
-        private final Drive drive;
+        private Drive drive;
 
         // Controller
         private final PomXboxController driverController = new PomXboxController(0);
@@ -61,6 +62,8 @@ public class RobotContainer {
         private final LoggedDashboardChooser<Command> autoChooser;
 
         private SwerveDriveSimulation driveSimulation = null;
+
+        private VisionSubsystem vision;
 
         /**
          * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -75,21 +78,33 @@ public class RobotContainer {
                                                 new ModuleIOPOM(1),
                                                 new ModuleIOPOM(2),
                                                 new ModuleIOPOM(3));
-                                break;
+                                VisionIOReal[] cameras = {
+                                                new VisionIOReal("Left Front Camera",
+                                                                Constants.VisionConstants.l_camera_transform),
+                                                new VisionIOReal("Right Front Camera",
+                                                                Constants.VisionConstants.r_camera_transform), };
+                                vision = new VisionSubsystem(drive::addVisionMeasurement, cameras);
 
                         case SIM:
                                 // Sim robot, instantiate physics sim IO implementations
 
-                                driveSimulation = new SwerveDriveSimulation(Drive.maplesimConfig,
-                                                new Pose2d(3, 3, new Rotation2d()));
-                                SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
+                                // driveSimulation = new SwerveDriveSimulation(Drive.maplesimConfig,
+                                // new Pose2d(3, 3, new Rotation2d()));
+                                // SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
 
-                                drive = new Drive(
-                                                new GyroIOSim(this.driveSimulation.getGyroSimulation()),
-                                                new ModuleIOSim(this.driveSimulation.getModules()[0]),
-                                                new ModuleIOSim(this.driveSimulation.getModules()[1]),
-                                                new ModuleIOSim(this.driveSimulation.getModules()[2]),
-                                                new ModuleIOSim(this.driveSimulation.getModules()[3]));
+                                // drive = new Drive(
+                                // new GyroIOSim(this.driveSimulation.getGyroSimulation()),
+                                // new ModuleIOSim(this.driveSimulation.getModules()[0]),
+                                // new ModuleIOSim(this.driveSimulation.getModules()[1]),
+                                // new ModuleIOSim(this.driveSimulation.getModules()[2]),
+                                // new ModuleIOSim(this.driveSimulation.getModules()[3]));
+
+                                // vision = new VisionSubsystem(drive::addVisionMeasurement,
+                                // new VisionIOSim("camera_0",
+                                // new Transform3d(0.2, 0.0, 0.2,
+                                // new Rotation3d(0.0, 0.0, Math.PI)),
+                                // driveSimulation::getSimulatedDriveTrainPose));
+
                                 break;
 
                         default:
@@ -194,27 +209,33 @@ public class RobotContainer {
                 driverController
                                 .a()
                                 .whileTrue(
-                                                DriveCommands.joystickDriveAtAngle(
+                                                DriveCommands.joystickDriveFixedAngles(
                                                                 drive,
-                                                                () -> -driverController.getLeftY(),
-                                                                () -> -driverController.getLeftX(),
-                                                                () -> new Rotation2d()));
+                                                                () -> driverController.getLeftY(),
+                                                                () -> driverController.getLeftX(),
+                                                                driverController.PovUp(),
+                                                                driverController.PovDown(),
+                                                                driverController.PovLeft(),
+                                                                driverController.PovRight()));
 
                 // Switch to X pattern when X button is pressed
                 driverController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
-                // Reset gyro to 0° when Y button is pressed
+                // Reset gyro to 0° when Y button is pressed
                 driverController.y().onTrue(drive.resetGyroCommand());
+
         }
 
         public void displaSimFieldToAdvantageScope() {
                 if (Constants.currentMode != Constants.Mode.SIM)
                         return;
 
-                Logger.recordOutput(
-                                "FieldSimulation/RobotPosition", driveSimulation.getSimulatedDriveTrainPose());
-                Logger.recordOutput(
-                                "FieldSimulation/Notes", SimulatedArena.getInstance().getGamePiecesArrayByType("Note"));
+                // Logger.recordOutput(
+                // "FieldSimulation/RobotPosition",
+                // driveSimulation.getSimulatedDriveTrainPose());
+                // Logger.recordOutput(
+                // "FieldSimulation/Notes",
+                // SimulatedArena.getInstance().getGamePiecesArrayByType("Note"));
         }
 
         /**
@@ -237,8 +258,9 @@ public class RobotContainer {
                         return (AutoBuilder.followPath(path).andThen(Commands.print("After command")))
                                         .beforeStarting(() -> drive.setPose(path.getStartingDifferentialPose()))
                                         .beforeStarting(Commands.print("Starts following path"));
+
                 } catch (Exception e) {
-                        DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
+                        // DriverStataion.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
                         return Commands.print("Exception creating path");
                 }
         }

@@ -50,6 +50,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 import frc.robot.subsystems.drive.FieldConstants;
 
 public class DriveCommands {
@@ -256,10 +263,10 @@ public class DriveCommands {
       Drive drive,
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
-      Supplier<Boolean> front,
-      Supplier<Boolean> back,
-      Supplier<Boolean> left,
-      Supplier<Boolean> right) {
+      BooleanSupplier front,
+      BooleanSupplier back,
+      BooleanSupplier left,
+      BooleanSupplier right) {
 
     // Create PID controller
     ProfiledPIDController angleController = new ProfiledPIDController(
@@ -274,13 +281,13 @@ public class DriveCommands {
     // Construct command
     return Commands.run(
         () -> { // TODO: verify angles, maybe need to rotate half pi
-          if (front.get())
+          if (front.getAsBoolean())
             rot[0] = new Rotation2d(0.0);
-          else if (back.get())
+          else if (back.getAsBoolean())
             rot[0] = new Rotation2d(Math.PI);
-          else if (left.get())
+          else if (left.getAsBoolean())
             rot[0] = new Rotation2d(Math.PI / 2.0);
-          else if (right.get())
+          else if (right.getAsBoolean())
             rot[0] = new Rotation2d(-Math.PI / 2.0);
           // Get linear velocity
           Translation2d linearVelocity = getLinearVelocityFromJoysticks(xSupplier.getAsDouble(),
