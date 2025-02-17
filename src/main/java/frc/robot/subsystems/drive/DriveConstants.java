@@ -21,7 +21,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 
 public class DriveConstants {
-        public static final double maxSpeedMetersPerSec = 4;
+        public static final double maxSpeedMetersPerSec = 6;
         public static final double maxAccMetersPerSecSquared = 4;
         public static final double maxSpeedRadiansPerSec = 4;
         public static final double maxAccRadiansPerSecSquared = 4;
@@ -83,7 +83,7 @@ public class DriveConstants {
         public static final double driveKp = 0.1;
         public static final double driveKd = 0.0;
         public static final double driveKs = 0.25;
-        public static final double driveKv = 1.2;
+        public static final double driveKv = .4;
         public static final double driveSimP = 0.05;
         public static final double driveSimD = 0.0;
         public static final double driveSimKs = 0.0;

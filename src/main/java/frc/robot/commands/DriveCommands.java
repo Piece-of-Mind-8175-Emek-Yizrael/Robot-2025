@@ -537,9 +537,7 @@ public class DriveCommands {
           new GoalEndState(0, destination.getRotation()));
       path.preventFlipping = true;
       Logger.recordOutput("current reef destination", destination);
-      Commands.run(() -> drive.runVelocity(new ChassisSpeeds(0.2, 0, 0), true)).withTimeout(0.15)
-          .andThen(AutoBuilder.followPath(path))
-          .schedule();
+      AutoBuilder.followPath(path).schedule();
     }
 
     @Override
