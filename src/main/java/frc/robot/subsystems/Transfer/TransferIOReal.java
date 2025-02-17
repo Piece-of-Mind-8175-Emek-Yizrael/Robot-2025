@@ -20,7 +20,9 @@ import static frc.robot.subsystems.Transfer.TransferConstants.TRANSFER_MOTOR_ID;
 import static frc.robot.subsystems.Transfer.TransferConstants.TRANSFER_SENSOR_CHANNEL;
 import static frc.robot.subsystems.drive.DriveConstants.pigeonCanId;
 
-import java.util.function.BooleanSupplier;;
+import java.util.function.BooleanSupplier;
+
+import org.littletonrobotics.junction.Logger;;
 
 
 
@@ -56,6 +58,7 @@ public class TransferIOReal implements TransferIO{
             inputs.transferSensorInput = transferSensor.get();
             setPidValues();
             resetEncoder();
+            Logger.recordOutput("Transfer/Spark Switch",motor.getForwardLimitSwitch().isPressed());
         }
 
         @Override
