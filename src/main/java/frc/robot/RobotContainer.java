@@ -264,8 +264,8 @@ public class RobotContainer {
                 // operator controller buttens
 
                 //algae arm open & close
-                operatorController.RB().onTrue(AlgaeOuttakeCommands.openArm(algaeOuttake));
-                operatorController.LB().onTrue(AlgaeOuttakeCommands.closeArm(algaeOuttake));
+                operatorController.PovLeft().onTrue(AlgaeOuttakeCommands.openArm(algaeOuttake));
+                operatorController.PovRight().onTrue(AlgaeOuttakeCommands.closeArm(algaeOuttake));
                 
                 //outake algae
                 operatorController.a()
@@ -283,17 +283,12 @@ public class RobotContainer {
                 operatorController.b().onTrue(
                         ElevatorCommands.goToPosition(elevatorSubsystem, ElevatorConstants.L2_POSITION));
                 
-                //intake coral
-                operatorController.PovDown().whileTrue(TransferCommands.intakeCoral(transfer));
-                
-                operatorController.PovUp().whileTrue(TransferCommands.coralOutake(transfer));
+                //intake coral                
+                operatorController.RB().whileTrue(TransferCommands.coralOutake(transfer));
                 
                 //rutern the coral back
-                operatorController.PovRight().whileTrue(TransferCommands.takeCoralIn(transfer));
+                operatorController.LB().whileTrue(TransferCommands.takeCoralIn(transfer));
 
-                //intake coral with pid
-
-                operatorController.PovLeft().onTrue(TransferCommands.intakeCoralWithPid(transfer, 0.3));
                 
                 //manual elevator control
                 //fast
@@ -302,9 +297,10 @@ public class RobotContainer {
                 operatorController.rightTrigger().whileTrue(ElevatorCommands.openElevatorManual(elevatorSubsystem, MANUAL_FAST_OPEN));
 
                 //slow FIXME not working
-                operatorController.leftYUp().whileTrue(ElevatorCommands.closeElevatorManual(elevatorSubsystem, MANUAL_SLOW_CLOSE));
+                operatorController.PovUp().whileTrue(ElevatorCommands.openElevatorManual(elevatorSubsystem, MANUAL_SLOW_OPEN));
+
+                operatorController.PovDown().whileTrue(ElevatorCommands.closeElevatorManual(elevatorSubsystem, MANUAL_SLOW_CLOSE));
                 
-                operatorController.leftYUp().whileTrue(ElevatorCommands.openElevatorManual(elevatorSubsystem, MANUAL_SLOW_OPEN));
 
 
 
