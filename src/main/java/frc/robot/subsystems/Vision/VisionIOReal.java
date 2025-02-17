@@ -9,6 +9,8 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.PhotonCamera;
 
 /** IO implementation for real PhotonVision hardware. */
@@ -40,6 +42,7 @@ public class VisionIOReal implements VisionIO {
         inputs.latestTargetObservation = new TargetObservation(
             Rotation2d.fromDegrees(result.getBestTarget().getYaw()),
             Rotation2d.fromDegrees(result.getBestTarget().getPitch()));
+        Logger.recordOutput("tag rotation", result.getBestTarget().getBestCameraToTarget().getRotation().getAngle());
       } else {
         inputs.latestTargetObservation = new TargetObservation(new Rotation2d(), new Rotation2d());
       }
