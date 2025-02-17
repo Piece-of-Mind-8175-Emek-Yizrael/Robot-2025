@@ -6,12 +6,12 @@ import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
 
-public class ElevatorSubsystem extends SubsystemBase {
+public class Elevator extends SubsystemBase {
     private  ElevatorIO elevatorIO;
     public  ElevatorIOInputsAutoLogged elevatorInputs = new ElevatorIOInputsAutoLogged();
 
 
-    public ElevatorSubsystem(ElevatorIO elevatorIO){
+    public Elevator(ElevatorIO elevatorIO){
        this.elevatorIO = elevatorIO;
 
        setDefaultCommand(new RepeatCommand(new ConditionalCommand(this.runOnce(()->elevatorIO.setVoltage(0)), this.runOnce(elevatorIO::resistGravity), elevatorIO::isPressed)).beforeStarting(new PrintCommand("Elevator default command")));

@@ -42,7 +42,7 @@ import frc.robot.subsystems.Elevator.ElevatorConstants;
 import frc.robot.subsystems.Elevator.ElevatorIO;
 import frc.robot.subsystems.Elevator.ElevatorIOSim;
 import frc.robot.subsystems.Elevator.ElevatorReal;
-import frc.robot.subsystems.Elevator.ElevatorSubsystem;
+import frc.robot.subsystems.Elevator.Elevator;
 import frc.robot.subsystems.LEDs.LEDs;
 import frc.robot.subsystems.LEDs.LEDsIO;
 import frc.robot.subsystems.LEDs.LEDsIOReal;
@@ -88,7 +88,7 @@ public class RobotContainer {
 
         private SwerveDriveSimulation driveSimulation;
 
-        private ElevatorSubsystem elevatorSubsystem;
+        private Elevator elevatorSubsystem;
 
         private boolean isRelative;
 
@@ -100,7 +100,7 @@ public class RobotContainer {
                         case REAL:
                                 // Real robot, instantiate hardware IO implementations
                                 algaeOuttake = new AlgaeOuttake(new AlgaeOuttakeIOReal());
-                                elevatorSubsystem = new ElevatorSubsystem(new ElevatorReal(() -> false));
+                                elevatorSubsystem = new Elevator(new ElevatorReal(() -> false));
                                 transfer = new Transfer(new TransferIOReal());
 
                                 isRelative = true;
@@ -123,7 +123,7 @@ public class RobotContainer {
                                 // elevatorSubsystem = new ElevatorSubsystem(new ElevatorIOSim());
                                 // Logger.recordOutput("Intake Pose", new Pose3d());//FIXME temp
 
-                                elevatorSubsystem = new ElevatorSubsystem(new ElevatorIOSim());
+                                elevatorSubsystem = new Elevator(new ElevatorIOSim());
                                 transfer = new Transfer(new TransferIOSim(driveSimulation));
 
                                 algaeOuttake = new AlgaeOuttake(new AlgaeOuttakeIOSim());
@@ -154,7 +154,7 @@ public class RobotContainer {
                                                 },
                                                 new ModuleIO() {
                                                 });
-                                elevatorSubsystem = new ElevatorSubsystem(new ElevatorIO() {
+                                elevatorSubsystem = new Elevator(new ElevatorIO() {
                                 });
 
                                 transfer = new Transfer(new TransferIO() {
