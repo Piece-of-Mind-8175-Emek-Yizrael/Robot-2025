@@ -6,7 +6,6 @@ import org.ironmaple.simulation.IntakeSimulation;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.IntakeSimulation.IntakeSide;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
-import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeCoral;
 
 import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -32,8 +31,8 @@ public class OutakeIOSim implements OutakeIO {
         flywheel.setAngularVelocity(speed);
         if(intakeSimulation.obtainGamePieceFromIntake()){
 
-            ReefscapeCoral coral = new ReefscapeCoral(swerveDriveSimulation.getSimulatedDriveTrainPose());
-            SimulatedArena.getInstance().addGamePiece(coral);
+            // ReefscapeCoral coral = new ReefscapeCoral(swerveDriveSimulation.getSimulatedDriveTrainPose());
+            // SimulatedArena.getInstance().addGamePiece(coral);
         }
     }
 
