@@ -12,11 +12,12 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
+
+import org.littletonrobotics.junction.Logger;
 
 /**
  * Contains various field dimensions and useful reference points. All units are
@@ -89,31 +90,32 @@ public class FieldConstants {
                 static {
                         // Initialize faces
                         centerFaces[0] = new Pose2d(
-                                        Units.inchesToMeters(144.003),
+                                        Units.inchesToMeters(144.003 - 16.04),
                                         Units.inchesToMeters(158.500),
                                         Rotation2d.fromDegrees(0));
                         centerFaces[1] = new Pose2d(
-                                        Units.inchesToMeters(160.373),
-                                        Units.inchesToMeters(186.857),
+                                        Units.inchesToMeters(160.373 - 16.04 * Math.sin(Math.PI / 3)),
+                                        Units.inchesToMeters(186.857 + 16.04 * Math.cos(Math.PI / 3)),
                                         Rotation2d.fromDegrees(60));
                         centerFaces[2] = new Pose2d(
-                                        Units.inchesToMeters(193.116),
-                                        Units.inchesToMeters(186.858),
+                                        Units.inchesToMeters(193.116 + 16.04 * Math.sin(2 * Math.PI / 3)),
+                                        Units.inchesToMeters(186.858 - 16.04 * Math.cos(2 * Math.PI / 3)),
                                         Rotation2d.fromDegrees(120));
                         centerFaces[3] = new Pose2d(
-                                        Units.inchesToMeters(209.489),
+                                        Units.inchesToMeters(209.489 + 16.04),
                                         Units.inchesToMeters(158.502),
                                         Rotation2d.fromDegrees(180));
                         centerFaces[4] = new Pose2d(
-                                        Units.inchesToMeters(193.118),
-                                        Units.inchesToMeters(130.145),
+                                        Units.inchesToMeters(193.118 - 16.04 * Math.sin(-2 * Math.PI / 3)),
+                                        Units.inchesToMeters(130.145 + 16.04 * Math.cos(-2 * Math.PI / 3)),
                                         Rotation2d.fromDegrees(-120));
                         centerFaces[5] = new Pose2d(
-                                        Units.inchesToMeters(160.375),
-                                        Units.inchesToMeters(130.144),
+                                        Units.inchesToMeters(160.375 + 16.04 * Math.sin(-Math.PI / 3)),
+                                        Units.inchesToMeters(130.144 - 16.04 * Math.cos(-Math.PI / 3)),
                                         Rotation2d.fromDegrees(-60));
-
+                        Logger.recordOutput("center face 0", centerFaces);
                         for (int i = 0; i < 6; i++) {
+
                                 leftBranches[i] = new Pose2d(
                                                 centerFaces[i].getX() - branchDist
                                                                 * Math.sin(centerFaces[i].getRotation().getRadians()),
@@ -198,80 +200,80 @@ public class FieldConstants {
                                 branchPositions.add(fillLeft);
                         }
                 }
-        }
 
-        public static class StagingPositions {
-                // Measured from the center of the ice cream
-                public static final Pose2d leftIceCream = new Pose2d(Units.inchesToMeters(48),
-                                Units.inchesToMeters(230.5),
-                                new Rotation2d());
-                public static final Pose2d middleIceCream = new Pose2d(Units.inchesToMeters(48),
-                                Units.inchesToMeters(158.5),
-                                new Rotation2d());
-                public static final Pose2d rightIceCream = new Pose2d(Units.inchesToMeters(48),
-                                Units.inchesToMeters(86.5),
-                                new Rotation2d());
-        }
-
-        public enum ReefHeight {
-                L1(Units.inchesToMeters(25.0), 0),
-                L2(Units.inchesToMeters(31.875), -35),
-                L3(Units.inchesToMeters(47.625), -35),
-                L4(Units.inchesToMeters(72), -90);
-
-                ReefHeight(double height, double pitch) {
-                        this.height = height;
-                        this.pitch = pitch; // in degrees
+                public static class StagingPositions {
+                        // Measured from the center of the ice cream
+                        public static final Pose2d leftIceCream = new Pose2d(Units.inchesToMeters(48),
+                                        Units.inchesToMeters(230.5),
+                                        new Rotation2d());
+                        public static final Pose2d middleIceCream = new Pose2d(Units.inchesToMeters(48),
+                                        Units.inchesToMeters(158.5),
+                                        new Rotation2d());
+                        public static final Pose2d rightIceCream = new Pose2d(Units.inchesToMeters(48),
+                                        Units.inchesToMeters(86.5),
+                                        new Rotation2d());
                 }
 
-                public static ReefHeight fromLevel(int level) {
-                        return Arrays.stream(values())
-                                        .filter(height -> height.ordinal() == level)
-                                        .findFirst()
-                                        .orElse(L4);
-                }
+                public enum ReefHeight {
+                        L1(Units.inchesToMeters(25.0), 0),
+                        L2(Units.inchesToMeters(31.875), -35),
+                        L3(Units.inchesToMeters(47.625), -35),
+                        L4(Units.inchesToMeters(72), -90);
 
-                public final double height;
-                public final double pitch;
-        }
-
-        public static final double aprilTagWidth = Units.inchesToMeters(6.50);
-        public static final int aprilTagCount = 22;
-        public static final AprilTagLayoutType defaultAprilTagType = AprilTagLayoutType.NO_BARGE;
-
-        public enum AprilTagLayoutType {
-                OFFICIAL("2025-official"),
-                NO_BARGE("2025-no-barge"),
-                BLUE_REEF("2025-blue-reef"),
-                RED_REEF("2025-red-reef");
-
-                AprilTagLayoutType(String name) {
-
-                        try {
-                                layout = new AprilTagFieldLayout(
-                                                Path.of(Filesystem.getDeployDirectory().getPath(), "apriltags",
-                                                                name + ".json"));
-                        } catch (IOException e) {
-                                throw new RuntimeException(e);
+                        ReefHeight(double height, double pitch) {
+                                this.height = height;
+                                this.pitch = pitch; // in degrees
                         }
 
-                        if (layout == null) {
-                                layoutString = "";
-                        } else {
+                        public static ReefHeight fromLevel(int level) {
+                                return Arrays.stream(values())
+                                                .filter(height -> height.ordinal() == level)
+                                                .findFirst()
+                                                .orElse(L4);
+                        }
+
+                        public final double height;
+                        public final double pitch;
+                }
+
+                public static final double aprilTagWidth = Units.inchesToMeters(6.50);
+                public static final int aprilTagCount = 22;
+                public static final AprilTagLayoutType defaultAprilTagType = AprilTagLayoutType.NO_BARGE;
+
+                public enum AprilTagLayoutType {
+                        OFFICIAL("2025-official"),
+                        NO_BARGE("2025-no-barge"),
+                        BLUE_REEF("2025-blue-reef"),
+                        RED_REEF("2025-red-reef");
+
+                        AprilTagLayoutType(String name) {
+
                                 try {
-                                        layoutString = new ObjectMapper().writeValueAsString(layout);
-                                } catch (JsonProcessingException e) {
-                                        throw new RuntimeException(
-                                                        "Failed to serialize AprilTag layout JSON " + toString()
-                                                                        + "for Northstar");
+                                        layout = new AprilTagFieldLayout(
+                                                        Path.of(Filesystem.getDeployDirectory().getPath(), "apriltags",
+                                                                        name + ".json"));
+                                } catch (IOException e) {
+                                        throw new RuntimeException(e);
+                                }
+
+                                if (layout == null) {
+                                        layoutString = "";
+                                } else {
+                                        try {
+                                                layoutString = new ObjectMapper().writeValueAsString(layout);
+                                        } catch (JsonProcessingException e) {
+                                                throw new RuntimeException(
+                                                                "Failed to serialize AprilTag layout JSON " + toString()
+                                                                                + "for Northstar");
+                                        }
                                 }
                         }
+
+                        private final AprilTagFieldLayout layout;
+                        private final String layoutString;
                 }
 
-                private final AprilTagFieldLayout layout;
-                private final String layoutString;
-        }
-
-        public record CoralObjective(int branchId, ReefHeight reefLevel) {
+                public record CoralObjective(int branchId, ReefHeight reefLevel) {
+                }
         }
 }
