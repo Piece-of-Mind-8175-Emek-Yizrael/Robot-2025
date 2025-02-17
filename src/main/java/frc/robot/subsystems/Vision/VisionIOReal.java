@@ -9,6 +9,8 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.PhotonCamera;
 
 /** IO implementation for real PhotonVision hardware. */
@@ -47,6 +49,12 @@ public class VisionIOReal implements VisionIO {
       // Add pose observation
       if (result.multitagResult.isPresent()) { // Multitag result
         var multitagResult = result.multitagResult.get();
+        try {
+          Logger.recordOutput(camera.getName() + "Target Yaw", result.getBestTarget().yaw);
+        } catch (Exception e) {
+          Logger.recordOutput(camera.getName() + "Target Yaw", 0);
+          System.out.print("No Tag Was Found: " + e.toString());
+        }
 
         // Calculate robot pose
         Transform3d fieldToCamera = multitagResult.estimatedPose.best;

@@ -42,7 +42,7 @@ public final class Constants {
     // THE TRANSFORMATION FOR THE LEFT AND RIGHT CAMERAS
     public static Transform3d l_camera_transform = new Transform3d(l_camera_translation, l_camera_rotation);
     public static Transform3d r_camera_transform = new Transform3d(r_camera_translation, r_camera_rotation);
-  }
+  }
 
   public static enum Mode {
     /** Running on a real robot. */
