@@ -469,11 +469,11 @@ public class DriveCommands {
     double gyroDelta = 0.0;
   }
 
-  public static Command goToPosition(Drive drive,double positions){
+  public static Command goToPosition(Drive drive, double positions){
     ChassisSpeeds speeds = new ChassisSpeeds(
-      (new PIDController(KP_XY, KI_XY, KD_XY, new TrapezoidProfile.Constraints(MAX_VELOCETY_XY, MAX_ACCELERATION_XY)),
-      new PIDController(KP_XY, KI_XY, KD_XY, new TrapezoidProfile.Constraints(MAX_VELOCETY_XY, MAX_ACCELERATION_XY),
-      new PIDController(KP_OMEGA, KI_OMEGA, KD_OMEGA, new TrapezoidProfile.Constraints(MAX_VELOCETY_OMEGA, MAX_ACCELERATION_OMEGA));
+      new ProfiledPIDController(KP_XY, KI_XY, KD_XY, new TrapezoidProfile.Constraints(MAX_VELOCETY_XY, MAX_ACCELERATION_XY)).calculate(positions),
+      new ProfiledPIDController(KP_XY, KI_XY, KD_XY, new TrapezoidProfile.Constraints(MAX_VELOCETY_XY, MAX_ACCELERATION_XY)).calculate(positions),
+      new ProfiledPIDController(KP_OMEGA, KI_OMEGA, KD_OMEGA, new TrapezoidProfile.Constraints(MAX_VELOCETY_OMEGA, MAX_ACCELERATION_OMEGA)).calculate(positions));
     return Commands.runEnd(() -> drive.runVelocity(speeds, true), () -> drive.stop(), drive);
   }
 }
