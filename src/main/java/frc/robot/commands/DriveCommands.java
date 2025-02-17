@@ -13,7 +13,27 @@
 
 package frc.robot.commands;
 
+import static frc.robot.subsystems.drive.DriveConstants.ALGAE_OUTTAKE_DRIVE_BACK_SPEED;
+import static frc.robot.subsystems.drive.DriveConstants.KD_OMEGA;
+import static frc.robot.subsystems.drive.DriveConstants.KD_XY;
+import static frc.robot.subsystems.drive.DriveConstants.KI_OMEGA;
+import static frc.robot.subsystems.drive.DriveConstants.KI_XY;
+import static frc.robot.subsystems.drive.DriveConstants.KP_OMEGA;
+import static frc.robot.subsystems.drive.DriveConstants.KP_XY;
+import static frc.robot.subsystems.drive.DriveConstants.MAX_ACCELERATION_OMEGA;
+import static frc.robot.subsystems.drive.DriveConstants.MAX_ACCELERATION_XY;
+import static frc.robot.subsystems.drive.DriveConstants.MAX_VELOCETY_OMEGA;
+import static frc.robot.subsystems.drive.DriveConstants.MAX_VELOCETY_XY;
+
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
+
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -30,13 +50,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
-import static frc.robot.subsystems.drive.DriveConstants.ALGAE_OUTTAKE_DRIVE_BACK_SPEED;
 
 public class DriveCommands {
   private static final double DEADBAND = 0.1;
@@ -48,6 +61,7 @@ public class DriveCommands {
   private static final double FF_RAMP_RATE = 0.1; // Volts/Sec
   private static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Rad/Sec
   private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
+
 
   private DriveCommands() {
   }
@@ -453,5 +467,13 @@ public class DriveCommands {
     double[] positions = new double[4];
     Rotation2d lastAngle = new Rotation2d();
     double gyroDelta = 0.0;
+  }
+
+  public static Command goToPosition(Drive drive,double positions){
+    ChassisSpeeds speeds = new ChassisSpeeds(
+      (new PIDController(KP_XY, KI_XY, KD_XY, new TrapezoidProfile.Constraints(MAX_VELOCETY_XY, MAX_ACCELERATION_XY)),
+      new PIDController(KP_XY, KI_XY, KD_XY, new TrapezoidProfile.Constraints(MAX_VELOCETY_XY, MAX_ACCELERATION_XY),
+      new PIDController(KP_OMEGA, KI_OMEGA, KD_OMEGA, new TrapezoidProfile.Constraints(MAX_VELOCETY_OMEGA, MAX_ACCELERATION_OMEGA));
+    return Commands.runEnd(() -> drive.runVelocity(speeds, true), () -> drive.stop(), drive);
   }
 }

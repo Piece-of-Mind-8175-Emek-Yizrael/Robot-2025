@@ -130,4 +130,19 @@ public class DriveConstants {
                                         driveMotorCurrentLimit,
                                         1),
                         moduleTranslations);
+
+
+        // autonomous pid 
+
+        public static final double KP_XY = 0;
+        public static final double KI_XY = 0;
+        public static final double KD_XY = 0;
+        public static final double MAX_ACCELERATION_XY = 0;
+        public static final double MAX_VELOCETY_XY = 0;
+
+        public static final double KP_OMEGA = 0;
+        public static final double KI_OMEGA = 0;
+        public static final double KD_OMEGA = 0;
+        public static final double MAX_ACCELERATION_OMEGA = 0;
+        public static final double MAX_VELOCETY_OMEGA = 0;
 }
