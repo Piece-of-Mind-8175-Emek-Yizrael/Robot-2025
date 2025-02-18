@@ -113,7 +113,7 @@ public class Drive extends SubsystemBase {
         this::getChassisSpeeds,
         this::runPureVelocity,
         new PPHolonomicDriveController(
-            new PIDConstants(.2, 0.0, 0.0), new PIDConstants(.2, 0.0, 0.0)),
+            new PIDConstants(2.5, 0.0, 0.0), new PIDConstants(2.5, 0.0, 0.0)),
         ppConfig,
         () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
         this);
@@ -149,8 +149,8 @@ public class Drive extends SubsystemBase {
     PushSwerveData();
     Field2d field = new Field2d();
     for (int i = 0; i < 6; i += 1) {
-      field.getObject("left" + i).setPose(FieldConstants.Reef.leftBranches[i]);
-      field.getObject("right" + i).setPose(FieldConstants.Reef.rightBranches[i]);
+      field.getObject("left" + i).setPose(FieldConstants.Reef.blueLeftBranches[i]);
+      field.getObject("right" + i).setPose(FieldConstants.Reef.blueRightBranches[i]);
     }
     SmartDashboard.putData("Field", field);
   }

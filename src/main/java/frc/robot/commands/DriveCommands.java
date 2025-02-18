@@ -527,13 +527,12 @@ public class DriveCommands {
 
     @Override
     public void initialize() {
-      int closestReef = getClosestReef(drive.getPose());
-      if (closestReef == -1) {
+      Pose2d destination;
+      try {
+        destination = getClosestReef(drive.getPose(), toLeft);
+      } catch (Exception e) {
         return;
       }
-      Pose2d destination = toLeft ? FieldConstants.Reef.leftBranches[closestReef]
-          : FieldConstants.Reef.rightBranches[closestReef];
-
       List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
           drive.getPose(),
           destination);
@@ -552,20 +551,25 @@ public class DriveCommands {
       return true;
     }
 
-    public int getClosestReef(Pose2d currentPose) {
+    public Pose2d getClosestReef(Pose2d currentPose, boolean toLeft) throws Exception {
+      Pose2d[] branches = /* DriverStation.getAlliance().orElseGet(() -> Alliance.Red) == Alliance.Red */ currentPose
+          .getX() > FieldConstants.fieldLength / 2
+              ? (toLeft ? FieldConstants.Reef.redLeftBranches : FieldConstants.Reef.redRightBranches)
+              : (toLeft ? FieldConstants.Reef.blueLeftBranches : FieldConstants.Reef.blueRightBranches);
       // Get the closest reef to the robot
       double minDistance = Double.MAX_VALUE;
-      int closestReef = 0;
-      for (int i = 0; i < FieldConstants.Reef.centerFaces.length; i++) {
-        double distance = currentPose.getTranslation().getDistance(FieldConstants.Reef.centerFaces[i].getTranslation());
+      Pose2d closestReef = FieldConstants.Reef.blueCenterFaces[0];
+      for (int i = 0; i < FieldConstants.Reef.blueCenterFaces.length; i++) {
+        double distance = currentPose.getTranslation()
+            .getDistance(branches[i].getTranslation());
         if (distance < minDistance) {
           minDistance = distance;
-          closestReef = i;
+          closestReef = branches[i];
         }
       }
       double allowedDist = 2.5;
       if (minDistance > allowedDist) {
-        return -1;
+        throw new Exception("No reef is close enough");
       }
       return closestReef;
     }

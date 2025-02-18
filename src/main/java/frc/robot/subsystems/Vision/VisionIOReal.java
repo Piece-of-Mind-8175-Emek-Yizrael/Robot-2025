@@ -88,6 +88,9 @@ public class VisionIOReal implements VisionIO {
         if (tagPose.isPresent()) {
           Transform3d fieldToTarget = new Transform3d(tagPose.get().getTranslation(), tagPose.get().getRotation());
           Transform3d cameraToTarget = target.bestCameraToTarget;
+          // if (cameraToTarget.getTranslation().getNor )  > 1 .5){
+          //   continue;
+          // }
           Transform3d fieldToCamera = fieldToTarget.plus(cameraToTarget.inverse());
           Transform3d fieldToRobot = fieldToCamera.plus(robotToCamera.inverse());
           Pose3d robotPose = new Pose3d(fieldToRobot.getTranslation(), fieldToRobot.getRotation());

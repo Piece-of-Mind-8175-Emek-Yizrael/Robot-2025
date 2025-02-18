@@ -36,8 +36,8 @@ public final class Constants {
     public static Translation3d r_camera_translation = new Translation3d(0.1, 0, 0.263);
 
     // THE ROTATION FOR THE LEFT AND RIGHT CAMERAS
-    public static Rotation3d l_camera_rotation = new Rotation3d(Degrees.of(0), Degrees.of(0), Degrees.of(0));
-    public static Rotation3d r_camera_rotation = new Rotation3d(Degrees.of(0), Degrees.of(0), Degrees.of(-9));
+    public static Rotation3d l_camera_rotation = new Rotation3d(Degrees.of(0), Degrees.of(0), Degrees.of(10));
+    public static Rotation3d r_camera_rotation = new Rotation3d(Degrees.of(0), Degrees.of(0), Degrees.of(-4));
 
     // THE TRANSFORMATION FOR THE LEFT AND RIGHT CAMERAS
     public static Transform3d l_camera_transform = new Transform3d(l_camera_translation, l_camera_rotation);
