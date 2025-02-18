@@ -79,8 +79,8 @@ public class RobotContainer {
                                                 new ModuleIOPOM(2),
                                                 new ModuleIOPOM(3));
                                 VisionIOReal[] cameras = {
-                                                new VisionIOReal("Left Front Camera",
-                                                                Constants.VisionConstants.l_camera_transform),
+                                                // new VisionIOReal("Left Front Camera",
+                                                // Constants.VisionConstants.l_camera_transform),
                                                 new VisionIOReal("Right Front Camera",
                                                                 Constants.VisionConstants.r_camera_transform), };
                                 vision = new VisionSubsystem(drive::addVisionMeasurement, cameras);
@@ -251,7 +251,7 @@ public class RobotContainer {
                 try {
                         // Load the path you want to follow using its name in the GUI
                         // PathPlannerPath path = PathPlannerPath.fromPathFile("Drive 1 meter path");
-                        PathPlannerPath path = PathPlannerPath.fromPathFile("Drive half meter");
+                        PathPlannerPath path = PathPlannerPath.fromPathFile("Test1");
 
                         // Create a path following command using AutoBuilder. This will also trigger
                         // event markers.
