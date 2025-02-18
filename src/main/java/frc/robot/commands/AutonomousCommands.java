@@ -14,7 +14,7 @@ public class AutonomousCommands {
 
     Timer timer = new Timer();
 
-    public Command goToPosition(Drive drive, Rotation3d rotation3d, Elevator elevator, Transfer transfer){
+    public Command autonomous1(Drive drive, Rotation3d rotation3d, Elevator elevator, Transfer transfer){
         return DriveCommands.goToPosition(drive, rotation3d).
         andThen(ElevatorCommands.goToPosition(elevator, L2_POSITION)).
         andThen(() -> timer.restart()).
