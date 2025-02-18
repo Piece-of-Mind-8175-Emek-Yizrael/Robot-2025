@@ -38,6 +38,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -469,11 +470,11 @@ public class DriveCommands {
     double gyroDelta = 0.0;
   }
 
-  public static Command goToPosition(Drive drive, double positions){
+  public static Command goToPosition(Drive drive, Rotation3d positions){
     ChassisSpeeds speeds = new ChassisSpeeds(
-      new ProfiledPIDController(KP_XY, KI_XY, KD_XY, new TrapezoidProfile.Constraints(MAX_VELOCETY_XY, MAX_ACCELERATION_XY)).calculate(positions),
-      new ProfiledPIDController(KP_XY, KI_XY, KD_XY, new TrapezoidProfile.Constraints(MAX_VELOCETY_XY, MAX_ACCELERATION_XY)).calculate(positions),
-      new ProfiledPIDController(KP_OMEGA, KI_OMEGA, KD_OMEGA, new TrapezoidProfile.Constraints(MAX_VELOCETY_OMEGA, MAX_ACCELERATION_OMEGA)).calculate(positions));
+      new ProfiledPIDController(KP_XY, KI_XY, KD_XY, new TrapezoidProfile.Constraints(MAX_VELOCETY_XY, MAX_ACCELERATION_XY)).calculate(positions.getX()),
+      new ProfiledPIDController(KP_XY, KI_XY, KD_XY, new TrapezoidProfile.Constraints(MAX_VELOCETY_XY, MAX_ACCELERATION_XY)).calculate(positions.getY()),
+      new ProfiledPIDController(KP_OMEGA, KI_OMEGA, KD_OMEGA, new TrapezoidProfile.Constraints(MAX_VELOCETY_OMEGA, MAX_ACCELERATION_OMEGA)).calculate(positions.getAngle()));
     return Commands.runEnd(() -> drive.runVelocity(speeds, true), () -> drive.stop(), drive);
   }
 }
