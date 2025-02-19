@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import static frc.robot.subsystems.Elevator.ElevatorConstants.*;
 
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -14,8 +15,8 @@ public class AutonomousCommands {
 
     Timer timer = new Timer();
 
-    public Command autonomous1(Drive drive, Rotation3d rotation3d, Elevator elevator, Transfer transfer){
-        return DriveCommands.goToPosition(drive, rotation3d).
+    public Command autonomous1(Drive drive, Pose3d pose3d, Elevator elevator, Transfer transfer){
+        return DriveCommands.goToPosition(drive, pose3d).
         andThen(ElevatorCommands.goToPosition(elevator, L2_POSITION)).
         andThen(() -> timer.restart()).
         andThen(TransferCommands.coralOutake(transfer)).until(() -> (timer.get() > 3));

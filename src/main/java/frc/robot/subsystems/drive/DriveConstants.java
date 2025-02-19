@@ -134,7 +134,7 @@ public class DriveConstants {
 
         // autonomous pid 
 
-        public static final double KP_XY = 0;
+        public static final double KP_XY = 5;
         public static final double KI_XY = 0;
         public static final double KD_XY = 0;
         public static final double MAX_ACCELERATION_XY = 0;

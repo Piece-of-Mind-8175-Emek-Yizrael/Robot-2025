@@ -22,7 +22,9 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -31,6 +33,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.POM_lib.Joysticks.PomXboxController;
 import frc.robot.commands.AlgaeOuttakeCommands;
+import frc.robot.commands.AutonomousCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.ElevatorCommands;
 import frc.robot.commands.TransferCommands;
@@ -198,6 +201,7 @@ public class RobotContainer {
                                 "Drive SysId (Dynamic Steer Reverse)",
                                 drive.sysIdSteerDynamic(SysIdRoutine.Direction.kReverse));
 
+
                 // Configure the button bindings
                 configureButtonBindings();
         }
@@ -214,7 +218,10 @@ public class RobotContainer {
                                                 () -> -driverController.getLeftY() * 0.3,
                                                 () -> -driverController.getLeftX() * 0.3,
                                                 () -> -driverController.getRightX() * 0.25));
-                                                
+                                           
+                //checking autonomus
+
+                driverController.LB().whileTrue(DriveCommands.goToPosition(drive, new Pose3d(1,1,30,new Rotation3d())));
                 
                 
                 // driverController.povRight().onTrue(getPathCommand());
