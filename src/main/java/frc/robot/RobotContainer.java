@@ -131,24 +131,24 @@ public class RobotContainer {
                         case SIM:
                                 // Sim robot, instantiate physics sim IO implementations
 
-                                driveSimulation = new SwerveDriveSimulation(Drive.maplesimConfig,
-                                                new Pose2d(3, 3, new Rotation2d()));
-                                SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
+                                // driveSimulation = new SwerveDriveSimulation(Drive.maplesimConfig,
+                                // new Pose2d(3, 3, new Rotation2d()));
+                                // SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
 
-                                drive = new Drive(
-                                                new GyroIOSim(this.driveSimulation.getGyroSimulation()),
-                                                new ModuleIOSim(this.driveSimulation.getModules()[0]),
-                                                new ModuleIOSim(this.driveSimulation.getModules()[1]),
-                                                new ModuleIOSim(this.driveSimulation.getModules()[2]),
-                                                new ModuleIOSim(this.driveSimulation.getModules()[3]));
+                                // drive = new Drive(
+                                // new GyroIOSim(this.driveSimulation.getGyroSimulation()),
+                                // new ModuleIOSim(this.driveSimulation.getModules()[0]),
+                                // new ModuleIOSim(this.driveSimulation.getModules()[1]),
+                                // new ModuleIOSim(this.driveSimulation.getModules()[2]),
+                                // new ModuleIOSim(this.driveSimulation.getModules()[3]));
 
-                                vision = new VisionSubsystem(drive::addVisionMeasurement,
-                                                new VisionIOSim("camera_0",
-                                                                new Transform3d(0.2, 0.0, 0.2,
-                                                                                new Rotation3d(0.0, 0.0, Math.PI)),
-                                                                driveSimulation::getSimulatedDriveTrainPose));
-                                transfer = new Transfer(new TransferIOSim(driveSimulation));
-                                algaeOuttake = new AlgaeOuttake(new AlgaeOuttakeIOSim());
+                                // vision = new VisionSubsystem(drive::addVisionMeasurement,
+                                // new VisionIOSim("camera_0",
+                                // new Transform3d(0.2, 0.0, 0.2,
+                                // new Rotation3d(0.0, 0.0, Math.PI)),
+                                // driveSimulation::getSimulatedDriveTrainPose));
+                                // transfer = new Transfer(new TransferIOSim(driveSimulation));
+                                // algaeOuttake = new AlgaeOuttake(new AlgaeOuttakeIOSim());
 
                                 // leds = new LEDs(new LEDsIOSim());
 
@@ -303,16 +303,16 @@ public class RobotContainer {
                 // driverController.PovLeft().onTrue(drive.resetGyroCommand(Rotation2d.fromDegrees(125)));
                 // driverController.PovRight().onTrue(drive.resetGyroCommand(Rotation2d.fromDegrees(-125)));
 
-                driverController.x().whileTrue(
-                                DriveCommands.joystickDriveRobotRelative(drive, () -> 0.2, () -> 0, () -> 0));
-                driverController.b().whileTrue(
-                                DriveCommands.joystickDriveRobotRelative(drive, () -> -0.2, () -> 0, () -> 0));
+                driverController.LB().whileTrue(
+                                DriveCommands.joystickDriveRobotRelative(drive, () -> 0, () -> -0.2, () -> 0));
+                driverController.RB().whileTrue(
+                                DriveCommands.joystickDriveRobotRelative(drive, () -> 0, () -> 0.2, () -> 0));
 
-                driverController.RB().whileTrue(DriveCommands.joystickDriveRobotRelative(
-                                drive,
-                                () -> -driverController.getLeftY() * 0.3,
-                                () -> -driverController.getLeftX() * 0.3,
-                                () -> -driverController.getRightX() * 0.25));
+                // driverController.RB().whileTrue(DriveCommands.joystickDriveRobotRelative(
+                // drive,
+                // () -> -driverController.getLeftY() * 0.3,
+                // () -> -driverController.getLeftX() * 0.3,
+                // () -> -driverController.getRightX() * 0.25));
 
                 // operator controller buttens
 
