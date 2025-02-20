@@ -221,7 +221,7 @@ public class RobotContainer {
                                            
                 //checking autonomus
 
-                driverController.LB().whileTrue(DriveCommands.goToPosition(drive, new Pose3d(1,1,30,new Rotation3d())));
+                driverController.LB().whileTrue(DriveCommands.goToPosition(drive, new Pose3d(1,1,30,new Rotation3d(0,0,0))));
                 
                 
                 // driverController.povRight().onTrue(getPathCommand());
