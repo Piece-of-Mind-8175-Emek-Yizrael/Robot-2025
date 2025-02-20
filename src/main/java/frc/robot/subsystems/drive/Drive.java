@@ -439,7 +439,7 @@ public class Drive extends SubsystemBase {
   public void resetGyro() {
     if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue) {
       resetGyro(new Rotation2d());
-      setPose(new Pose2d(getPose().getTranslation(), getRotation()));
+      setPose(new Pose2d(getPose().getTranslation(), new Rotation2d()));
     } else {
       resetGyro(new Rotation2d(Math.PI));
       setPose(new Pose2d(getPose().getTranslation(), new Rotation2d(Math.PI)));
@@ -448,7 +448,7 @@ public class Drive extends SubsystemBase {
 
   public void resetGyro(Rotation2d to) {
     if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue) {
-      to = to.plus(new Rotation2d(Math.PI));
+      to = to.minus(new Rotation2d(Math.PI));
     }
     gyroIO.reset(to);
     setPose(new Pose2d(getPose().getTranslation(), to));
