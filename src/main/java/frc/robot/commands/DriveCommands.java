@@ -25,11 +25,6 @@ import static frc.robot.subsystems.drive.DriveConstants.MAX_VELOCETY_OMEGA;
 import static frc.robot.subsystems.drive.DriveConstants.MAX_VELOCETY_XY;
 import static frc.robot.subsystems.drive.DriveConstants.OMEGA_TOLERANCE;
 import static frc.robot.subsystems.drive.DriveConstants.TRANSLATION_TOLERANCE;
-import static frc.robot.subsystems.drive.DriveConstants.maxAccMetersPerSecSquared;
-import static frc.robot.subsystems.drive.DriveConstants.maxAccRadiansPerSecSquared;
-import static frc.robot.subsystems.drive.DriveConstants.maxSpeedMetersPerSec;
-import static frc.robot.subsystems.drive.DriveConstants.maxSpeedRadiansPerSec;
-
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.LinkedList;
@@ -40,12 +35,6 @@ import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
-
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.GoalEndState;
-import com.pathplanner.lib.path.PathConstraints;
-import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.path.Waypoint;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -65,13 +54,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.subsystems.drive.FieldConstants;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
 import static frc.robot.subsystems.drive.DriveConstants.ALGAE_OUTTAKE_DRIVE_BACK_SPEED;
 
 public class DriveCommands {
