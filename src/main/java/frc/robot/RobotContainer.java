@@ -245,10 +245,10 @@ public class RobotContainer {
                                                 () -> -driverController.getRightX() * 0.25));
 
                 // driverController.povRight().onTrue(getPathCommand());
-                driverController.PovLeft().whileTrue(DriveCommands.locateToReefCommand(drive, true));
-                driverController.PovRight().whileTrue(DriveCommands.locateToReefCommand(drive, false));
+                driverController.x().whileTrue(DriveCommands.locateToReefCommand(drive, true));
+                driverController.b().whileTrue(DriveCommands.locateToReefCommand(drive, false));
 
-                driverController.PovLeft().or(driverController.PovRight()).onFalse(new InstantCommand(() -> {
+                driverController.x().or(driverController.b()).onFalse(new InstantCommand(() -> {
                 }, drive));
 
                 driverController.back().whileTrue(new DriveToPosition(drive, new Pose2d(2, 2, new Rotation2d())));
