@@ -79,6 +79,7 @@ import frc.robot.Constants.Mode;
 import frc.robot.util.LocalADStarAK;
 
 public class Drive extends SubsystemBase {
+  boolean goodVision = true;
   static final Lock odometryLock = new ReentrantLock();
   private final GyroIO gyroIO;
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
@@ -207,6 +208,7 @@ public class Drive extends SubsystemBase {
       Logger.recordOutput("SwerveStates/Setpoints", new SwerveModuleState[] {});
       Logger.recordOutput("SwerveStates/SetpointsOptimized", new SwerveModuleState[] {});
     }
+    Logger.recordOutput("good vision", goodVision);
 
     // Update odometry
     double[] sampleTimestamps = modules[0].getOdometryTimestamps(); // All signals are sampled together
@@ -279,7 +281,10 @@ public class Drive extends SubsystemBase {
   }
 
   public void addVisionMeasurement(Pose2d visionPose, double timestamp) {
-    poseEstimator.addVisionMeasurement(visionPose, timestamp);
+    if (goodVision
+        && !(DriverStation.isEnabled() && visionPose.getTranslation().getDistance(getPose().getTranslation()) > 0.5)) {
+      poseEstimator.addVisionMeasurement(visionPose, timestamp);
+    }
   }
 
   /** Runs the drive in a straight line with the specified drive output. */
@@ -414,8 +419,13 @@ public class Drive extends SubsystemBase {
       Pose2d visionRobotPoseMeters,
       double timestampSeconds,
       Matrix<N3, N1> visionMeasurementStdDevs) {
-    poseEstimator.addVisionMeasurement(
-        visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
+    if (goodVision
+        && !(DriverStation.isEnabled()
+            && visionRobotPoseMeters.getTranslation().getDistance(getPose().getTranslation()) > 0.5)) {
+
+      poseEstimator.addVisionMeasurement(
+          visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
+    }
   }
 
   /** Returns the maximum linear speed in meters per sec. */
@@ -426,6 +436,10 @@ public class Drive extends SubsystemBase {
   /** Returns the maximum angular speed in radians per sec. */
   public double getMaxAngularSpeedRadPerSec() {
     return maxSpeedMetersPerSec / driveBaseRadius;
+  }
+
+  public void disableGoodVision() {
+    this.goodVision = false;
   }
 
   public void resetKinematics() {
