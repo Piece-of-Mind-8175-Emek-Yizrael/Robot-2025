@@ -100,29 +100,29 @@ public class FieldConstants {
                                         Units.inchesToMeters(158.500),
                                         Rotation2d.fromDegrees(0));
                         blueCenterFaces[1] = new Pose2d(
-                                        Units.inchesToMeters(160.373 - 16.04 * Math.sin(Math.PI / 3)),
-                                        Units.inchesToMeters(186.857 + 16.04 * Math.cos(Math.PI / 3)),
+                                        Units.inchesToMeters(160.373 - (16.04 * Math.cos(Math.PI / 3))),
+                                        Units.inchesToMeters(186.857 + (16.04 * Math.sin(Math.PI / 3))),
                                         Rotation2d.fromDegrees(60));
                         blueCenterFaces[2] = new Pose2d(
-                                        Units.inchesToMeters(193.116 + 16.04 * Math.sin(2 * Math.PI / 3)),
-                                        Units.inchesToMeters(186.858 - 16.04 * Math.cos(2 * Math.PI / 3)),
+                                        Units.inchesToMeters(193.116 - (16.04 * Math.cos(2 * Math.PI / 3))),
+                                        Units.inchesToMeters(186.858 + (16.04 * Math.sin(2 * Math.PI / 3))),
                                         Rotation2d.fromDegrees(120));
                         blueCenterFaces[3] = new Pose2d(
                                         Units.inchesToMeters(209.489 + 16.04),
                                         Units.inchesToMeters(158.502),
                                         Rotation2d.fromDegrees(180));
                         blueCenterFaces[4] = new Pose2d(
-                                        Units.inchesToMeters(193.118 - 16.04 * Math.sin(-2 * Math.PI / 3)),
-                                        Units.inchesToMeters(130.145 + 16.04 * Math.cos(-2 * Math.PI / 3)),
+                                        Units.inchesToMeters(193.118 - (16.04 * Math.cos(-2 * Math.PI / 3))),
+                                        Units.inchesToMeters(130.145 + (16.04 * Math.sin(-2 * Math.PI / 3))),
                                         Rotation2d.fromDegrees(-120));
                         blueCenterFaces[5] = new Pose2d(
-                                        Units.inchesToMeters(160.375 + 16.04 * Math.sin(-Math.PI / 3)),
-                                        Units.inchesToMeters(130.144 - 16.04 * Math.cos(-Math.PI / 3)),
+                                        Units.inchesToMeters(160.375 - (16.04 * Math.cos(-Math.PI / 3))),
+                                        Units.inchesToMeters(130.144 + (16.04 * Math.sin(-Math.PI / 3))),
                                         Rotation2d.fromDegrees(-60));
                         Logger.recordOutput("center face 0", blueCenterFaces);
                         for (int i = 0; i < 6; i++) {
 
-                                blueLeftBranches[i] = new Pose2d(
+                                blueRightBranches[i] = new Pose2d(
                                                 blueCenterFaces[i].getX() - branchDist
                                                                 * Math.sin(blueCenterFaces[i].getRotation()
                                                                                 .getRadians()),
@@ -130,7 +130,7 @@ public class FieldConstants {
                                                                 * Math.cos(blueCenterFaces[i].getRotation()
                                                                                 .getRadians()),
                                                 Rotation2d.fromDegrees(-i * 60));
-                                blueRightBranches[i] = new Pose2d(
+                                blueLeftBranches[i] = new Pose2d(
                                                 blueCenterFaces[i].getX() + branchDist
                                                                 * Math.sin(blueCenterFaces[i].getRotation()
                                                                                 .getRadians()),
@@ -140,6 +140,9 @@ public class FieldConstants {
                                                 Rotation2d.fromDegrees(-i * 60));
 
                         }
+                        Logger.recordOutput("left branch blue", blueLeftBranches);
+                        Logger.recordOutput("right branch blue", blueRightBranches);
+
                         for (int i = 0; i < blueCenterFaces.length; i++) {
                                 redLeftBranches[i] = new Pose2d(fieldLength - blueLeftBranches[i].getX(),
                                                 fieldWidth - blueLeftBranches[i].getY(),
