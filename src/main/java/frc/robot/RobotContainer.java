@@ -26,6 +26,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -34,6 +35,7 @@ import frc.robot.POM_lib.Joysticks.PomXboxController;
 import frc.robot.commands.AlgaeOuttakeCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.ElevatorCommands;
+import frc.robot.commands.LEDsCommands;
 import frc.robot.commands.TransferCommands;
 import frc.robot.subsystems.AlgaeOuttake.AlgaeOuttake;
 import frc.robot.subsystems.AlgaeOuttake.AlgaeOuttakeIO;
@@ -90,6 +92,10 @@ public class RobotContainer {
         private SwerveDriveSimulation driveSimulation;
 
         private Elevator elevatorSubsystem;
+
+        private LEDs leDs;
+
+        private Color color;
 
         private boolean isRelative;
 
@@ -212,28 +218,23 @@ public class RobotContainer {
                 drive.setDefaultCommand(
                                 DriveCommands.joystickDrive(
                                                 drive,
-                                                () -> -driverController.getLeftY() * 0.35,
-                                                () -> -driverController.getLeftX() * 0.35,
-                                                () -> -driverController.getRightX() * 0.3));
+                                                () -> -driverController.getLeftY() * 0.30,
+                                                () -> -driverController.getLeftX() * 0.30,
+                                                () -> -driverController.getRightX() * 0.25));
                                                 
-                driverController.start().onTrue(new InstantCommand(()-> drive.setDefaultCommand(DriveCommands.joystickDrive(
-                        drive,
-                        () -> -driverController.getLeftY() * 0.35,
-                        () -> -driverController.getLeftX() * 0.35,
-                        () -> -driverController.getRightX() * 0.3))));
-
-                driverController.back().onTrue(new InstantCommand(()-> drive.setDefaultCommand(DriveCommands.joystickDrive(
-                        drive,
-                        () -> driverController.getLeftY() * 0.35,
-                        () -> driverController.getLeftX() * 0.35,
-                        () -> driverController.getRightX() * 0.3))));
-                
-                driverController.rightTrigger().whileTrue(
+                driverController.leftTrigger().whileTrue(
                         DriveCommands.joystickDrive(
                                         drive,
                                         () -> -driverController.getLeftY() * 0.25,
                                         () -> -driverController.getLeftX() * 0.25,
                                         () -> -driverController.getRightX() * 0.25));
+
+                                        driverController.rightTrigger().whileTrue(
+                                                DriveCommands.joystickDrive(
+                                                                drive,
+                                                                () -> -driverController.getLeftY() * 0.40,
+                                                                () -> -driverController.getLeftX() * 0.40,
+                                                                () -> -driverController.getRightX() * 0.25));
         
                 
 
@@ -269,13 +270,16 @@ public class RobotContainer {
                 // () -> new Rotation2d()));
 
                 // Switch to X pattern when X button is pressed
-                driverController.PovLeft().onTrue(Commands.runOnce(drive::stopWithX, drive));
+                // driverController.PovLeft().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
                 // Reset gyro to 0° when Y button is pressed
-                driverController.PovUp().onTrue(drive.resetGyroCommand());
+                driverController.PovUp().onTrue(drive.resetGyroCommand(Rotation2d.fromDegrees(180)));
+                driverController.PovDown().onTrue(drive.resetGyroCommand());
+                driverController.PovLeft().onTrue(drive.resetGyroCommand(Rotation2d.fromDegrees(125)));
+                driverController.PovRight().onTrue(drive.resetGyroCommand(Rotation2d.fromDegrees(-125)));
 
-
-                driverController.a().whileFalse(DriveCommands.joystickDriveRobotRelative(
+   
+                driverController.RB().whileTrue(DriveCommands.joystickDriveRobotRelative(
                         drive,
                         () -> -driverController.getLeftY() * 0.3,
                         () -> -driverController.getLeftX() * 0.3,
@@ -284,8 +288,8 @@ public class RobotContainer {
                 // operator controller buttens
 
                 //algae arm open & close
-                operatorController.PovLeft().onTrue(AlgaeOuttakeCommands.openArm(algaeOuttake));
-                operatorController.PovRight().onTrue(AlgaeOuttakeCommands.closeArm(algaeOuttake));
+                operatorController.LB().onTrue(AlgaeOuttakeCommands.openArm(algaeOuttake));
+                operatorController.RB().onTrue(AlgaeOuttakeCommands.closeArm(algaeOuttake));
                 
                 //outake algae
                 operatorController.a()
@@ -304,10 +308,10 @@ public class RobotContainer {
                         ElevatorCommands.goToPosition(elevatorSubsystem, ElevatorConstants.L2_POSITION));
                 
                 //intake coral                
-                operatorController.RB().whileTrue(TransferCommands.coralOutake(transfer));
+                operatorController.PovRight().whileTrue(TransferCommands.coralOutake(transfer));
                 
                 //rutern the coral back
-                operatorController.LB().whileTrue(TransferCommands.takeCoralIn(transfer));
+                operatorController.PovLeft().whileTrue(TransferCommands.takeCoralIn(transfer));
 
                 
                 //manual elevator control
@@ -317,9 +321,13 @@ public class RobotContainer {
                 operatorController.rightTrigger().whileTrue(ElevatorCommands.openElevatorManual(elevatorSubsystem, MANUAL_FAST_OPEN));
 
                 //slow FIXME not working
-                operatorController.PovUp().whileTrue(ElevatorCommands.openElevatorManual(elevatorSubsystem, MANUAL_SLOW_OPEN));
+                //operatorController.PovUp().whileTrue(ElevatorCommands.openElevatorManual(elevatorSubsystem, MANUAL_SLOW_OPEN));
+
+                operatorController.PovUp().whileTrue(TransferCommands.coralOutakeFast(transfer));
 
                 operatorController.PovDown().whileTrue(ElevatorCommands.closeElevatorManual(elevatorSubsystem, MANUAL_SLOW_CLOSE));
+
+                //driverController.a().onTrue(LEDsCommands.setAll(leDs,color));
                 
 
 

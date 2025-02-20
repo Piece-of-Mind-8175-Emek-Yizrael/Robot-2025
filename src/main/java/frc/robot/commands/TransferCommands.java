@@ -27,6 +27,10 @@ public class TransferCommands{
         return Commands.startEnd(() -> transfer.getIO().setVoltage(CORAL_OUTTAKE_VOLTAGE), () -> transfer.getIO().stopMotor(), transfer);
     }
 
+    public static Command coralOutakeFast(Transfer transfer) {
+        return Commands.startEnd(() -> transfer.getIO().setVoltage(CORAL_OUTTAKE_VOLTAGE_FAST), () -> transfer.getIO().stopMotor(), transfer);
+    }
+
     public static Command intakeCoral(Transfer transfer){
         return Commands.startEnd(() -> transfer.getIO().setVoltage(3), () -> transfer.getIO().stopMotor() ,transfer);
     }
