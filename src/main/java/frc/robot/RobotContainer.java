@@ -29,9 +29,11 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.POM_lib.Joysticks.PomXboxController;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.DriveCommands.DriveToPosition;
 import frc.robot.subsystems.Vision.VisionIOReal;
 import frc.robot.subsystems.Vision.VisionIOSim;
 import frc.robot.subsystems.Vision.VisionSubsystem;
@@ -89,22 +91,22 @@ public class RobotContainer {
                         case SIM:
                                 // Sim robot, instantiate physics sim IO implementations
 
-                                driveSimulation = new SwerveDriveSimulation(Drive.maplesimConfig,
-                                                new Pose2d(3, 3, new Rotation2d()));
-                                SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
+                                // driveSimulation = new SwerveDriveSimulation(Drive.maplesimConfig,
+                                // new Pose2d(3, 3, new Rotation2d()));
+                                // SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
 
-                                drive = new Drive(
-                                                new GyroIOSim(this.driveSimulation.getGyroSimulation()),
-                                                new ModuleIOSim(this.driveSimulation.getModules()[0]),
-                                                new ModuleIOSim(this.driveSimulation.getModules()[1]),
-                                                new ModuleIOSim(this.driveSimulation.getModules()[2]),
-                                                new ModuleIOSim(this.driveSimulation.getModules()[3]));
+                                // drive = new Drive(
+                                // new GyroIOSim(this.driveSimulation.getGyroSimulation()),
+                                // new ModuleIOSim(this.driveSimulation.getModules()[0]),
+                                // new ModuleIOSim(this.driveSimulation.getModules()[1]),
+                                // new ModuleIOSim(this.driveSimulation.getModules()[2]),
+                                // new ModuleIOSim(this.driveSimulation.getModules()[3]));
 
-                                vision = new VisionSubsystem(drive::addVisionMeasurement,
-                                                new VisionIOSim("camera_0",
-                                                                new Transform3d(0.2, 0.0, 0.2,
-                                                                                new Rotation3d(0.0, 0.0, Math.PI)),
-                                                                driveSimulation::getSimulatedDriveTrainPose));
+                                // vision = new VisionSubsystem(drive::addVisionMeasurement,
+                                // new VisionIOSim("camera_0",
+                                // new Transform3d(0.2, 0.0, 0.2,
+                                // new Rotation3d(0.0, 0.0, Math.PI)),
+                                // driveSimulation::getSimulatedDriveTrainPose));
 
                                 break;
 
@@ -180,8 +182,13 @@ public class RobotContainer {
                                                 () -> driverController.getRightX() * 0.5));
 
                 driverController.b().onTrue(getPathCommand());
-                driverController.PovDown().whileTrue(DriveCommands.locateToReefCommand(drive, true));
-                driverController.PovUp().whileTrue(DriveCommands.locateToReefCommand(drive, false));
+                driverController.PovLeft().whileTrue(DriveCommands.locateToReefCommand(drive, true));
+                driverController.PovRight().whileTrue(DriveCommands.locateToReefCommand(drive, false));
+
+                driverController.PovLeft().or(driverController.PovRight()).onFalse(new InstantCommand(() -> {
+                }, drive));
+
+                driverController.back().whileTrue(new DriveToPosition(drive, new Pose2d(2, 2, new Rotation2d())));
 
                 // driverController.x().onTrue(Commands.runOnce(() ->
                 // moduleFL.setTurnPosition(new Rotation2d(Math.PI)).l;p.));

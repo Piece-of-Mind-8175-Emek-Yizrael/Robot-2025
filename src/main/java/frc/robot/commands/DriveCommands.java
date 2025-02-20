@@ -540,18 +540,26 @@ public class DriveCommands {
       } catch (Exception e) {
         return;
       }
-      List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
-          drive.getPose(),
-          destination);
-      PathPlannerPath path = new PathPlannerPath(waypoints,
-          new PathConstraints(maxSpeedMetersPerSec, maxAccMetersPerSecSquared, maxSpeedRadiansPerSec,
-              maxAccRadiansPerSecSquared),
-          null,
-          new GoalEndState(0, destination.getRotation()));
-      path.preventFlipping = true;
-      Logger.recordOutput("current reef destination", destination);
-      AutoBuilder.followPath(path).schedule();
-      // new DriveToPosition(drive, destination).schedule();
+      // List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
+      // drive.getPose(),
+      // destination);
+      // PathPlannerPath path = new PathPlannerPath(waypoints,
+      // new PathConstraints(maxSpeedMetersPerSec, maxAccMetersPerSecSquared,
+      // maxSpeedRadiansPerSec,
+      // maxAccRadiansPerSecSquared),
+      // null,
+      // new GoalEndState(0, destination.getRotation()));
+      // path.preventFlipping = true;
+      // Logger.recordOutput("current reef destination", destination);
+      // Command cmd = AutoBuilder.followPath(path)
+      // .until(() ->
+      // drive.getPose().getTranslation().getDistance(destination.getTranslation()) <
+      // 0.6);
+
+      // cmd = cmd.andThen(new DriveToPosition(drive, destination));
+      // cmd.schedule();
+
+      new DriveToPosition(drive, destination).schedule();
     }
 
     @Override
@@ -635,6 +643,11 @@ public class DriveCommands {
     public void initialize() {
       m_timer.reset();
       m_timer.start();
+      var currPose = m_drive.getPose();
+      ChassisSpeeds currS = m_drive.getChassisSpeeds();
+      m_controllerX.reset(currPose.getX(), currS.vxMetersPerSecond);
+      m_controllerY.reset(currPose.getY(), currS.vyMetersPerSecond);
+      m_controllerTheta.reset(currPose.getRotation().getRadians(), currS.omegaRadiansPerSecond);
     }
 
     @Override
@@ -654,6 +667,11 @@ public class DriveCommands {
           m_controllerX.calculate(pose.getTranslation().getX(), m_target.getTranslation().getX()),
           m_controllerY.calculate(pose.getTranslation().getY(), m_target.getTranslation().getY()),
           m_controllerTheta.calculate(pose.getRotation().getRadians(), m_target.getRotation().getRadians()));
+      Logger.recordOutput("Requested speeds", chassisSpeeds);
+      // Logger.recordOutput("pose", pose);
+      // Logger.recordOutput("pose to", m_target);
+      Logger.recordOutput("error x", m_target.getTranslation().getX() - pose.getTranslation().getX());
+      Logger.recordOutput("error y", m_target.getTranslation().getY() - pose.getTranslation().getY());
       m_drive.runVelocity(chassisSpeeds, true);
     }
 
