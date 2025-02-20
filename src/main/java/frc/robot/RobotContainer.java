@@ -300,8 +300,8 @@ public class RobotContainer {
                 // Reset gyro to 0° when Y button is pressed
                 driverController.PovUp().onTrue(drive.resetGyroCommand(Rotation2d.fromDegrees(180)));
                 driverController.PovDown().onTrue(drive.resetGyroCommand());
-                driverController.PovLeft().onTrue(drive.resetGyroCommand(Rotation2d.fromDegrees(125)));
-                driverController.PovRight().onTrue(drive.resetGyroCommand(Rotation2d.fromDegrees(-125)));
+                // driverController.PovLeft().onTrue(drive.resetGyroCommand(Rotation2d.fromDegrees(125)));
+                // driverController.PovRight().onTrue(drive.resetGyroCommand(Rotation2d.fromDegrees(-125)));
 
                 driverController.x().whileTrue(
                                 DriveCommands.joystickDriveRobotRelative(drive, () -> 0.2, () -> 0, () -> 0));
