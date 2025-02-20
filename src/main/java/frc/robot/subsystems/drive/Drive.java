@@ -417,21 +417,29 @@ public class Drive extends SubsystemBase {
   }
 
   public void resetGyro() {
-    gyroIO.reset();
-    setPose(new Pose2d(getPose().getTranslation(), new Rotation2d()));
+    if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue) {
+      resetGyro(new Rotation2d());
+      setPose(new Pose2d(getPose().getTranslation(), getRotation()));
+    } else {
+      resetGyro(new Rotation2d(Math.PI));
+      setPose(new Pose2d(getPose().getTranslation(), new Rotation2d(Math.PI)));
+    }
   }
 
   public void resetGyro(Rotation2d to) {
+    if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue) {
+      to = to.plus(new Rotation2d(Math.PI));
+    }
     gyroIO.reset(to);
-    // rawGyroRotation = to;
     setPose(new Pose2d(getPose().getTranslation(), to));
   }
 
   public Command resetGyroCommand() {
     return this.runOnce(this::resetGyro).ignoringDisable(true);
   }
+
   public Command resetGyroCommand(Rotation2d to) {
-    return this.runOnce(()->this.resetGyro(to)).ignoringDisable(true);
+    return this.runOnce(() -> this.resetGyro(to)).ignoringDisable(true);
   }
 
   public Command resetGyroCommand(Supplier<Rotation2d> to) {

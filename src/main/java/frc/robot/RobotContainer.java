@@ -80,7 +80,7 @@ public class RobotContainer {
         private final AlgaeOuttake algaeOuttake;
         private final Transfer transfer;
 
-        //private final LEDs leds;
+        // private final LEDs leds;
 
         // Controller
         private final PomXboxController driverController = new PomXboxController(0);
@@ -118,7 +118,7 @@ public class RobotContainer {
                                                 new ModuleIOPOM(2),
                                                 new ModuleIOPOM(3));
 
-                                //leds = new LEDs(new LEDsIOReal());
+                                // leds = new LEDs(new LEDsIOReal());
                                 break;
 
                         case SIM:
@@ -142,7 +142,7 @@ public class RobotContainer {
                                                 new ModuleIOSim(this.driveSimulation.getModules()[2]),
                                                 new ModuleIOSim(this.driveSimulation.getModules()[3]));
 
-                                //leds = new LEDs(new LEDsIOSim());
+                                // leds = new LEDs(new LEDsIOSim());
                                 break;
 
                         default:
@@ -166,8 +166,8 @@ public class RobotContainer {
 
                                 transfer = new Transfer(new TransferIO() {
                                 });
-                                //leds = new LEDs(new LEDsIO() {
-                                //});
+                                // leds = new LEDs(new LEDsIO() {
+                                // });
                                 break;
                 }
 
@@ -209,7 +209,6 @@ public class RobotContainer {
                 configureButtonBindings();
         }
 
-        
         private void configureButtonBindings() {
 
                 // driver controller buttens
@@ -221,27 +220,25 @@ public class RobotContainer {
                                                 () -> -driverController.getLeftY() * 0.30,
                                                 () -> -driverController.getLeftX() * 0.30,
                                                 () -> -driverController.getRightX() * 0.25));
-                                                
-                driverController.leftTrigger().whileTrue(
-                        DriveCommands.joystickDrive(
-                                        drive,
-                                        () -> -driverController.getLeftY() * 0.25,
-                                        () -> -driverController.getLeftX() * 0.25,
-                                        () -> -driverController.getRightX() * 0.25));
 
-                                        driverController.rightTrigger().whileTrue(
-                                                DriveCommands.joystickDrive(
-                                                                drive,
-                                                                () -> -driverController.getLeftY() * 0.40,
-                                                                () -> -driverController.getLeftX() * 0.40,
-                                                                () -> -driverController.getRightX() * 0.25));
-        
-                
+                driverController.leftTrigger().whileTrue(
+                                DriveCommands.joystickDrive(
+                                                drive,
+                                                () -> -driverController.getLeftY() * 0.25,
+                                                () -> -driverController.getLeftX() * 0.25,
+                                                () -> -driverController.getRightX() * 0.25));
+
+                driverController.rightTrigger().whileTrue(
+                                DriveCommands.joystickDrive(
+                                                drive,
+                                                () -> -driverController.getLeftY() * 0.40,
+                                                () -> -driverController.getLeftX() * 0.40,
+                                                () -> -driverController.getRightX() * 0.25));
 
                 // driverController.povRight().onTrue(getPathCommand());
                 // driverController.povLeft().onTrue(Commands.runOnce(() ->
                 // moduleFL.setTurnPosition(new Rotation2d(Math.PI))));
-                // driverController.povRight().onTrue( 
+                // driverController.povRight().onTrue(
                 // Commands.runOnce(() -> moduleFL.setTurnPosition(new Rotation2d(1.5 *
                 // Math.PI))));
                 // driverController.povUp().whileTrue(Commands.run(() ->
@@ -278,69 +275,72 @@ public class RobotContainer {
                 driverController.PovLeft().onTrue(drive.resetGyroCommand(Rotation2d.fromDegrees(125)));
                 driverController.PovRight().onTrue(drive.resetGyroCommand(Rotation2d.fromDegrees(-125)));
 
-   
+                driverController.x().whileTrue(
+                                DriveCommands.joystickDriveRobotRelative(drive, () -> 0.2, () -> 0, () -> 0));
+                driverController.b().whileTrue(
+                                DriveCommands.joystickDriveRobotRelative(drive, () -> -0.2, () -> 0, () -> 0));
+
                 driverController.RB().whileTrue(DriveCommands.joystickDriveRobotRelative(
-                        drive,
-                        () -> -driverController.getLeftY() * 0.3,
-                        () -> -driverController.getLeftX() * 0.3,
-                        () -> -driverController.getRightX() * 0.25));
+                                drive,
+                                () -> -driverController.getLeftY() * 0.3,
+                                () -> -driverController.getLeftX() * 0.3,
+                                () -> -driverController.getRightX() * 0.25));
 
                 // operator controller buttens
 
-                //algae arm open & close
+                // algae arm open & close
                 operatorController.LB().onTrue(AlgaeOuttakeCommands.openArm(algaeOuttake));
                 operatorController.RB().onTrue(AlgaeOuttakeCommands.closeArm(algaeOuttake));
-                
-                //outake algae
+
+                // outake algae
                 operatorController.a()
-                .whileTrue(ElevatorCommands.goToPosition(elevatorSubsystem, 11.5).withTimeout(0.8)
-                .andThen(DriveCommands.driveBackSlow(drive)
-                .raceWith(ElevatorCommands.goToPositionWithoutPid(
-                        elevatorSubsystem,
-                        ALGAE_OUTTAKE_ELEVATOR_POSITION))));
-                        
-                //L2, L3, close with pid
+                                .whileTrue(ElevatorCommands.goToPosition(elevatorSubsystem, 11.5).withTimeout(0.8)
+                                                .andThen(DriveCommands.driveBackSlow(drive)
+                                                                .raceWith(ElevatorCommands.goToPositionWithoutPid(
+                                                                                elevatorSubsystem,
+                                                                                ALGAE_OUTTAKE_ELEVATOR_POSITION))));
+
+                // L2, L3, close with pid
                 operatorController.y().onTrue(
-                        ElevatorCommands.goToPosition(elevatorSubsystem, ElevatorConstants.L3_POSITION));
-                operatorController.x().onTrue
-                (ElevatorCommands.closeElevator(elevatorSubsystem));
+                                ElevatorCommands.goToPosition(elevatorSubsystem, ElevatorConstants.L3_POSITION));
+                operatorController.x().onTrue(ElevatorCommands.closeElevator(elevatorSubsystem));
                 operatorController.b().onTrue(
-                        ElevatorCommands.goToPosition(elevatorSubsystem, ElevatorConstants.L2_POSITION));
-                
-                //intake coral                
+                                ElevatorCommands.goToPosition(elevatorSubsystem, ElevatorConstants.L2_POSITION));
+
+                // intake coral
                 operatorController.PovRight().whileTrue(TransferCommands.coralOutake(transfer));
-                
-                //rutern the coral back
+
+                // rutern the coral back
                 operatorController.PovLeft().whileTrue(TransferCommands.takeCoralIn(transfer));
 
-                
-                //manual elevator control
-                //fast
-                operatorController.leftTrigger().whileTrue(ElevatorCommands.closeElevatorManual(elevatorSubsystem, MANUAL_FAST_CLOSE));
-                
-                operatorController.rightTrigger().whileTrue(ElevatorCommands.openElevatorManual(elevatorSubsystem, MANUAL_FAST_OPEN));
+                // manual elevator control
+                // fast
+                operatorController.leftTrigger()
+                                .whileTrue(ElevatorCommands.closeElevatorManual(elevatorSubsystem, MANUAL_FAST_CLOSE));
 
-                //slow FIXME not working
-                //operatorController.PovUp().whileTrue(ElevatorCommands.openElevatorManual(elevatorSubsystem, MANUAL_SLOW_OPEN));
+                operatorController.rightTrigger()
+                                .whileTrue(ElevatorCommands.openElevatorManual(elevatorSubsystem, MANUAL_FAST_OPEN));
+
+                // slow FIXME not working
+                // operatorController.PovUp().whileTrue(ElevatorCommands.openElevatorManual(elevatorSubsystem,
+                // MANUAL_SLOW_OPEN));
 
                 operatorController.PovUp().whileTrue(TransferCommands.coralOutakeFast(transfer));
 
-                operatorController.PovDown().whileTrue(ElevatorCommands.closeElevatorManual(elevatorSubsystem, MANUAL_SLOW_CLOSE));
+                operatorController.PovDown()
+                                .whileTrue(ElevatorCommands.closeElevatorManual(elevatorSubsystem, MANUAL_SLOW_CLOSE));
 
-                //driverController.a().onTrue(LEDsCommands.setAll(leDs,color));
-                
+                // driverController.a().onTrue(LEDsCommands.setAll(leDs,color));
 
-
-
-                
                 // driverController.leftTrigger().onTrue(ElevatorCommands.setSpeed(elevatorSubsystem,
                 // 0.2));
                 // driverController.rightTrigger().onTrue(ElevatorCommands.stopElevator(elevatorSubsystem));
-                                        
+
                 // driverController.y().or(driverController.x())
-                //                 .onFalse(ElevatorCommands.closeElevator(elevatorSubsystem));
-                // driverController.leftTrigger().whileTrue(TransferCommands.coralOutake(transfer));       
-                // new Trigger(transfer::isCoralIn).onTrue(TransferCommands.startTransfer(transfer));
+                // .onFalse(ElevatorCommands.closeElevator(elevatorSubsystem));
+                // driverController.leftTrigger().whileTrue(TransferCommands.coralOutake(transfer));
+                // new
+                // Trigger(transfer::isCoralIn).onTrue(TransferCommands.startTransfer(transfer));
 
                 // driverController.PovDown().onTrue(ElevatorCommands.goToPosition(elevatorSubsystem,
                 // ALGAE_OUTTAKE_ELEVATOR_POSITION));
@@ -348,7 +348,7 @@ public class RobotContainer {
                 // driverController.PovDown().onTrue(ElevatorCommands.goToPositionWithoutPid(elevatorSubsystem,
                 // ALGAE_OUTTAKE_ELEVATOR_POSITION));
                 // operatorController.a().onFalse(
-                //                 (ElevatorCommands.closeElevator(elevatorSubsystem)));
+                // (ElevatorCommands.closeElevator(elevatorSubsystem)));
                 // driverController.PovDown().onFalse(AlgaeOuttakeCommands.closeArm(algaeOuttake)
                 // .alongWith(ElevatorCommands.closeElevator(elevatorSubsystem)));
 
@@ -375,7 +375,7 @@ public class RobotContainer {
         }
 
         // public void startTransfer() {
-        //         TransferCommands.startTransfer(transfer).schedule();
+        // TransferCommands.startTransfer(transfer).schedule();
         // }
 
         public void closeAlgaeArm() {
@@ -398,39 +398,18 @@ public class RobotContainer {
                 }
         }
 
-        public Command isRelativeCommand(){
+        public Command isRelativeCommand() {
                 isRelative = !isRelative;
                 return Commands.none();
         }
 
-        public void slowSpeedCommand(){
+        public void slowSpeedCommand() {
                 drive.setDefaultCommand(
-                                        DriveCommands.joystickDrive(
-                                                        drive,
-                                                        () -> -driverController.getLeftY() * 0.25,
-                                                        () -> -driverController.getLeftX() * 0.25,
-                                                        () -> -driverController.getRightX() * 0.25));
+                                DriveCommands.joystickDrive(
+                                                drive,
+                                                () -> -driverController.getLeftY() * 0.25,
+                                                () -> -driverController.getLeftX() * 0.25,
+                                                () -> -driverController.getRightX() * 0.25));
         }
 
-        
-
 }
-
-        
-        
-        
-        
-        
-
-        
-
-        
-        
-
-        
-        
-        
-        
-        
-
-        
