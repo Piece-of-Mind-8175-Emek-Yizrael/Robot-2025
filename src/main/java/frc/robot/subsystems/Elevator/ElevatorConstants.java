@@ -18,7 +18,7 @@ public class ElevatorConstants {
     public static final double MAX_VELOCITY = 50;
 
     public static final double FORWARD_SOFT_LIMIT = 0;
-    public static final double L2_POSITION = 32;
+    public static final double L2_POSITION = 32.5;
     public static final double L3_POSITION = 55;
 
     public static final double CLOSE_ELEVATOR_SPEED = -0.5;
@@ -34,7 +34,7 @@ public class ElevatorConstants {
     public static final double VOLTAGE_COMPENSATION = 12.0;
 
     public static final double UPPER_POSITION = 20;
-    
+
     public static final double MANUAL_SLOW_OPEN = 2;
     public static final double MANUAL_SLOW_CLOSE = -1;
     public static final double MANUAL_FAST_OPEN = 2.5;

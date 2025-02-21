@@ -689,6 +689,8 @@ public class DriveCommands {
           m_controllerX.calculate(pose.getTranslation().getX(), m_target.getTranslation().getX()),
           m_controllerY.calculate(pose.getTranslation().getY(), m_target.getTranslation().getY()),
           m_controllerTheta.calculate(pose.getRotation().getRadians(), m_target.getRotation().getRadians()));
+
+      chassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(chassisSpeeds, new Rotation2d());
       Logger.recordOutput("Requested speeds", chassisSpeeds);
       // Logger.recordOutput("pose", pose);
       // Logger.recordOutput("pose to", m_target);
@@ -708,4 +710,5 @@ public class DriveCommands {
       return (m_controllerX.atGoal() && m_controllerY.atGoal() && m_controllerTheta.atGoal());
     }
   }
+
 }

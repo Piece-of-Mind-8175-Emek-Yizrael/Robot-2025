@@ -282,7 +282,9 @@ public class Drive extends SubsystemBase {
 
   public void addVisionMeasurement(Pose2d visionPose, double timestamp) {
     if (goodVision
-        && !(DriverStation.isEnabled() && visionPose.getTranslation().getDistance(getPose().getTranslation()) > 0.5)) {
+    // && !(DriverStation.isEnabled() &&
+    // visionPose.getTranslation().getDistance(getPose().getTranslation()) > 0.5)) {
+    ) {
       poseEstimator.addVisionMeasurement(visionPose, timestamp);
     }
   }
@@ -420,11 +422,13 @@ public class Drive extends SubsystemBase {
       double timestampSeconds,
       Matrix<N3, N1> visionMeasurementStdDevs) {
     if (goodVision
-        && !(DriverStation.isEnabled()
-            && visionRobotPoseMeters.getTranslation().getDistance(getPose().getTranslation()) > 0.5)) {
+    // && !(DriverStation.isEnabled()
+    // &&
+    // visionRobotPoseMeters.getTranslation().getDistance(getPose().getTranslation())
+    // > 0.5)) {
+    ) {
+      poseEstimator.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
 
-      poseEstimator.addVisionMeasurement(
-          visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
     }
   }
 
