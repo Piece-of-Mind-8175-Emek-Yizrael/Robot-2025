@@ -14,6 +14,7 @@
 package frc.robot;
 
 import static frc.robot.subsystems.AlgaeOuttake.AlgaeOuttakeConstants.ALGAE_OUTTAKE_ELEVATOR_POSITION;
+import static frc.robot.subsystems.Elevator.ElevatorConstants.L2_POSITION;
 import static frc.robot.subsystems.Elevator.ElevatorConstants.MANUAL_FAST_CLOSE;
 import static frc.robot.subsystems.Elevator.ElevatorConstants.MANUAL_FAST_OPEN;
 import static frc.robot.subsystems.Elevator.ElevatorConstants.MANUAL_SLOW_CLOSE;
@@ -29,9 +30,12 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.POM_lib.Joysticks.PomXboxController;
@@ -64,6 +68,7 @@ import frc.robot.subsystems.drive.GyroIOSim;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOPOM;
 import frc.robot.subsystems.drive.ModuleIOSim;
+import frc.robot.subsystems.drive.FieldConstants.Reef;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -186,34 +191,46 @@ public class RobotContainer {
                                                                                                             // builder
 
                 // Set up SysId routines
-                autoChooser.addOption(
-                                "Drive Wheel Radius Characterization",
-                                DriveCommands.wheelRadiusCharacterization(drive));
-                autoChooser.addOption(
-                                "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
-                autoChooser.addOption(
-                                "Drive SysId (Quasistatic Forward)",
-                                drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-                autoChooser.addOption(
-                                "Drive SysId (Quasistatic Reverse)",
-                                drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-                autoChooser.addOption(
-                                "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
-                autoChooser.addOption(
-                                "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-                autoChooser.addOption(
-                                "Drive SysId (Quasistatic Steer Forward)",
-                                drive.sysIdSteerQuasistatic(SysIdRoutine.Direction.kForward));
-                autoChooser.addOption(
-                                "Drive SysId (Quasistatic Steer Reverse)",
-                                drive.sysIdSteerQuasistatic(SysIdRoutine.Direction.kReverse));
-                autoChooser.addOption(
-                                "Drive SysId (Dynamic Steer Forward)",
-                                drive.sysIdSteerDynamic(SysIdRoutine.Direction.kForward));
-                autoChooser.addOption(
-                                "Drive SysId (Dynamic Steer Reverse)",
-                                drive.sysIdSteerDynamic(SysIdRoutine.Direction.kReverse));
+                // autoChooser.addOption(
+                // "Drive Wheel Radius Characterization",
+                // DriveCommands.wheelRadiusCharacterization(drive));
+                // autoChooser.addOption(
+                // "Drive Simple FF Characterization",
+                // DriveCommands.feedforwardCharacterization(drive));
+                // autoChooser.addOption(
+                // "Drive SysId (Quasistatic Forward)",
+                // drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+                // autoChooser.addOption(
+                // "Drive SysId (Quasistatic Reverse)",
+                // drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+                // autoChooser.addOption(
+                // "Drive SysId (Dynamic Forward)",
+                // drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
+                // autoChooser.addOption(
+                // "Drive SysId (Dynamic Reverse)",
+                // drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+                // autoChooser.addOption(
+                // "Drive SysId (Quasistatic Steer Forward)",
+                // drive.sysIdSteerQuasistatic(SysIdRoutine.Direction.kForward));
+                // autoChooser.addOption(
+                // "Drive SysId (Quasistatic Steer Reverse)",
+                // drive.sysIdSteerQuasistatic(SysIdRoutine.Direction.kReverse));
+                // autoChooser.addOption(
+                // "Drive SysId (Dynamic Steer Forward)",
+                // drive.sysIdSteerDynamic(SysIdRoutine.Direction.kForward));
+                // autoChooser.addOption(
+                // "Drive SysId (Dynamic Steer Reverse)",
+                // drive.sysIdSteerDynamic(SysIdRoutine.Direction.kReverse));
 
+                autoChooser.addOption("drive out",
+                                DriveCommands.joystickDriveRobotRelative(drive, () -> 0.22, () -> 0, () -> 0)
+                                                .withTimeout(1.2));
+                autoChooser.addOption("put L2", new ConditionalCommand(
+                                new DriveToPosition(drive, Reef.blueLeftBranches[3]),
+                                new DriveToPosition(drive, Reef.redLeftBranches[3]),
+                                () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue)
+                                .andThen(ElevatorCommands.goToPosition(elevatorSubsystem, L2_POSITION))
+                                .andThen(TransferCommands.coralOutakeFast(transfer)));
                 // Configure the button bindings
                 configureButtonBindings();
         }
@@ -226,23 +243,23 @@ public class RobotContainer {
                 drive.setDefaultCommand(
                                 DriveCommands.joystickDrive(
                                                 drive,
-                                                () -> -driverController.getLeftY() * 0.35,
-                                                () -> -driverController.getLeftX() * 0.35,
-                                                () -> -driverController.getRightX() * 0.25));
+                                                () -> driverController.getLeftY() * 0.35,
+                                                () -> driverController.getLeftX() * 0.35,
+                                                () -> driverController.getRightX() * 0.32));
 
                 driverController.leftTrigger().whileTrue(
                                 DriveCommands.joystickDrive(
                                                 drive,
-                                                () -> -driverController.getLeftY() * 0.25,
-                                                () -> -driverController.getLeftX() * 0.25,
-                                                () -> -driverController.getRightX() * 0.25));
+                                                () -> driverController.getLeftY() * 0.25,
+                                                () -> driverController.getLeftX() * 0.25,
+                                                () -> driverController.getRightX() * 0.25));
 
                 driverController.rightTrigger().whileTrue(
                                 DriveCommands.joystickDrive(
                                                 drive,
-                                                () -> -driverController.getLeftY() * 0.6,
-                                                () -> -driverController.getLeftX() * 0.6,
-                                                () -> -driverController.getRightX() * 0.25));
+                                                () -> driverController.getLeftY() * 0.6,
+                                                () -> driverController.getLeftX() * 0.6,
+                                                () -> driverController.getRightX() * 0.35));
 
                 // driverController.povRight().onTrue(getPathCommand());
                 driverController.x().whileTrue(DriveCommands.locateToReefCommand(drive, true));
@@ -250,8 +267,6 @@ public class RobotContainer {
 
                 driverController.x().or(driverController.b()).onFalse(new InstantCommand(() -> {
                 }, drive));
-
-                driverController.back().whileTrue(new DriveToPosition(drive, new Pose2d(2, 2, new Rotation2d())));
 
                 // driverController.povLeft().onTrue(Commands.runOnce(() ->
                 // moduleFL.setTurnPosition(new Rotation2d(Math.PI)).l;p.));
@@ -293,9 +308,9 @@ public class RobotContainer {
                 driverController.PovRight().onTrue(drive.resetGyroCommand(Rotation2d.fromDegrees(-125)));
 
                 driverController.LB().whileTrue(
-                                DriveCommands.joystickDriveRobotRelative(drive, () -> 0, () -> -0.28, () -> 0));
+                                DriveCommands.joystickDriveRobotRelative(drive, () -> 0, () -> 0.24, () -> 0));
                 driverController.RB().whileTrue(
-                                DriveCommands.joystickDriveRobotRelative(drive, () -> 0, () -> 0.28, () -> 0));
+                                DriveCommands.joystickDriveRobotRelative(drive, () -> 0, () -> -0.24, () -> 0));
 
                 driverController.a().debounce(1)
                                 .onTrue(new InstantCommand(() -> drive.disableGoodVision()).ignoringDisable(true));
