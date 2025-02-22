@@ -51,6 +51,7 @@ import frc.robot.subsystems.AlgaeOuttake.AlgaeOuttakeIOSim;
 import frc.robot.subsystems.Elevator.Elevator;
 import frc.robot.subsystems.Elevator.ElevatorConstants;
 import frc.robot.subsystems.Elevator.ElevatorIO;
+import frc.robot.subsystems.Elevator.ElevatorIOSim;
 import frc.robot.subsystems.Elevator.ElevatorReal;
 import frc.robot.subsystems.LEDs.LEDs;
 import frc.robot.subsystems.LEDs.LEDsIOSim;
@@ -127,10 +128,11 @@ public class RobotContainer {
 
                                 // leds = new LEDs(new LEDsIOReal());
                                 VisionIOReal[] cameras = {
-                                                // new VisionIOReal("Left Front Camera",
-                                                // Constants.VisionConstants.l_camera_transform),
+                                                new VisionIOReal("Left Front Camera",
+                                                                Constants.VisionConstants.l_camera_transform),
                                                 new VisionIOReal("Right Front Camera",
-                                                                Constants.VisionConstants.r_camera_transform), };
+                                                                Constants.VisionConstants.r_camera_transform),
+                                };
                                 vision = new VisionSubsystem(drive::addVisionMeasurement, cameras);
 
                         case SIM:
@@ -154,6 +156,7 @@ public class RobotContainer {
                                 // driveSimulation::getSimulatedDriveTrainPose));
                                 // transfer = new Transfer(new TransferIOSim(driveSimulation));
                                 // algaeOuttake = new AlgaeOuttake(new AlgaeOuttakeIOSim());
+                                // elevatorSubsystem = new Elevator(new ElevatorIOSim());
 
                                 // leds = new LEDs(new LEDsIOSim());
 
