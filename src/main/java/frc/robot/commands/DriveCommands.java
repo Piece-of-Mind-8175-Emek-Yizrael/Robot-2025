@@ -24,6 +24,8 @@ import static frc.robot.subsystems.drive.DriveConstants.MAX_ACCELERATION_OMEGA;
 import static frc.robot.subsystems.drive.DriveConstants.MAX_ACCELERATION_XY;
 import static frc.robot.subsystems.drive.DriveConstants.MAX_VELOCETY_OMEGA;
 import static frc.robot.subsystems.drive.DriveConstants.MAX_VELOCETY_XY;
+import static frc.robot.subsystems.drive.DriveConstants.OMEGA_TOLERANCE;
+import static frc.robot.subsystems.drive.DriveConstants.TRANSLATION_TOLERANCE;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -32,14 +34,14 @@ import java.util.List;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
+
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -63,7 +65,6 @@ public class DriveCommands {
   private static final double FF_RAMP_RATE = 0.1; // Volts/Sec
   private static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Rad/Sec
   private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
-
 
   private DriveCommands() {
   }
@@ -163,31 +164,33 @@ public class DriveCommands {
         },
         drive).beforeStarting(Commands.runOnce(drive::resetKinematics, drive));
   }
+
   public static Command joystickDriveRobotRelative(
-    Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier omegaSupplier) {
-  return Commands.run(
-      () -> {
-        // Get linear velocity
-        Translation2d linearVelocity = getLinearVelocityFromJoysticks(xSupplier.getAsDouble(),
-            ySupplier.getAsDouble());
+      Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier omegaSupplier) {
+    return Commands.run(
+        () -> {
+          // Get linear velocity
+          Translation2d linearVelocity = getLinearVelocityFromJoysticks(xSupplier.getAsDouble(),
+              ySupplier.getAsDouble());
 
-        // Apply rotation deadband
-        double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
+          // Apply rotation deadband
+          double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
 
-        // Square rotation value for more precise control
-        omega = Math.copySign(omega * omega, omega);
+          // Square rotation value for more precise control
+          omega = Math.copySign(omega * omega, omega);
 
-        // Convert to field relative speeds & send command
-        ChassisSpeeds speeds = new ChassisSpeeds(
-            linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
-            linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
-            omega * drive.getMaxAngularSpeedRadPerSec());
-        boolean isFlipped = DriverStation.getAlliance().isPresent()
-            && DriverStation.getAlliance().get() == Alliance.Red;
-                drive.runVelocity(speeds, true);
-      },
-      drive).beforeStarting(Commands.runOnce(drive::resetKinematics, drive));
-}
+          // Convert to field relative speeds & send command
+          ChassisSpeeds speeds = new ChassisSpeeds(
+              linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
+              linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
+              omega * drive.getMaxAngularSpeedRadPerSec());
+          boolean isFlipped = DriverStation.getAlliance().isPresent()
+              && DriverStation.getAlliance().get() == Alliance.Red;
+          drive.runVelocity(speeds, true);
+        },
+        drive).beforeStarting(Commands.runOnce(drive::resetKinematics, drive));
+  }
+
   public static Command joystickDriveClosedLoopVel(
       Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier omegaSupplier) {
     return Commands.run(
@@ -471,11 +474,95 @@ public class DriveCommands {
     double gyroDelta = 0.0;
   }
 
-  public static Command goToPosition(Drive drive, Pose3d positions){
+  public static Command goToPosition(Drive drive, Pose3d positions) {
+
     ChassisSpeeds speeds = new ChassisSpeeds(
-      new ProfiledPIDController(KP_XY, KI_XY, KD_XY, new TrapezoidProfile.Constraints(MAX_VELOCETY_XY, MAX_ACCELERATION_XY)).calculate(positions.getX()),
-      new ProfiledPIDController(KP_XY, KI_XY, KD_XY, new TrapezoidProfile.Constraints(MAX_VELOCETY_XY, MAX_ACCELERATION_XY)).calculate(positions.getY()),
-      new ProfiledPIDController(KP_OMEGA, KI_OMEGA, KD_OMEGA, new TrapezoidProfile.Constraints(MAX_VELOCETY_OMEGA, MAX_ACCELERATION_OMEGA)).calculate(positions.getRotation().getAngle()));
+        new ProfiledPIDController(KP_XY, KI_XY, KD_XY,
+            new TrapezoidProfile.Constraints(MAX_VELOCETY_XY, MAX_ACCELERATION_XY)).calculate(positions.getX()),
+        new ProfiledPIDController(KP_XY, KI_XY, KD_XY,
+            new TrapezoidProfile.Constraints(MAX_VELOCETY_XY, MAX_ACCELERATION_XY)).calculate(positions.getY()),
+        new ProfiledPIDController(KP_OMEGA, KI_OMEGA, KD_OMEGA,
+            new TrapezoidProfile.Constraints(MAX_VELOCETY_OMEGA, MAX_ACCELERATION_OMEGA))
+            .calculate(positions.getRotation().getAngle()));
     return Commands.runEnd(() -> drive.runVelocity(speeds, true), () -> drive.stop(), drive);
+  }
+
+  public class DriveToPosition extends Command {
+    private final Drive m_drive;
+    private final Pose2d m_target;
+    private final ProfiledPIDController m_controllerX;
+    private final ProfiledPIDController m_controllerY;
+    private final ProfiledPIDController m_controllerTheta;
+    private final Timer m_timer = new Timer();
+
+    LoggedNetworkNumber kpTune = new LoggedNetworkNumber("tunes/translation kp", KP_XY);
+    LoggedNetworkNumber kiTune = new LoggedNetworkNumber("tunes/translation ki", KI_XY);
+    LoggedNetworkNumber kdTune = new LoggedNetworkNumber("tunes/translation kd", KD_XY);
+    LoggedNetworkNumber maxVelocityTune = new LoggedNetworkNumber("tunes/translation max velocity", MAX_VELOCETY_XY);
+    LoggedNetworkNumber maxAccelerationTune = new LoggedNetworkNumber("tunes/translation max acceleration",
+        MAX_ACCELERATION_XY);
+
+    LoggedNetworkNumber kpThetaTune = new LoggedNetworkNumber("tunes/rotation kp", KP_OMEGA);
+    LoggedNetworkNumber kiThetaTune = new LoggedNetworkNumber("tunes/rotation ki", KI_OMEGA);
+    LoggedNetworkNumber kdThetaTune = new LoggedNetworkNumber("tunes/rotation kd", KD_OMEGA);
+    LoggedNetworkNumber maxVelocityThetaTune = new LoggedNetworkNumber("tunes/rotation max velocity",
+        MAX_VELOCETY_OMEGA);
+    LoggedNetworkNumber maxAccelerationThetaTune = new LoggedNetworkNumber("tunes/rotation max acceleration",
+        MAX_ACCELERATION_OMEGA);
+
+    LoggedNetworkNumber translationTolerance = new LoggedNetworkNumber("tunes/translation tolerance",
+        TRANSLATION_TOLERANCE);
+    LoggedNetworkNumber omegaTolerance = new LoggedNetworkNumber("tunes/rotation tolerance", OMEGA_TOLERANCE);
+
+    public DriveToPosition(Drive drive, Pose2d target) {
+      m_drive = drive;
+      m_target = target;
+      m_controllerX = new ProfiledPIDController(KP_XY, KI_XY, KD_XY,
+          new TrapezoidProfile.Constraints(MAX_VELOCETY_XY, MAX_ACCELERATION_XY));
+      m_controllerX.setTolerance(TRANSLATION_TOLERANCE);
+      m_controllerY = new ProfiledPIDController(KP_XY, KI_XY, KD_XY,
+          new TrapezoidProfile.Constraints(MAX_VELOCETY_XY, MAX_ACCELERATION_XY));
+      m_controllerY.setTolerance(TRANSLATION_TOLERANCE);
+      m_controllerTheta = new ProfiledPIDController(KP_OMEGA, KI_OMEGA, KD_OMEGA,
+          new TrapezoidProfile.Constraints(MAX_VELOCETY_OMEGA, MAX_ACCELERATION_OMEGA));
+      m_controllerTheta.setTolerance(OMEGA_TOLERANCE);
+      m_controllerTheta.enableContinuousInput(-Math.PI, Math.PI);
+      addRequirements(drive);
+    }
+
+    @Override
+    public void initialize() {
+      m_timer.reset();
+      m_timer.start();
+    }
+
+    @Override
+    public void execute() {
+      m_controllerX.setPID(kpTune.get(), kiTune.get(), kdTune.get());
+      m_controllerX.setConstraints(new TrapezoidProfile.Constraints(maxVelocityTune.get(), maxAccelerationTune.get()));
+      m_controllerY.setPID(kpTune.get(), kiTune.get(), kdTune.get());
+      m_controllerY.setConstraints(new TrapezoidProfile.Constraints(maxVelocityTune.get(), maxAccelerationTune.get()));
+      m_controllerTheta.setPID(kpThetaTune.get(), kiThetaTune.get(), kdThetaTune.get());
+      m_controllerTheta.setConstraints(
+          new TrapezoidProfile.Constraints(maxVelocityThetaTune.get(), maxAccelerationThetaTune.get()));
+
+      var pose = m_drive.getPose();
+      var chassisSpeeds = new ChassisSpeeds(
+          m_controllerX.calculate(pose.getTranslation().getX(), m_target.getTranslation().getX()),
+          m_controllerY.calculate(pose.getTranslation().getY(), m_target.getTranslation().getY()),
+          m_controllerTheta.calculate(pose.getRotation().getRadians(), m_target.getRotation().getRadians()));
+      m_drive.runVelocity(chassisSpeeds, true);
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+      m_drive.stop();
+    }
+
+    @Override
+    public boolean isFinished() {
+      // return m_timer.hasElapsed(5) ||
+      return (m_controllerX.atGoal() && m_controllerY.atGoal() && m_controllerTheta.atGoal());
+    }
   }
 }
