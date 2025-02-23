@@ -30,6 +30,16 @@ import java.util.function.Supplier;
 
 import org.ironmaple.simulation.drivesims.COTS;
 import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
+import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
+
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
+
+import org.ironmaple.simulation.drivesims.COTS;
+import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -39,7 +49,6 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.PathPlannerLogging;
-
 import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
@@ -60,6 +69,7 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -69,6 +79,7 @@ import frc.robot.Constants.Mode;
 import frc.robot.util.LocalADStarAK;
 
 public class Drive extends SubsystemBase {
+  boolean goodVision = true;
   static final Lock odometryLock = new ReentrantLock();
   private final GyroIO gyroIO;
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
@@ -116,7 +127,7 @@ public class Drive extends SubsystemBase {
         this::getChassisSpeeds,
         this::runPureVelocity,
         new PPHolonomicDriveController(
-            new PIDConstants(5.0, 0.0, 0.0), new PIDConstants(5.0, 0.0, 0.0)),
+            new PIDConstants(2.5, 0.0, 0.0), new PIDConstants(2.5, 0.0, 0.0)),
         ppConfig,
         () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
         this);
@@ -150,6 +161,12 @@ public class Drive extends SubsystemBase {
             (voltage) -> runSteerCharacterization(voltage.in(Volts)), null, this));
 
     PushSwerveData();
+    Field2d field = new Field2d();
+    for (int i = 0; i < 6; i += 1) {
+      field.getObject("left" + i).setPose(FieldConstants.Reef.blueLeftBranches[i]);
+      field.getObject("right" + i).setPose(FieldConstants.Reef.blueRightBranches[i]);
+    }
+    SmartDashboard.putData("Field", field);
   }
 
   public static final DriveTrainSimulationConfig maplesimConfig = DriveTrainSimulationConfig.Default()
@@ -191,6 +208,7 @@ public class Drive extends SubsystemBase {
       Logger.recordOutput("SwerveStates/Setpoints", new SwerveModuleState[] {});
       Logger.recordOutput("SwerveStates/SetpointsOptimized", new SwerveModuleState[] {});
     }
+    Logger.recordOutput("good vision", goodVision);
 
     // Update odometry
     double[] sampleTimestamps = modules[0].getOdometryTimestamps(); // All signals are sampled together
@@ -247,13 +265,28 @@ public class Drive extends SubsystemBase {
     Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
     Logger.recordOutput("SwerveChassisSpeeds/Setpoints", speeds);
 
-    // Send setpoints to modules
-    for (int i = 0; i < 4; i++) {
-      modules[i].runSetpoint(setpointStates[i], isOpenLoop);
+    if (Math.abs(speeds.omegaRadiansPerSecond + speeds.vxMetersPerSecond + speeds.vyMetersPerSecond) < 0.01) {
+      for (int i = 0; i < 4; i++) {
+        modules[i].stop();
+      }
+    } else {
+      // Send setpoints to modules
+      for (int i = 0; i < 4; i++) {
+        modules[i].runSetpoint(setpointStates[i], isOpenLoop);
+      }
     }
 
     // Log optimized setpoints (runSetpoint mutates each state)
     Logger.recordOutput("SwerveStates/SetpointsOptimized", setpointStates);
+  }
+
+  public void addVisionMeasurement(Pose2d visionPose, double timestamp) {
+    if (goodVision
+    // && !(DriverStation.isEnabled() &&
+    // visionPose.getTranslation().getDistance(getPose().getTranslation()) > 0.5)) {
+    ) {
+      poseEstimator.addVisionMeasurement(visionPose, timestamp);
+    }
   }
 
   /** Runs the drive in a straight line with the specified drive output. */
@@ -345,7 +378,7 @@ public class Drive extends SubsystemBase {
 
   /** Returns the measured chassis speeds of the robot. */
   @AutoLogOutput(key = "SwerveChassisSpeeds/Measured")
-  private ChassisSpeeds getChassisSpeeds() {
+  public ChassisSpeeds getChassisSpeeds() {
     return kinematics.toChassisSpeeds(getModuleStates());
   }
 
@@ -388,8 +421,15 @@ public class Drive extends SubsystemBase {
       Pose2d visionRobotPoseMeters,
       double timestampSeconds,
       Matrix<N3, N1> visionMeasurementStdDevs) {
-    poseEstimator.addVisionMeasurement(
-        visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
+    if (goodVision
+    // && !(DriverStation.isEnabled()
+    // &&
+    // visionRobotPoseMeters.getTranslation().getDistance(getPose().getTranslation())
+    // > 0.5)) {
+    ) {
+      poseEstimator.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
+
+    }
   }
 
   /** Returns the maximum linear speed in meters per sec. */
@@ -402,6 +442,10 @@ public class Drive extends SubsystemBase {
     return maxSpeedMetersPerSec / driveBaseRadius;
   }
 
+  public void disableGoodVision() {
+    this.goodVision = false;
+  }
+
   public void resetKinematics() {
     Rotation2d[] rotations = new Rotation2d[4];
     for (int i = 0; i < rotations.length; i++) {
@@ -411,18 +455,29 @@ public class Drive extends SubsystemBase {
   }
 
   public void resetGyro() {
-    gyroIO.reset();
-    setPose(new Pose2d(getPose().getTranslation(), new Rotation2d()));
+    if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue) {
+      resetGyro(new Rotation2d());
+      setPose(new Pose2d(getPose().getTranslation(), new Rotation2d()));
+    } else {
+      resetGyro(new Rotation2d(Math.PI));
+      setPose(new Pose2d(getPose().getTranslation(), new Rotation2d(Math.PI)));
+    }
   }
 
   public void resetGyro(Rotation2d to) {
+    if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue) {
+      to = to.minus(new Rotation2d(Math.PI));
+    }
     gyroIO.reset(to);
-    rawGyroRotation = to;
     setPose(new Pose2d(getPose().getTranslation(), to));
   }
 
   public Command resetGyroCommand() {
     return this.runOnce(this::resetGyro).ignoringDisable(true);
+  }
+
+  public Command resetGyroCommand(Rotation2d to) {
+    return this.runOnce(() -> this.resetGyro(to)).ignoringDisable(true);
   }
 
   public Command resetGyroCommand(Supplier<Rotation2d> to) {

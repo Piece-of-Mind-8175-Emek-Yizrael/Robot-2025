@@ -12,6 +12,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.POM_lib.Motors.POMSparkMax;
 import frc.robot.POM_lib.sensors.POMDigitalInput;
 
@@ -56,7 +57,6 @@ public class ElevatorReal implements ElevatorIO {
 
         encoder.setPosition(0);
 
-        // TODO finish configure
     }
 
     @Override
@@ -69,6 +69,10 @@ public class ElevatorReal implements ElevatorIO {
         inputs.foldSwitch = foldSwitch.get();
         setPidValues();
         resetlfPressed();
+    }
+
+    private void resetEncoder(){
+        encoder.setPosition(0);
     }
 
     @Override
@@ -110,21 +114,52 @@ public class ElevatorReal implements ElevatorIO {
 
     boolean lastSwitchState = false;
 
+    // @Override
+    // public void resetlfPressed() {
+    //     if (DriverStation.isEnabled()) {
+    //         if (foldSwitch.get()) {
+    //             encoder.setPosition(0);
+    //             if (!lastSwitchState) {
+    //                 motor.configure(new SparkMaxConfig().idleMode(IdleMode.kBrake), ResetMode.kNoResetSafeParameters,
+    //                         PersistMode.kNoPersistParameters);
+    //             }
+    //             lastSwitchState = true;
+    //         } else if (lastSwitchState) {
+    //             motor.configure(new SparkMaxConfig().idleMode(IdleMode.kCoast), ResetMode.kNoResetSafeParameters,
+    //                     PersistMode.kNoPersistParameters);
+    //             lastSwitchState = false;
+    //         }
+    //     } else {
+    //         motor.configure(new SparkMaxConfig().idleMode(IdleMode.kBrake), ResetMode.kNoResetSafeParameters,
+    //                 PersistMode.kNoPersistParameters);
+    //     }
+
+    // }
+
     @Override
     public void resetlfPressed() {
-        if (foldSwitch.get()) {
-            encoder.setPosition(0);
-            if (!lastSwitchState) {
+        if(DriverStation.isEnabled()){
+            if(foldSwitch.get()){
                 motor.configure(new SparkMaxConfig().idleMode(IdleMode.kBrake), ResetMode.kNoResetSafeParameters,
-                        PersistMode.kNoPersistParameters);
+                     PersistMode.kNoPersistParameters);
+                resetEncoder();
             }
-            lastSwitchState = true;
-        } else if (lastSwitchState) {
-            motor.configure(new SparkMaxConfig().idleMode(IdleMode.kCoast), ResetMode.kNoResetSafeParameters,
-                    PersistMode.kNoPersistParameters);
-            lastSwitchState = false;
+            else{
+                motor.configure(new SparkMaxConfig().idleMode(IdleMode.kCoast), ResetMode.kNoResetSafeParameters,
+                     PersistMode.kNoPersistParameters);
+            }
         }
-
+        else{
+            // if(foldSwitch.get()){
+            //     motor.configure(new SparkMaxConfig().idleMode(IdleMode.kCoast), ResetMode.kNoResetSafeParameters,
+            //          PersistMode.kNoPersistParameters);
+            //     resetEncoder();
+            // }
+            // else{
+                motor.configure(new SparkMaxConfig().idleMode(IdleMode.kBrake), ResetMode.kNoResetSafeParameters,
+                     PersistMode.kNoPersistParameters);
+            // }
+        }
     }
 
     @Override
@@ -164,6 +199,15 @@ public class ElevatorReal implements ElevatorIO {
     @Override
     public void setVoltageWithResistGravity(double voltage) {
         motor.setVoltage(getFeedForwardVelocity(0) + voltage);
+    }
+
+    public double getPosition() {
+        return encoder.getPosition();
+    }
+
+    @Override
+    public void resetPID() {
+        pidController.reset(encoder.getPosition(), encoder.getVelocity());
     }
 
 }

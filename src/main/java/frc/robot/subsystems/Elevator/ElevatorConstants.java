@@ -18,8 +18,8 @@ public class ElevatorConstants {
     public static final double MAX_VELOCITY = 50;
 
     public static final double FORWARD_SOFT_LIMIT = 0;
-    public static final double L2_POSITION = 30;
-    public static final double L3_POSITION = 55.2;
+    public static final double L2_POSITION = 32.5;
+    public static final double L3_POSITION = 55;
 
     public static final double CLOSE_ELEVATOR_SPEED = -0.5;
 
@@ -27,7 +27,7 @@ public class ElevatorConstants {
 
     public static double KG_OF_CORAL = 0.1;
 
-    public static final boolean INVERTED = false;
+    public static final boolean INVERTED = true;
 
     public static final int CURRENT_LIMIT = 40;
 
@@ -35,4 +35,8 @@ public class ElevatorConstants {
 
     public static final double UPPER_POSITION = 20;
 
+    public static final double MANUAL_SLOW_OPEN = 2;
+    public static final double MANUAL_SLOW_CLOSE = -1;
+    public static final double MANUAL_FAST_OPEN = 2.5;
+    public static final double MANUAL_FAST_CLOSE = -2;
 }

@@ -21,9 +21,26 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 
 public class DriveConstants {
-        public static final double ALGAE_OUTTAKE_DRIVE_BACK_SPEED = -0.4;
+        public static final double KP_XY = 0.5;
+        public static final double KI_XY = 0;
+        public static final double KD_XY = 0;
+        public static final double MAX_ACCELERATION_XY = 1.5;
+        public static final double MAX_VELOCETY_XY = 1.5;
+        public static final double TRANSLATION_TOLERANCE = 0.04;
 
-        public static final double maxSpeedMetersPerSec = 4;
+        public static final double KP_OMEGA = 0.5;
+        public static final double KI_OMEGA = 0;
+        public static final double KD_OMEGA = 0;
+        public static final double MAX_ACCELERATION_OMEGA = 1;
+        public static final double MAX_VELOCETY_OMEGA = 1;
+        public static final double OMEGA_TOLERANCE = 0.05;
+
+        public static final double ALGAE_OUTTAKE_DRIVE_BACK_SPEED = 0.03;
+
+        public static final double maxSpeedMetersPerSec = 6;
+        public static final double maxAccMetersPerSecSquared = 4;
+        public static final double maxSpeedRadiansPerSec = 4;
+        public static final double maxAccRadiansPerSecSquared = 4;
         public static final double odometryFrequency = 100.0; // Hz
         public static final double trackWidth = 0.55735;
         public static final double wheelBase = 0.55735;
@@ -39,7 +56,7 @@ public class DriveConstants {
         public static final Rotation2d frontLeftZeroRotation = new Rotation2d(0.9715 + Math.PI);
         public static final Rotation2d frontRightZeroRotation = new Rotation2d(0.39);
         public static final Rotation2d backLeftZeroRotation = new Rotation2d(1.54 + Math.PI);
-        public static final Rotation2d backRightZeroRotation = new Rotation2d(3.05 + Math.PI);
+        public static final Rotation2d backRightZeroRotation = new Rotation2d(3.05 + 1.015 + Math.PI);
 
         // Device CAN IDs
         public static final int pigeonCanId = 2;
@@ -79,10 +96,10 @@ public class DriveConstants {
                                                                                                             // Rad/Sec
 
         // Drive PID configuration
-        public static final double driveKp = 0.0;
+        public static final double driveKp = 0.1;
         public static final double driveKd = 0.0;
-        public static final double driveKs = 0.1;
-        public static final double driveKv = 0.7;
+        public static final double driveKs = 0.25;
+        public static final double driveKv = .4;
         public static final double driveSimP = 0.05;
         public static final double driveSimD = 0.0;
         public static final double driveSimKs = 0.0;
@@ -105,7 +122,7 @@ public class DriveConstants {
         public static final double turnEncoderVelocityFactor = turnEncoderPositionFactor / 60.0; // RPM -> Rad/Sec
 
         // Turn PID configuration
-        public static final double turnKp = 0.275;
+        public static final double turnKp = 0.29;
         public static final double turnKd = 0.0744;
         public static final double turnKs = 0.25;
         // public static final double turnKp = 0.275;

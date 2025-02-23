@@ -47,7 +47,6 @@ import org.littletonrobotics.urcl.URCL;
 public class Robot extends LoggedRobot {
   private Command autonomousCommand;
   private RobotContainer robotContainer;
-  private AnalogInput temp = new AnalogInput(0);// TODO remomve
 
   public Robot() {
     // Record metadata;
@@ -123,7 +122,6 @@ public class Robot extends LoggedRobot {
     // the Command-based framework to work.
     CommandScheduler.getInstance().run();
 
-    SmartDashboard.putNumber("Transfer Sensor", temp.getValue());
     // Return to normal thread priority
     Threads.setCurrentThreadPriority(false, 10);
   }
@@ -212,6 +210,6 @@ public class Robot extends LoggedRobot {
 
   public void enable() {
     robotContainer.closeAlgaeArm();
-    robotContainer.startTransfer();
+    // robotContainer.startTransfer();
   }
 }

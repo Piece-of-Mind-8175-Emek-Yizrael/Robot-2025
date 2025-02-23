@@ -1,5 +1,7 @@
 package frc.robot.subsystems.Transfer;
 
+import java.util.function.BooleanSupplier;
+
 import org.littletonrobotics.junction.AutoLog;
 
 public interface TransferIO {
@@ -16,9 +18,17 @@ public interface TransferIO {
 
   public default void setVoltage(double voltage) {}
 
-  public default void stopMotor(){}
+  public default void stopMotor() {}
 
-  public default boolean isCoralIn(){ return false; }
+  public default boolean isCoralIn() { return false; }
 
   public default void updateInputs(TransferIOInputs inputs) {}
+
+  public default void setPidValues() {}
+
+  public default void setGoal(double goal) {}
+
+  public default BooleanSupplier atGoal() { return () -> false; }
+
+  public default void setVoltageWithPid(double voltage) {}
 }
