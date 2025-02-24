@@ -37,6 +37,6 @@ public class ElevatorConstants {
 
     public static final double MANUAL_SLOW_OPEN = 2;
     public static final double MANUAL_SLOW_CLOSE = -1;
-    public static final double MANUAL_FAST_OPEN = 2.5;
-    public static final double MANUAL_FAST_CLOSE = -2;
+    public static final double MANUAL_FAST_OPEN = 3;
+    public static final double MANUAL_FAST_CLOSE = -2.5;
 }

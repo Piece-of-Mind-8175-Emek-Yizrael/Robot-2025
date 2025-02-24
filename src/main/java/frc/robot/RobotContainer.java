@@ -32,6 +32,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -189,9 +190,11 @@ public class RobotContainer {
                 }
 
                 // Set up auto routines
-                autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser()); // TODO use
-                                                                                                            // auto
-                                                                                                            // builder
+                // autoChooser = new LoggedDashboardChooser<>("Auto Choices",
+                // AutoBuilder.buildAutoChooser()); // TODO use
+                autoChooser = new LoggedDashboardChooser<>("Auto Choices", new SendableChooser<>()); // TODO use
+                                                                                                     // auto
+                                                                                                     // builder
 
                 // Set up SysId routines
                 // autoChooser.addOption(
@@ -225,9 +228,10 @@ public class RobotContainer {
                 // "Drive SysId (Dynamic Steer Reverse)",
                 // drive.sysIdSteerDynamic(SysIdRoutine.Direction.kReverse));
 
+                autoChooser.addDefaultOption("None", null);
                 autoChooser.addOption("drive out",
-                                DriveCommands.joystickDriveRobotRelative(drive, () -> 0.22, () -> 0, () -> 0)
-                                                .withTimeout(1.2));
+                                DriveCommands.joystickDriveRobotRelative(drive, () -> 0.3, () -> 0, () -> 0)
+                                                .withTimeout(1.5));
                 autoChooser.addOption("put L2", new ConditionalCommand(
                                 new DriveToPosition(drive, Reef.blueLeftBranches[3]),
                                 new DriveToPosition(drive, Reef.redLeftBranches[3]),
@@ -260,9 +264,9 @@ public class RobotContainer {
                 driverController.rightTrigger().whileTrue(
                                 DriveCommands.joystickDrive(
                                                 drive,
-                                                () -> driverController.getLeftY() * 0.6,
-                                                () -> driverController.getLeftX() * 0.6,
-                                                () -> driverController.getRightX() * 0.35));
+                                                () -> driverController.getLeftY() * 0.5,
+                                                () -> driverController.getLeftX() * 0.5,
+                                                () -> driverController.getRightX() * 0.32));
 
                 // driverController.povRight().onTrue(getPathCommand());
                 driverController.x().whileTrue(DriveCommands.locateToReefCommand(drive, true));
@@ -314,6 +318,8 @@ public class RobotContainer {
                                 DriveCommands.joystickDriveRobotRelative(drive, () -> 0, () -> 0.24, () -> 0));
                 driverController.RB().whileTrue(
                                 DriveCommands.joystickDriveRobotRelative(drive, () -> 0, () -> -0.24, () -> 0));
+                driverController.y().whileTrue(
+                                DriveCommands.joystickDriveRobotRelative(drive, () -> -0.24, () -> 0, () -> 0));
 
                 driverController.a().debounce(1)
                                 .onTrue(new InstantCommand(() -> drive.disableGoodVision()).ignoringDisable(true));
@@ -331,12 +337,13 @@ public class RobotContainer {
                 operatorController.RB().onTrue(AlgaeOuttakeCommands.closeArm(algaeOuttake));
 
                 // outake algae
-                operatorController.a()
-                                .whileTrue(ElevatorCommands.goToPosition(elevatorSubsystem, 11.5).withTimeout(0.8)
-                                                .andThen(DriveCommands.driveBackSlow(drive)
-                                                                .raceWith(ElevatorCommands.goToPositionWithoutPid(
-                                                                                elevatorSubsystem,
-                                                                                ALGAE_OUTTAKE_ELEVATOR_POSITION))));
+                // operatorController.a()
+                // .whileTrue(ElevatorCommands.goToPosition(elevatorSubsystem,
+                // 11.5).withTimeout(0.8)
+                // .andThen(DriveCommands.driveBackSlow(drive)
+                // .raceWith(ElevatorCommands.goToPositionWithoutPid(
+                // elevatorSubsystem,
+                // ALGAE_OUTTAKE_ELEVATOR_POSITION))));
 
                 // L2, L3, close with pid
                 operatorController.y().onTrue(

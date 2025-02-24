@@ -21,7 +21,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 
 public class DriveConstants {
-        public static final double KP_XY = 0.5;
+        public static final double KP_XY = 0.7;
         public static final double KI_XY = 0;
         public static final double KD_XY = 0;
         public static final double MAX_ACCELERATION_XY = 1.5;
