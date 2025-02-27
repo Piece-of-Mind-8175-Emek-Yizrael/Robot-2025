@@ -151,6 +151,10 @@ public class DriveCommands {
           // Apply rotation deadband
           double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
 
+          // if (linearVelocity.getNorm() > 0.3) {
+          // omega *= 1.3;
+          // }
+
           // Square rotation value for more precise control
           omega = Math.copySign(omega * omega, omega);
 
@@ -594,6 +598,74 @@ public class DriveCommands {
           .getX() > FieldConstants.fieldLength / 2
               ? (toLeft ? FieldConstants.Reef.redLeftBranches : FieldConstants.Reef.redRightBranches)
               : (toLeft ? FieldConstants.Reef.blueLeftBranches : FieldConstants.Reef.blueRightBranches);
+      // Get the closest reef to the robot
+      double minDistance = Double.MAX_VALUE;
+      Pose2d closestReef = FieldConstants.Reef.blueCenterFaces[0];
+      for (int i = 0; i < FieldConstants.Reef.blueCenterFaces.length; i++) {
+        double distance = currentPose.getTranslation()
+            .getDistance(branches[i].getTranslation());
+        if (distance < minDistance) {
+          minDistance = distance;
+          closestReef = branches[i];
+        }
+      }
+      double allowedDist = 2.5;
+      if (minDistance > allowedDist) {
+        throw new Exception("No reef is close enough");
+      }
+      return closestReef;
+    }
+
+  }
+
+  public static class LocateToReefAlgaeOuttakeCommand extends Command {
+    Drive drive;
+
+    public LocateToReefAlgaeOuttakeCommand(Drive drive) {
+      this.drive = drive;
+      addRequirements(drive);
+    }
+
+    @Override
+    public void initialize() {
+      Pose2d destination;
+      try {
+        destination = getClosestReef(drive.getPose());
+      } catch (Exception e) {
+        return;
+      }
+      // List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
+      // drive.getPose(),
+      // destination);
+      // PathPlannerPath path = new PathPlannerPath(waypoints,
+      // new PathConstraints(maxSpeedMetersPerSec, maxAccMetersPerSecSquared,
+      // maxSpeedRadiansPerSec,
+      // maxAccRadiansPerSecSquared),
+      // null,
+      // new GoalEndState(0, destination.getRotation()));
+      // path.preventFlipping = true;
+      // Logger.recordOutput("current reef destination", destination);
+      // Command cmd = AutoBuilder.followPath(path)
+      // .until(() ->
+      // drive.getPose().getTranslation().getDistance(destination.getTranslation()) <
+      // 0.6);
+
+      // cmd = cmd.andThen(new DriveToPosition(drive, destination));
+      // cmd.schedule();
+
+      new DriveToPosition(drive, destination).schedule();
+    }
+
+    @Override
+    public boolean isFinished() {
+      return true;
+    }
+
+    public Pose2d getClosestReef(Pose2d currentPose) throws Exception {
+      Pose2d[] branches = /* DriverStation.getAlliance().orElseGet(() -> Alliance.Red) == Alliance.Red */ currentPose
+          .getX() > FieldConstants.fieldLength / 2
+              ? (FieldConstants.Reef.redCenterFaces)
+              : (FieldConstants.Reef.blueCenterFaces);
       // Get the closest reef to the robot
       double minDistance = Double.MAX_VALUE;
       Pose2d closestReef = FieldConstants.Reef.blueCenterFaces[0];

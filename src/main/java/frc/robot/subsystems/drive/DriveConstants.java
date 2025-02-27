@@ -21,21 +21,21 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 
 public class DriveConstants {
-        public static final double KP_XY = 0.7;
+        public static final double KP_XY = 0.9;
         public static final double KI_XY = 0;
         public static final double KD_XY = 0;
         public static final double MAX_ACCELERATION_XY = 1.5;
         public static final double MAX_VELOCETY_XY = 1.5;
-        public static final double TRANSLATION_TOLERANCE = 0.04;
+        public static final double TRANSLATION_TOLERANCE = 0.03;
 
-        public static final double KP_OMEGA = 0.5;
+        public static final double KP_OMEGA = 0.7;
         public static final double KI_OMEGA = 0;
         public static final double KD_OMEGA = 0;
         public static final double MAX_ACCELERATION_OMEGA = 1;
         public static final double MAX_VELOCETY_OMEGA = 1;
         public static final double OMEGA_TOLERANCE = 0.05;
 
-        public static final double ALGAE_OUTTAKE_DRIVE_BACK_SPEED = 0.03;
+        public static final double ALGAE_OUTTAKE_DRIVE_BACK_SPEED = 0.04;
 
         public static final double maxSpeedMetersPerSec = 6;
         public static final double maxAccMetersPerSecSquared = 4;
@@ -105,7 +105,7 @@ public class DriveConstants {
         public static final double driveSimKs = 0.0;
         public static final double driveSimKv = 0.0789;
 
-        public static final double driveSlipCurrent = 120.0;
+        public static final double driveSlipCurrent = 70;
         public static final double driveRampRate = 0.6;
 
         // Turn motor configuration

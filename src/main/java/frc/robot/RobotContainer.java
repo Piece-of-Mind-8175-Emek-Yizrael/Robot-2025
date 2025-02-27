@@ -13,23 +13,20 @@
 
 package frc.robot;
 
-import static frc.robot.subsystems.AlgaeOuttake.AlgaeOuttakeConstants.ALGAE_OUTTAKE_ELEVATOR_POSITION;
 import static frc.robot.subsystems.Elevator.ElevatorConstants.L2_POSITION;
+import static frc.robot.subsystems.Elevator.ElevatorConstants.L3_POSITION;
 import static frc.robot.subsystems.Elevator.ElevatorConstants.MANUAL_FAST_CLOSE;
 import static frc.robot.subsystems.Elevator.ElevatorConstants.MANUAL_FAST_OPEN;
 import static frc.robot.subsystems.Elevator.ElevatorConstants.MANUAL_SLOW_CLOSE;
+import static frc.robot.subsystems.AlgaeOuttake.AlgaeOuttakeConstants.ALGAE_OUTTAKE_ELEVATOR_POSITION;
 
-import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathPlannerPath;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -38,39 +35,32 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.POM_lib.Joysticks.PomXboxController;
 import frc.robot.commands.AlgaeOuttakeCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.DriveCommands.DriveToPosition;
+import frc.robot.commands.DriveCommands.LocateToReefAlgaeOuttakeCommand;
 import frc.robot.commands.ElevatorCommands;
 import frc.robot.commands.TransferCommands;
 import frc.robot.subsystems.AlgaeOuttake.AlgaeOuttake;
 import frc.robot.subsystems.AlgaeOuttake.AlgaeOuttakeIO;
 import frc.robot.subsystems.AlgaeOuttake.AlgaeOuttakeIOReal;
-import frc.robot.subsystems.AlgaeOuttake.AlgaeOuttakeIOSim;
 import frc.robot.subsystems.Elevator.Elevator;
 import frc.robot.subsystems.Elevator.ElevatorConstants;
 import frc.robot.subsystems.Elevator.ElevatorIO;
-import frc.robot.subsystems.Elevator.ElevatorIOSim;
 import frc.robot.subsystems.Elevator.ElevatorReal;
 import frc.robot.subsystems.LEDs.LEDs;
-import frc.robot.subsystems.LEDs.LEDsIOSim;
 import frc.robot.subsystems.Transfer.Transfer;
 import frc.robot.subsystems.Transfer.TransferIO;
 import frc.robot.subsystems.Transfer.TransferIOReal;
-import frc.robot.subsystems.Transfer.TransferIOSim;
 import frc.robot.subsystems.Vision.VisionIOReal;
-import frc.robot.subsystems.Vision.VisionIOSim;
 import frc.robot.subsystems.Vision.VisionSubsystem;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.FieldConstants.Reef;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon;
-import frc.robot.subsystems.drive.GyroIOSim;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOPOM;
-import frc.robot.subsystems.drive.ModuleIOSim;
-import frc.robot.subsystems.drive.FieldConstants.Reef;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -232,12 +222,49 @@ public class RobotContainer {
                 autoChooser.addOption("drive out",
                                 DriveCommands.joystickDriveRobotRelative(drive, () -> 0.3, () -> 0, () -> 0)
                                                 .withTimeout(1.5));
-                autoChooser.addOption("put L2", new ConditionalCommand(
-                                new DriveToPosition(drive, Reef.blueLeftBranches[3]),
-                                new DriveToPosition(drive, Reef.redLeftBranches[3]),
+                autoChooser.addOption("put L2 11 red 22 blue", new ConditionalCommand(
+                                new DriveToPosition(drive, Reef.blueRightBranches[4]).withTimeout(7),
+                                new DriveToPosition(drive, Reef.redRightBranches[4]).withTimeout(7),
                                 () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue)
-                                .andThen(ElevatorCommands.goToPosition(elevatorSubsystem, L2_POSITION))
+                                .andThen(ElevatorCommands.goToPosition(elevatorSubsystem, L2_POSITION + 2))
                                 .andThen(TransferCommands.coralOutakeFast(transfer)));
+                autoChooser.addOption("put L2 9 red 20 blue", new ConditionalCommand(
+                                new DriveToPosition(drive, Reef.blueLeftBranches[2]).withTimeout(7),
+                                new DriveToPosition(drive, Reef.redLeftBranches[2]).withTimeout(7),
+                                () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue)
+                                .andThen(ElevatorCommands.goToPosition(elevatorSubsystem, L2_POSITION + 2))
+                                .andThen(TransferCommands.coralOutakeFast(transfer)));
+                autoChooser.addOption("put L2 algae outtake",
+                                AlgaeOuttakeCommands.openArm(algaeOuttake)
+                                                .andThen(new ConditionalCommand(
+                                                                new DriveToPosition(drive, Reef.blueRightBranches[3])
+                                                                                .withTimeout(7),
+                                                                new DriveToPosition(drive, Reef.redRightBranches[3])
+                                                                                .withTimeout(7),
+                                                                () -> DriverStation.getAlliance()
+                                                                                .orElse(Alliance.Blue) == Alliance.Blue))
+                                                .andThen(Commands.print("1"))
+                                                .andThen(ElevatorCommands.goToPosition(elevatorSubsystem,
+                                                                11.5).withTimeout(0.8)
+                                                                .andThen(DriveCommands.driveBackSlow(drive)
+                                                                                .raceWith(ElevatorCommands
+                                                                                                .goToPositionWithoutPid(
+                                                                                                                elevatorSubsystem,
+                                                                                                                ALGAE_OUTTAKE_ELEVATOR_POSITION))))
+
+                                                .andThen(Commands.print("2"))
+                                                .andThen(DriveCommands.joystickDriveRobotRelative(drive, () -> 0.2,
+                                                                () -> 0, () -> 0)
+                                                                .withTimeout(0.5)
+                                                                .andThen(DriveCommands.driveBackSlow(drive)
+                                                                                .withTimeout(0.01)))
+                                                // .andThen(ElevatorCommands.openElevatorManual(elevatorSubsystem, 1)
+                                                // .withTimeout(0.1))
+                                                .andThen(Commands.print("3"))
+                                                .andThen(ElevatorCommands.goToPosition(elevatorSubsystem,
+                                                                L2_POSITION + 1))
+                                                .andThen(Commands.print("4"))
+                                                .andThen(TransferCommands.coralOutakeFast(transfer)));
                 // Configure the button bindings
                 configureButtonBindings();
         }
@@ -252,7 +279,7 @@ public class RobotContainer {
                                                 drive,
                                                 () -> driverController.getLeftY() * 0.35,
                                                 () -> driverController.getLeftX() * 0.35,
-                                                () -> driverController.getRightX() * 0.32));
+                                                () -> driverController.getRightX() * 0.27));
 
                 driverController.leftTrigger().whileTrue(
                                 DriveCommands.joystickDrive(
@@ -271,9 +298,11 @@ public class RobotContainer {
                 // driverController.povRight().onTrue(getPathCommand());
                 driverController.x().whileTrue(DriveCommands.locateToReefCommand(drive, true));
                 driverController.b().whileTrue(DriveCommands.locateToReefCommand(drive, false));
+                driverController.a().whileTrue(new LocateToReefAlgaeOuttakeCommand(drive));
 
-                driverController.x().or(driverController.b()).onFalse(new InstantCommand(() -> {
-                }, drive));
+                driverController.x().or(driverController.b().or(driverController.a()))
+                                .onFalse(new InstantCommand(() -> {
+                                }, drive));
 
                 // driverController.povLeft().onTrue(Commands.runOnce(() ->
                 // moduleFL.setTurnPosition(new Rotation2d(Math.PI)).l;p.));
@@ -321,7 +350,7 @@ public class RobotContainer {
                 driverController.y().whileTrue(
                                 DriveCommands.joystickDriveRobotRelative(drive, () -> -0.24, () -> 0, () -> 0));
 
-                driverController.a().debounce(1)
+                driverController.back().debounce(1)
                                 .onTrue(new InstantCommand(() -> drive.disableGoodVision()).ignoringDisable(true));
 
                 // driverController.RB().whileTrue(DriveCommands.joystickDriveRobotRelative(
@@ -347,10 +376,23 @@ public class RobotContainer {
 
                 // L2, L3, close with pid
                 operatorController.y().onTrue(
-                                ElevatorCommands.goToPosition(elevatorSubsystem, ElevatorConstants.L3_POSITION));
-                operatorController.x().onTrue(ElevatorCommands.closeElevator(elevatorSubsystem));
+                                ElevatorCommands.goToPosition(elevatorSubsystem, ElevatorConstants.L3_POSITION)
+                                                .alongWith(Commands
+                                                                .runEnd(() -> operatorController.vibrate(0.2),
+                                                                                () -> operatorController.vibrate(0))
+                                                                .withTimeout(0.5)));
+                operatorController.x()
+                                .onTrue(ElevatorCommands.closeElevator(elevatorSubsystem)
+                                                .alongWith(Commands
+                                                                .runEnd(() -> operatorController.vibrate(0.2),
+                                                                                () -> operatorController.vibrate(0))
+                                                                .withTimeout(0.5)));
                 operatorController.b().onTrue(
-                                ElevatorCommands.goToPosition(elevatorSubsystem, ElevatorConstants.L2_POSITION));
+                                ElevatorCommands.goToPosition(elevatorSubsystem, ElevatorConstants.L2_POSITION)
+                                                .alongWith(Commands
+                                                                .runEnd(() -> operatorController.vibrate(0.2),
+                                                                                () -> operatorController.vibrate(0))
+                                                                .withTimeout(0.5)));
 
                 // intake coral
                 operatorController.PovRight().whileTrue(TransferCommands.coralOutake(transfer));
