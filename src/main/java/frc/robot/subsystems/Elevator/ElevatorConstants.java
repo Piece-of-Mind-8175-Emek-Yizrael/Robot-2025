@@ -3,6 +3,7 @@ package frc.robot.subsystems.Elevator;
 public class ElevatorConstants {
     public static final int ELEVATOR_ID = 16;
     public static final int FOLD_SWITCH = 1;
+    public static final int BRAKE_SWITCH = 2;
 
     public static final double KP = 1.2;
     public static final double KI = 0;
@@ -14,7 +15,7 @@ public class ElevatorConstants {
     public static final double RESIST_GRAVITY = 0;
     public static final double TOLERANCE = 0.15;
 
-    public static final double MAX_ACCELERATION = 60;
+    public static final double MAX_ACCELERATION = 75;
     public static final double MAX_VELOCITY = 50;
 
     public static final double FORWARD_SOFT_LIMIT = 0;

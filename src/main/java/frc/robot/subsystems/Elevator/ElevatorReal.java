@@ -22,6 +22,7 @@ public class ElevatorReal implements ElevatorIO {
     private ProfiledPIDController pidController;
     private ElevatorFeedforward feedforward;
     private POMDigitalInput foldSwitch;
+    private POMDigitalInput brakeSwitch;
     private ElevatorTuningPid pidConstants;
     private BooleanSupplier isCoralIn;
 
@@ -42,6 +43,7 @@ public class ElevatorReal implements ElevatorIO {
         this.isCoralIn = isCoralIn;
 
         foldSwitch = new POMDigitalInput(FOLD_SWITCH);
+        brakeSwitch = new POMDigitalInput(BRAKE_SWITCH);
         pidController.setTolerance(TOLERANCE);// TODO chaeck this
 
         SparkMaxConfig config = new SparkMaxConfig();
@@ -153,16 +155,16 @@ public class ElevatorReal implements ElevatorIO {
                         PersistMode.kNoPersistParameters);
             }
         } else {
-            // if(foldSwitch.get()){
-            // motor.configure(new SparkMaxConfig().idleMode(IdleMode.kCoast),
-            // ResetMode.kNoResetSafeParameters,
-            // PersistMode.kNoPersistParameters);
-            // resetEncoder();
-            // }
-            // else{
-            motor.configure(new SparkMaxConfig().idleMode(IdleMode.kBrake), ResetMode.kNoResetSafeParameters,
-                    PersistMode.kNoPersistParameters);
-            // }
+            if (brakeSwitch.get()) {
+                motor.configure(new SparkMaxConfig().idleMode(IdleMode.kCoast),
+                        ResetMode.kNoResetSafeParameters,
+                        PersistMode.kNoPersistParameters);
+                resetEncoder();
+            } else {
+                motor.configure(new SparkMaxConfig().idleMode(IdleMode.kBrake),
+                        ResetMode.kNoResetSafeParameters,
+                        PersistMode.kNoPersistParameters);
+            }
         }
     }
 

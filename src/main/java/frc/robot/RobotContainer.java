@@ -376,23 +376,12 @@ public class RobotContainer {
 
                 // L2, L3, close with pid
                 operatorController.y().onTrue(
-                                ElevatorCommands.goToPosition(elevatorSubsystem, ElevatorConstants.L3_POSITION)
-                                                .alongWith(Commands
-                                                                .runEnd(() -> operatorController.vibrate(0.2),
-                                                                                () -> operatorController.vibrate(0))
-                                                                .withTimeout(0.5)));
+                                ElevatorCommands.goToPosition(elevatorSubsystem, ElevatorConstants.L3_POSITION));
                 operatorController.x()
-                                .onTrue(ElevatorCommands.closeElevator(elevatorSubsystem)
-                                                .alongWith(Commands
-                                                                .runEnd(() -> operatorController.vibrate(0.2),
-                                                                                () -> operatorController.vibrate(0))
-                                                                .withTimeout(0.5)));
+                                .onTrue(ElevatorCommands.closeElevator(elevatorSubsystem));
                 operatorController.b().onTrue(
-                                ElevatorCommands.goToPosition(elevatorSubsystem, ElevatorConstants.L2_POSITION)
-                                                .alongWith(Commands
-                                                                .runEnd(() -> operatorController.vibrate(0.2),
-                                                                                () -> operatorController.vibrate(0))
-                                                                .withTimeout(0.5)));
+                                ElevatorCommands.goToPosition(elevatorSubsystem, ElevatorConstants.L2_POSITION));
+                operatorController.a().onTrue(ElevatorCommands.stopElevator(elevatorSubsystem));
 
                 // intake coral
                 operatorController.PovRight().whileTrue(TransferCommands.coralOutake(transfer));
