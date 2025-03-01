@@ -179,7 +179,7 @@ public class DriveCommands {
 
   public static Command joystickDriveRobotRelative(
       Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier omegaSupplier) {
-    return Commands.run(
+    return Commands.runEnd(
         () -> {
           // Get linear velocity
           Translation2d linearVelocity = getLinearVelocityFromJoysticks(xSupplier.getAsDouble(),
@@ -200,6 +200,7 @@ public class DriveCommands {
               && DriverStation.getAlliance().get() == Alliance.Red;
           drive.runVelocity(speeds, true);
         },
+        () -> drive.runVelocity(new ChassisSpeeds(), true),
         drive).beforeStarting(Commands.runOnce(drive::resetKinematics, drive));
   }
 

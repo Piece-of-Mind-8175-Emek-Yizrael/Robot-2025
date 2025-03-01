@@ -19,7 +19,7 @@ public class ElevatorConstants {
     public static final double MAX_VELOCITY = 50;
 
     public static final double FORWARD_SOFT_LIMIT = 0;
-    public static final double L2_POSITION = 32.5;
+    public static final double L2_POSITION = 34;
     public static final double L3_POSITION = 55;
 
     public static final double CLOSE_ELEVATOR_SPEED = -0.5;

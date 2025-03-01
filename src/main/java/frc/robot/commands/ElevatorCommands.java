@@ -1,13 +1,12 @@
 package frc.robot.commands;
 
 import static frc.robot.subsystems.Elevator.ElevatorConstants.CLOSE_ELEVATOR_SPEED;
-
-import java.util.function.BooleanSupplier;
+import static frc.robot.subsystems.Elevator.ElevatorConstants.L2_POSITION;
+import static frc.robot.subsystems.Elevator.ElevatorConstants.L3_POSITION;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.Elevator.Elevator;
 
 public class ElevatorCommands {
@@ -56,6 +55,14 @@ public class ElevatorCommands {
     public static Command closeElevator(Elevator elevator) {
         return ElevatorCommands.goToPosition(elevator, 0)
                 .andThen(ElevatorCommands.closeUntilSwitch(elevator));
+    }
+
+    public static Command L2(Elevator elevator) {
+        return goToPosition(elevator, L2_POSITION);
+    }
+
+    public static Command L3(Elevator elevator) {
+        return goToPosition(elevator, L3_POSITION);
     }
 
     public static Command closeElevatorManual(Elevator elevator, double voltage) {

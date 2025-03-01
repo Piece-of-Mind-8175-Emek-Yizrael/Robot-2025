@@ -37,6 +37,7 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.POM_lib.Joysticks.PomXboxController;
 import frc.robot.commands.AlgaeOuttakeCommands;
+import frc.robot.commands.AutonomousRoutines;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.DriveCommands.DriveToPosition;
 import frc.robot.commands.DriveCommands.LocateToReefAlgaeOuttakeCommand;
@@ -180,11 +181,12 @@ public class RobotContainer {
                 }
 
                 // Set up auto routines
-                // autoChooser = new LoggedDashboardChooser<>("Auto Choices",
-                // AutoBuilder.buildAutoChooser()); // TODO use
-                autoChooser = new LoggedDashboardChooser<>("Auto Choices", new SendableChooser<>()); // TODO use
-                                                                                                     // auto
-                                                                                                     // builder
+                autoChooser = new LoggedDashboardChooser<>("Auto Choices",
+                                AutoBuilder.buildAutoChooser()); // TODO use
+                // autoChooser = new LoggedDashboardChooser<>("Auto Choices", new
+                // SendableChooser<>()); // TODO use
+                // // auto
+                // // builder
 
                 // Set up SysId routines
                 // autoChooser.addOption(
@@ -222,6 +224,8 @@ public class RobotContainer {
                 autoChooser.addOption("drive out",
                                 DriveCommands.joystickDriveRobotRelative(drive, () -> 0.3, () -> 0, () -> 0)
                                                 .withTimeout(1.5));
+                autoChooser.addOption("red right l2",
+                                AutonomousRoutines.putL2Right(drive, elevatorSubsystem, transfer));
                 autoChooser.addOption("put L2 11 red 22 blue", new ConditionalCommand(
                                 new DriveToPosition(drive, Reef.blueRightBranches[4]).withTimeout(7),
                                 new DriveToPosition(drive, Reef.redRightBranches[4]).withTimeout(7),

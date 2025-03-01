@@ -28,7 +28,7 @@ public class DriveConstants {
         public static final double MAX_VELOCETY_XY = 4;
         public static final double TRANSLATION_TOLERANCE = 0.03;
 
-        public static final double KP_OMEGA = 1;
+        public static final double KP_OMEGA = 1.4;
         public static final double KI_OMEGA = 0;
         public static final double KD_OMEGA = 0;
         public static final double MAX_ACCELERATION_OMEGA = 1.5;
