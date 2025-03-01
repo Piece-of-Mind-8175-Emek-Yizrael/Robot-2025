@@ -64,4 +64,7 @@ public interface ElevatorIO {
     public default void resetPID() {
     }
 
+    public default void resetPID(double newGoal) {
+    }
+
 }

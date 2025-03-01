@@ -216,4 +216,13 @@ public class ElevatorReal implements ElevatorIO {
         pidController.reset(encoder.getPosition(), encoder.getVelocity());
     }
 
+    @Override
+    public void resetPID(double newGoal) {
+        if (newGoal - encoder.getPosition() > 0) {
+            pidController.reset(encoder.getPosition(), Math.max(encoder.getVelocity(), getFeedForwardVelocity(1)));
+        } else {
+            pidController.reset(encoder.getPosition(), Math.min(encoder.getVelocity(), getFeedForwardVelocity(1)));
+        }
+    }
+
 }

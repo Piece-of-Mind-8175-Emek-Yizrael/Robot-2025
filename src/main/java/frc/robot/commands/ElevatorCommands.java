@@ -16,7 +16,7 @@ public class ElevatorCommands {
         return new FunctionalCommand(() -> {
             System.out.println("going to position: " + position);
             elevator.getIO().stopMotor();
-            elevator.getIO().resetPID();
+            elevator.getIO().resetPID(position);
         },
                 () -> elevator.getIO().setGoal(position),
                 interrupted -> {
