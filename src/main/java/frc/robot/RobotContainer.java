@@ -300,11 +300,11 @@ public class RobotContainer {
                 // true));
                 // driverController.b().whileTrue(new DriveCommands.DriveToReef(drive, vision,
                 // false));
-                driverController.x().whileTrue(DriveCommands.locateToReefCommand(drive,
+                driverController.x().whileTrue(DriveCommands.locateToReefCommand(drive, driverController,
                                 true));
-                driverController.b().whileTrue(DriveCommands.locateToReefCommand(drive,
+                driverController.b().whileTrue(DriveCommands.locateToReefCommand(drive, driverController,
                                 false));
-                driverController.a().whileTrue(new LocateToReefAlgaeOuttakeCommand(drive));
+                driverController.a().whileTrue(new LocateToReefAlgaeOuttakeCommand(drive, driverController));
 
                 driverController.x().or(driverController.b().or(driverController.a()))
                                 .onFalse(new InstantCommand(() -> {

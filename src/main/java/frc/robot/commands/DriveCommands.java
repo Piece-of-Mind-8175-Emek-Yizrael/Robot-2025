@@ -54,6 +54,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.POM_lib.Joysticks.PomXboxController;
 import frc.robot.subsystems.Vision.VisionSubsystem;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
@@ -554,9 +555,11 @@ public class DriveCommands {
   public static class LocateToReefCommand extends Command {
     Drive drive;
     boolean toLeft;
+    PomXboxController controller;
 
-    public LocateToReefCommand(Drive drive, boolean toLeft) {
+    public LocateToReefCommand(Drive drive, PomXboxController controller, boolean toLeft) {
       this.drive = drive;
+      this.controller = controller;
       this.toLeft = toLeft;
       addRequirements(drive);
     }
@@ -588,7 +591,10 @@ public class DriveCommands {
       // cmd = cmd.andThen(new DriveToPosition(drive, destination));
       // cmd.schedule();
 
-      new DriveToPosition(drive, destination).schedule();
+      new DriveToPosition(drive, destination)
+          .andThen(joystickDriveRobotRelative(drive, () -> 0.35, () -> 0, () -> 0).withTimeout(0.3)
+              .raceWith(Commands.runEnd(() -> controller.vibrate(0.2), () -> controller.vibrate(0)).withTimeout(0.3)))
+          .schedule();
     }
 
     @Override
@@ -623,9 +629,11 @@ public class DriveCommands {
 
   public static class LocateToReefAlgaeOuttakeCommand extends Command {
     Drive drive;
+    PomXboxController controller;
 
-    public LocateToReefAlgaeOuttakeCommand(Drive drive) {
+    public LocateToReefAlgaeOuttakeCommand(Drive drive, PomXboxController controller) {
       this.drive = drive;
+      this.controller = controller;
       addRequirements(drive);
     }
 
@@ -656,7 +664,10 @@ public class DriveCommands {
       // cmd = cmd.andThen(new DriveToPosition(drive, destination));
       // cmd.schedule();
 
-      new DriveToPosition(drive, destination).schedule();
+      new DriveToPosition(drive, destination)
+          .andThen(joystickDriveRobotRelative(drive, () -> 0.35, () -> 0, () -> 0).withTimeout(0.3)
+              .raceWith(Commands.run(() -> controller.vibrate(0.2))))
+          .schedule();
     }
 
     @Override
@@ -689,8 +700,8 @@ public class DriveCommands {
 
   }
 
-  public static Command locateToReefCommand(Drive drive, boolean toLeft) {
-    return new LocateToReefCommand(drive, toLeft);
+  public static Command locateToReefCommand(Drive drive, PomXboxController controller, boolean toLeft) {
+    return new LocateToReefCommand(drive, controller, toLeft);
   }
 
   public static class DriveToPosition extends Command {
