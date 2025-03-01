@@ -275,27 +275,27 @@ public class RobotContainer {
 
                 // Default command, normal field-relative drive
                 drive.setDefaultCommand(
-                                DriveCommands.joystickDrive(
+                                DriveCommands.joystickDriveClosedLoopVel(
                                                 drive,
-                                                () -> driverController.getLeftY() * 0.35,
-                                                () -> driverController.getLeftX() * 0.35,
-                                                () -> driverController.getRightX() * 0.27));
+                                                () -> driverController.getLeftY() * 0.7,
+                                                () -> driverController.getLeftX() * 0.7,
+                                                () -> driverController.getRightX() * 0.6));
 
                 driverController.leftTrigger().whileTrue(
-                                DriveCommands.joystickDrive(
-                                                drive,
-                                                () -> driverController.getLeftY() * 0.25,
-                                                () -> driverController.getLeftX() * 0.25,
-                                                () -> driverController.getRightX() * 0.25));
-
-                driverController.rightTrigger().whileTrue(
-                                DriveCommands.joystickDrive(
+                                DriveCommands.joystickDriveClosedLoopVel(
                                                 drive,
                                                 () -> driverController.getLeftY() * 0.5,
                                                 () -> driverController.getLeftX() * 0.5,
-                                                () -> driverController.getRightX() * 0.32));
+                                                () -> driverController.getRightX() * 0.5));
 
-                // driverController.povRight().onTrue(getPathCommand());
+                driverController.rightTrigger().whileTrue(
+                                DriveCommands.joystickDriveClosedLoopVel(
+                                                drive,
+                                                () -> driverController.getLeftY() * 0.9,
+                                                () -> driverController.getLeftX() * 0.9,
+                                                () -> driverController.getRightX() * 0.8));
+
+                driverController.start().onTrue(getPathCommand());
                 driverController.x().whileTrue(DriveCommands.locateToReefCommand(drive, true));
                 driverController.b().whileTrue(DriveCommands.locateToReefCommand(drive, false));
                 driverController.a().whileTrue(new LocateToReefAlgaeOuttakeCommand(drive));
@@ -344,11 +344,11 @@ public class RobotContainer {
                 driverController.PovRight().onTrue(drive.resetGyroCommand(Rotation2d.fromDegrees(-125)));
 
                 driverController.LB().whileTrue(
-                                DriveCommands.joystickDriveRobotRelative(drive, () -> 0, () -> 0.24, () -> 0));
+                                DriveCommands.joystickDriveRobotRelative(drive, () -> 0, () -> 0.4, () -> 0));
                 driverController.RB().whileTrue(
-                                DriveCommands.joystickDriveRobotRelative(drive, () -> 0, () -> -0.24, () -> 0));
+                                DriveCommands.joystickDriveRobotRelative(drive, () -> 0, () -> -0.4, () -> 0));
                 driverController.y().whileTrue(
-                                DriveCommands.joystickDriveRobotRelative(drive, () -> -0.24, () -> 0, () -> 0));
+                                DriveCommands.joystickDriveRobotRelative(drive, () -> -0.4, () -> 0, () -> 0));
 
                 driverController.back().debounce(1)
                                 .onTrue(new InstantCommand(() -> drive.disableGoodVision()).ignoringDisable(true));

@@ -773,7 +773,7 @@ public class DriveCommands {
       // Logger.recordOutput("pose to", m_target);
       Logger.recordOutput("error x", m_target.getTranslation().getX() - pose.getTranslation().getX());
       Logger.recordOutput("error y", m_target.getTranslation().getY() - pose.getTranslation().getY());
-      m_drive.runVelocity(chassisSpeeds, true);
+      m_drive.runVelocity(chassisSpeeds, false);
     }
 
     @Override

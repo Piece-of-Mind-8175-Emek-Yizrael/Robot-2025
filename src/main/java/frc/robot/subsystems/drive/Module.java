@@ -71,8 +71,8 @@ public class Module {
     // Apply setpoints
     if (isOpenLoop) {
       // TODO replace to this
-      // io.setDriveOpenLoop(state.speedMetersPerSecond / maxSpeedMetersPerSec * 12);
-      io.setDriveOpenLoop(state.speedMetersPerSecond / wheelRadiusMeters);
+      io.setDriveOpenLoop(state.speedMetersPerSecond / maxSpeedMetersPerSec * 12);
+      // io.setDriveOpenLoop(state.speedMetersPerSecond / wheelRadiusMeters);
     } else {
       io.setDriveVelocity(state.speedMetersPerSecond / wheelRadiusMeters);
     }
