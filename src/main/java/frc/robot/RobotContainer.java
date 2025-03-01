@@ -296,8 +296,14 @@ public class RobotContainer {
                                                 () -> driverController.getRightX() * 0.7));
 
                 driverController.start().onTrue(getPathCommand());
-                driverController.x().whileTrue(DriveCommands.locateToReefCommand(drive, true));
-                driverController.b().whileTrue(DriveCommands.locateToReefCommand(drive, false));
+                // driverController.x().whileTrue(new DriveCommands.DriveToReef(drive, vision,
+                // true));
+                // driverController.b().whileTrue(new DriveCommands.DriveToReef(drive, vision,
+                // false));
+                driverController.x().whileTrue(DriveCommands.locateToReefCommand(drive,
+                                true));
+                driverController.b().whileTrue(DriveCommands.locateToReefCommand(drive,
+                                false));
                 driverController.a().whileTrue(new LocateToReefAlgaeOuttakeCommand(drive));
 
                 driverController.x().or(driverController.b().or(driverController.a()))

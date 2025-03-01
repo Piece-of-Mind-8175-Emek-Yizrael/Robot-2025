@@ -13,6 +13,7 @@
 
 package frc.robot.commands;
 
+import static frc.robot.subsystems.drive.DriveConstants.ALGAE_OUTTAKE_DRIVE_BACK_SPEED;
 import static frc.robot.subsystems.drive.DriveConstants.KD_OMEGA;
 import static frc.robot.subsystems.drive.DriveConstants.KD_XY;
 import static frc.robot.subsystems.drive.DriveConstants.KI_OMEGA;
@@ -25,7 +26,6 @@ import static frc.robot.subsystems.drive.DriveConstants.MAX_VELOCETY_OMEGA;
 import static frc.robot.subsystems.drive.DriveConstants.MAX_VELOCETY_XY;
 import static frc.robot.subsystems.drive.DriveConstants.OMEGA_TOLERANCE;
 import static frc.robot.subsystems.drive.DriveConstants.TRANSLATION_TOLERANCE;
-import static frc.robot.subsystems.drive.DriveConstants.trackWidth;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -53,11 +53,11 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.Vision.VisionSubsystem;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.subsystems.drive.FieldConstants;
-import static frc.robot.subsystems.drive.DriveConstants.ALGAE_OUTTAKE_DRIVE_BACK_SPEED;
 
 public class DriveCommands {
   private static final double DEADBAND = 0.15;
@@ -795,7 +795,7 @@ public class DriveCommands {
     private final Drive m_drive;
     VisionSubsystem vision;
     int camera;
-    private Pose2d m_target;
+    private Transform2d m_target;
     private final ProfiledPIDController m_controllerX;
     private final ProfiledPIDController m_controllerY;
     private final ProfiledPIDController m_controllerTheta;
@@ -824,7 +824,7 @@ public class DriveCommands {
       m_drive = drive;
       this.vision = vision;
       camera = left ? 0 : 1;
-      m_target = drive.getPose();
+      m_target = left ? VisionConstants.transformLeftBranch : VisionConstants.transformRightBranch;
       m_controllerX = new ProfiledPIDController(KP_XY, KI_XY, KD_XY,
           new TrapezoidProfile.Constraints(MAX_VELOCETY_XY, MAX_ACCELERATION_XY));
       m_controllerX.setTolerance(TRANSLATION_TOLERANCE);
@@ -842,18 +842,19 @@ public class DriveCommands {
     public void initialize() {
       m_timer.reset();
       m_timer.start();
-      var currPose = m_drive.getPose();
+      // var currPose = m_drive.getPose();
       var transform = vision.getBestTarget(camera);
-      if (transform != null) {
-        m_target = currPose
-            .transformBy(new Transform2d(transform.getX(), transform.getY(), transform.getRotation().toRotation2d()));
-      } else {
-        m_target = currPose;
-      }
+      // if (transform != null) {
+      // m_target = currPose
+      // .transformBy(new Transform2d(transform.getX(), transform.getY(),
+      // transform.getRotation().toRotation2d()));
+      // } else {
+      // m_target = currPose;
+      // }
       ChassisSpeeds currS = m_drive.getChassisSpeeds();
-      m_controllerX.reset(currPose.getX(), currS.vxMetersPerSecond);
-      m_controllerY.reset(currPose.getY(), currS.vyMetersPerSecond);
-      m_controllerTheta.reset(currPose.getRotation().getRadians(), currS.omegaRadiansPerSecond);
+      m_controllerX.reset(transform.getX(), currS.vxMetersPerSecond);
+      m_controllerY.reset(transform.getY(), currS.vyMetersPerSecond);
+      m_controllerTheta.reset(transform.getRotation().toRotation2d().getRadians(), currS.omegaRadiansPerSecond);
     }
 
     @Override
@@ -868,23 +869,29 @@ public class DriveCommands {
       m_controllerTheta.setConstraints(
           new TrapezoidProfile.Constraints(maxVelocityThetaTune.get(), maxAccelerationThetaTune.get()));
 
-      var pose = m_drive.getPose();
+      // var pose = m_drive.getPose();
+      var tranform = vision.getBestTarget(camera);
+      if (tranform == null)
+        return;
       var chassisSpeeds = new ChassisSpeeds(
-          m_controllerX.calculate(pose.getTranslation().getX(), m_target.getTranslation().getX()),
-          m_controllerY.calculate(pose.getTranslation().getY(), m_target.getTranslation().getY()),
-          m_controllerTheta.calculate(pose.getRotation().getRadians(), m_target.getRotation().getRadians()));
+          -m_controllerX.calculate(tranform.getTranslation().getX(), m_target.getTranslation().getX()),
+          -m_controllerY.calculate(tranform.getTranslation().getY(), m_target.getTranslation().getY()),
+          m_controllerTheta.calculate(tranform.getRotation().toRotation2d().getRadians(),
+              m_target.getRotation().getRadians()));
 
       // if ((pose.getRotation().getDegrees() % 360 + 470) % 360 > 180) {
       // chassisSpeeds = new ChassisSpeeds(-chassisSpeeds.vxMetersPerSecond,
       // -chassisSpeeds.vyMetersPerSecond,
       // chassisSpeeds.omegaRadiansPerSecond);
       // }
-      chassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(chassisSpeeds, pose.getRotation().unaryMinus());
+      // chassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(chassisSpeeds,
+      // tranform.getRotation().toRotation2d().unaryMinus());
       Logger.recordOutput("Requested speeds", chassisSpeeds);
       // Logger.recordOutput("pose", pose);
       // Logger.recordOutput("pose to", m_target);
-      Logger.recordOutput("error x", m_target.getTranslation().getX() - pose.getTranslation().getX());
-      Logger.recordOutput("error y", m_target.getTranslation().getY() - pose.getTranslation().getY());
+      Logger.recordOutput("error x", m_target.getTranslation().getX() - tranform.getTranslation().getX());
+      Logger.recordOutput("error y", m_target.getTranslation().getY() - tranform
+          .getTranslation().getY());
       m_drive.runVelocity(chassisSpeeds, false);
     }
 
