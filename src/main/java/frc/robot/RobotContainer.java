@@ -277,23 +277,23 @@ public class RobotContainer {
                 drive.setDefaultCommand(
                                 DriveCommands.joystickDriveClosedLoopVel(
                                                 drive,
-                                                () -> driverController.getLeftY() * 0.7,
-                                                () -> driverController.getLeftX() * 0.7,
-                                                () -> driverController.getRightX() * 0.6));
+                                                () -> driverController.getLeftY() * 0.6,
+                                                () -> driverController.getLeftX() * 0.6,
+                                                () -> driverController.getRightX() * 0.4));
 
                 driverController.leftTrigger().whileTrue(
                                 DriveCommands.joystickDriveClosedLoopVel(
                                                 drive,
-                                                () -> driverController.getLeftY() * 0.5,
-                                                () -> driverController.getLeftX() * 0.5,
-                                                () -> driverController.getRightX() * 0.5));
+                                                () -> driverController.getLeftY() * 0.4,
+                                                () -> driverController.getLeftX() * 0.4,
+                                                () -> driverController.getRightX() * 0.3));
 
                 driverController.rightTrigger().whileTrue(
                                 DriveCommands.joystickDriveClosedLoopVel(
                                                 drive,
-                                                () -> driverController.getLeftY() * 0.9,
-                                                () -> driverController.getLeftX() * 0.9,
-                                                () -> driverController.getRightX() * 0.8));
+                                                () -> driverController.getLeftY() * 0.8,
+                                                () -> driverController.getLeftX() * 0.8,
+                                                () -> driverController.getRightX() * 0.7));
 
                 driverController.start().onTrue(getPathCommand());
                 driverController.x().whileTrue(DriveCommands.locateToReefCommand(drive, true));
