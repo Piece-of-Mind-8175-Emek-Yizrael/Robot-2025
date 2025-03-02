@@ -224,51 +224,15 @@ public class RobotContainer {
                 autoChooser.addOption("drive out",
                                 DriveCommands.joystickDriveRobotRelative(drive, () -> 0.3, () -> 0, () -> 0)
                                                 .withTimeout(1.5));
-                autoChooser.addOption("red right l2",
-                                AutonomousRoutines.putL2Right(drive, elevatorSubsystem, transfer));
-                autoChooser.addOption("put L2 11 red 22 blue", new ConditionalCommand(
-                                new DriveToPosition(drive, Reef.blueRightBranches[4]).withTimeout(7),
-                                new DriveToPosition(drive, Reef.redRightBranches[4]).withTimeout(7),
-                                () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue)
-                                .andThen(ElevatorCommands.goToPosition(elevatorSubsystem, L2_POSITION + 2))
-                                .andThen(TransferCommands.coralOutakeFast(transfer)));
-                autoChooser.addOption("put L2 9 red 20 blue", new ConditionalCommand(
-                                new DriveToPosition(drive, Reef.blueLeftBranches[2]).withTimeout(7),
-                                new DriveToPosition(drive, Reef.redLeftBranches[2]).withTimeout(7),
-                                () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue)
-                                .andThen(ElevatorCommands.goToPosition(elevatorSubsystem, L2_POSITION + 2))
-                                .andThen(TransferCommands.coralOutakeFast(transfer)));
-                autoChooser.addOption("put L2 algae outtake",
-                                AlgaeOuttakeCommands.openArm(algaeOuttake)
-                                                .andThen(new ConditionalCommand(
-                                                                new DriveToPosition(drive, Reef.blueRightBranches[3])
-                                                                                .withTimeout(7),
-                                                                new DriveToPosition(drive, Reef.redRightBranches[3])
-                                                                                .withTimeout(7),
-                                                                () -> DriverStation.getAlliance()
-                                                                                .orElse(Alliance.Blue) == Alliance.Blue))
-                                                .andThen(Commands.print("1"))
-                                                .andThen(ElevatorCommands.goToPosition(elevatorSubsystem,
-                                                                11.5).withTimeout(0.8)
-                                                                .andThen(DriveCommands.driveBackSlow(drive)
-                                                                                .raceWith(ElevatorCommands
-                                                                                                .goToPositionWithoutPid(
-                                                                                                                elevatorSubsystem,
-                                                                                                                ALGAE_OUTTAKE_ELEVATOR_POSITION))))
+                autoChooser.addOption("proccessor side L2",
+                                AutonomousRoutines.putL2(drive, elevatorSubsystem, transfer, true));
+                autoChooser.addOption("NOT proccessor side L2",
+                                AutonomousRoutines.putL2(drive, elevatorSubsystem, transfer, false));
+                autoChooser.addOption("proccessor side L2 intake",
+                                AutonomousRoutines.putL2ThenIntake(drive, elevatorSubsystem, transfer, true));
+                autoChooser.addOption("NOT proccessor side L2 intake",
+                                AutonomousRoutines.putL2ThenIntake(drive, elevatorSubsystem, transfer, false));
 
-                                                .andThen(Commands.print("2"))
-                                                .andThen(DriveCommands.joystickDriveRobotRelative(drive, () -> 0.2,
-                                                                () -> 0, () -> 0)
-                                                                .withTimeout(0.5)
-                                                                .andThen(DriveCommands.driveBackSlow(drive)
-                                                                                .withTimeout(0.01)))
-                                                // .andThen(ElevatorCommands.openElevatorManual(elevatorSubsystem, 1)
-                                                // .withTimeout(0.1))
-                                                .andThen(Commands.print("3"))
-                                                .andThen(ElevatorCommands.goToPosition(elevatorSubsystem,
-                                                                L2_POSITION + 1))
-                                                .andThen(Commands.print("4"))
-                                                .andThen(TransferCommands.coralOutakeFast(transfer)));
                 // Configure the button bindings
                 configureButtonBindings();
         }
