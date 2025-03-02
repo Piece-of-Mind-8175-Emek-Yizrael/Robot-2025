@@ -358,10 +358,11 @@ public class RobotContainer {
                 operatorController.a().onTrue(ElevatorCommands.stopElevator(elevatorSubsystem));
 
                 // intake coral
+                operatorController.PovLeft().whileTrue(TransferCommands.takeCoralIn(transfer));
                 operatorController.PovRight().whileTrue(TransferCommands.coralOutake(transfer));
 
                 // rutern the coral back
-                operatorController.PovLeft().whileTrue(TransferCommands.takeCoralIn(transfer));
+                operatorController.a().onTrue(TransferCommands.intakeCoral(transfer));
 
                 // manual elevator control
                 // fast

@@ -54,7 +54,7 @@ public class ElevatorCommands {
 
     public static Command closeElevator(Elevator elevator) {
         return ElevatorCommands.goToPosition(elevator, 0)
-                .andThen(ElevatorCommands.closeUntilSwitch(elevator));
+                .andThen(ElevatorCommands.closeUntilSwitch(elevator)).andThen(elevator.getIO()::stopMotor);
     }
 
     public static Command L2(Elevator elevator) {

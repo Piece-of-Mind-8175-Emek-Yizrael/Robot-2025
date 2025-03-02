@@ -54,7 +54,8 @@ public class AutonomousRoutines {
                                                                                 .until(() -> drive.getPose()
                                                                                                 .getTranslation()
                                                                                                 .getDistance(poses[0]
-                                                                                                                .getTranslation()) < 0.5),
+                                                                                                                .getTranslation()) < 0.5)
+                                                                                .withTimeout(2),
                                                                 driveToPoseInCorrectAlliance(drive, poses[1],
                                                                                 proccessorSide)
                                                                                 .withTimeout(3))),
