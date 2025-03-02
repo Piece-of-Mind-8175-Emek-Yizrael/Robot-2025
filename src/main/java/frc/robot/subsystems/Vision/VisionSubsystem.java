@@ -77,6 +77,10 @@ public class VisionSubsystem extends SubsystemBase {
         return null;
     }
 
+    public Transform3d getBestTarget(int camera) {
+        return inputs[camera].cameraToBestTarget;
+    }
+
     @Override
     public void periodic() {
         for (int i = 0; i < io.length; i++) {

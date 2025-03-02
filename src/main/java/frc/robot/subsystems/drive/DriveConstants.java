@@ -21,27 +21,27 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 
 public class DriveConstants {
-        public static final double KP_XY = 0.5;
+        public static final double KP_XY = 1.7;
         public static final double KI_XY = 0;
         public static final double KD_XY = 0;
-        public static final double MAX_ACCELERATION_XY = 1.5;
-        public static final double MAX_VELOCETY_XY = 1.5;
-        public static final double TRANSLATION_TOLERANCE = 0.04;
+        public static final double MAX_ACCELERATION_XY = 4;
+        public static final double MAX_VELOCETY_XY = 4;
+        public static final double TRANSLATION_TOLERANCE = 0.03;
 
-        public static final double KP_OMEGA = 0.5;
+        public static final double KP_OMEGA = 1.4;
         public static final double KI_OMEGA = 0;
         public static final double KD_OMEGA = 0;
-        public static final double MAX_ACCELERATION_OMEGA = 1;
-        public static final double MAX_VELOCETY_OMEGA = 1;
+        public static final double MAX_ACCELERATION_OMEGA = 1.5;
+        public static final double MAX_VELOCETY_OMEGA = 1.5;
         public static final double OMEGA_TOLERANCE = 0.05;
 
-        public static final double ALGAE_OUTTAKE_DRIVE_BACK_SPEED = 0.03;
+        public static final double ALGAE_OUTTAKE_DRIVE_BACK_SPEED = 0.04;
 
         public static final double maxSpeedMetersPerSec = 6;
         public static final double maxAccMetersPerSecSquared = 4;
         public static final double maxSpeedRadiansPerSec = 4;
         public static final double maxAccRadiansPerSecSquared = 4;
-        public static final double odometryFrequency = 100.0; // Hz
+        public static final double odometryFrequency = 50.0; // Hz
         public static final double trackWidth = 0.55735;
         public static final double wheelBase = 0.55735;
         public static final double driveBaseRadius = Math.hypot(trackWidth / 2.0, wheelBase / 2.0);
@@ -96,16 +96,16 @@ public class DriveConstants {
                                                                                                             // Rad/Sec
 
         // Drive PID configuration
-        public static final double driveKp = 0.1;
+        public static final double driveKp = 0.15;
         public static final double driveKd = 0.0;
         public static final double driveKs = 0.25;
-        public static final double driveKv = .4;
+        public static final double driveKv = .7;
         public static final double driveSimP = 0.05;
         public static final double driveSimD = 0.0;
         public static final double driveSimKs = 0.0;
         public static final double driveSimKv = 0.0789;
 
-        public static final double driveSlipCurrent = 120.0;
+        public static final double driveSlipCurrent = 70;
         public static final double driveRampRate = 0.6;
 
         // Turn motor configuration

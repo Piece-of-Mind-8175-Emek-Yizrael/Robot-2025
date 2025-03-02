@@ -72,6 +72,9 @@ public class FieldConstants {
                 public static final Pose2d[] blueCenterFaces = new Pose2d[6]; // Starting facing the driver station in
                                                                               // clockwise
                                                                               // order
+                public static final Pose2d[] redCenterFaces = new Pose2d[6]; // Starting facing the driver station in
+                                                                             // clockwise
+                                                                             // order
                 public static final Pose2d[] blueLeftBranches = new Pose2d[6]; // Starting facing the driver station in
                                                                                // clockwise
                                                                                // order
@@ -144,6 +147,10 @@ public class FieldConstants {
                         Logger.recordOutput("right branch blue", blueRightBranches);
 
                         for (int i = 0; i < blueCenterFaces.length; i++) {
+                                redCenterFaces[i] = new Pose2d(fieldLength - blueCenterFaces[i].getX(),
+                                                fieldWidth - blueCenterFaces[i].getY(),
+                                                Rotation2d.fromDegrees(
+                                                                180 + blueCenterFaces[i].getRotation().getDegrees()));
                                 redLeftBranches[i] = new Pose2d(fieldLength - blueLeftBranches[i].getX(),
                                                 fieldWidth - blueLeftBranches[i].getY(),
                                                 Rotation2d.fromDegrees(
