@@ -130,7 +130,6 @@ public class Robot extends LoggedRobot {
   @Override
   public void disabledInit() {
     // POMTalonFX.DisableSound();
-    // POMTalonFX.DisableSound();
   }
 
   /** This function is called periodically when disabled. */
