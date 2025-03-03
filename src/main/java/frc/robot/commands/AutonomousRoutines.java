@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.Elevator.Elevator;
 import frc.robot.subsystems.Transfer.Transfer;
 import frc.robot.subsystems.drive.Drive;
@@ -40,7 +41,7 @@ public class AutonomousRoutines {
                                 TransferCommands.coralOutakeFast(transfer).withTimeout(0.5));
         }
 
-        public static Command putL2ThenIntake(Drive drive, Elevator elevator, Transfer transfer,
+        public static Command putL2Twice(Drive drive, Elevator elevator, Transfer transfer,
                         boolean proccessorSide) {
                 Pose2d[] poses = new Pose2d[] { new Pose2d(13.5, 1.5, new Rotation2d(Math.PI)),
                                 new Pose2d(16.4, 1.1, Rotation2d.fromDegrees(125)) };
@@ -54,12 +55,22 @@ public class AutonomousRoutines {
                                                                                 .until(() -> drive.getPose()
                                                                                                 .getTranslation()
                                                                                                 .getDistance(poses[0]
-                                                                                                                .getTranslation()) < 0.5)
-                                                                                .withTimeout(2),
+                                                                                                                .getTranslation()) < 0.8)
+                                                                                .withTimeout(1.5),
                                                                 driveToPoseInCorrectAlliance(drive, poses[1],
                                                                                 proccessorSide)
-                                                                                .withTimeout(3))),
-                                TransferCommands.intakeCoral(transfer));
+                                                                                .withTimeout(2.5))),
+                                Commands.parallel(
+                                                TransferCommands.intakeCoral(transfer),
+                                                Commands.sequence(
+                                                                new WaitCommand(0.8),
+                                                                driveToPoseInCorrectAlliance(drive,
+                                                                                FieldConstants.Reef.redLeftBranches[0],
+                                                                                proccessorSide))),
+                                DriveCommands.joystickDriveRobotRelative(drive, () -> 0.35, () -> 0, () -> 0)
+                                                .withTimeout(0.3),
+                                ElevatorCommands.L2(elevator),
+                                TransferCommands.coralOutakeFast(transfer).withTimeout(0.5));
         }
 
 }
