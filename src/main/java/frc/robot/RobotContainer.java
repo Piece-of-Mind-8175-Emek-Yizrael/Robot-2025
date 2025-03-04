@@ -49,6 +49,8 @@ import frc.robot.subsystems.Elevator.ElevatorIO;
 import frc.robot.subsystems.Elevator.ElevatorIOSim;
 import frc.robot.subsystems.Elevator.ElevatorReal;
 import frc.robot.subsystems.LEDs.LEDs;
+import frc.robot.subsystems.LEDs.LEDsIO;
+import frc.robot.subsystems.LEDs.LEDsIOReal;
 import frc.robot.subsystems.LEDs.LEDsIOSim;
 import frc.robot.subsystems.Transfer.Transfer;
 import frc.robot.subsystems.Transfer.TransferIO;
@@ -80,7 +82,7 @@ public class RobotContainer {
         private AlgaeOuttake algaeOuttake;
         private Transfer transfer;
 
-        // private final LEDs leds;
+        private LEDs leds;
 
         // Controller
         private final PomXboxController driverController = new PomXboxController(0);
@@ -92,8 +94,6 @@ public class RobotContainer {
         private SwerveDriveSimulation driveSimulation;
 
         private Elevator elevatorSubsystem;
-
-        private LEDs leDs;
 
         private Color color;
 
@@ -120,7 +120,7 @@ public class RobotContainer {
                                                 new ModuleIOPOM(2),
                                                 new ModuleIOPOM(3));
 
-                                // leds = new LEDs(new LEDsIOReal());
+                                leds = new LEDs(new LEDsIOReal());
                                 VisionIOReal[] cameras = {
                                                 new VisionIOReal("Left Front Camera",
                                                                 Constants.VisionConstants.l_camera_transform),
@@ -132,27 +132,27 @@ public class RobotContainer {
                         case SIM:
                                 // Sim robot, instantiate physics sim IO implementations
 
-                                // driveSimulation = new SwerveDriveSimulation(Drive.maplesimConfig,
-                                // new Pose2d(3, 3, new Rotation2d()));
-                                // SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
+                                driveSimulation = new SwerveDriveSimulation(Drive.maplesimConfig,
+                                                new Pose2d(3, 3, new Rotation2d()));
+                                SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
 
-                                // drive = new Drive(
-                                // new GyroIOSim(this.driveSimulation.getGyroSimulation()),
-                                // new ModuleIOSim(this.driveSimulation.getModules()[0]),
-                                // new ModuleIOSim(this.driveSimulation.getModules()[1]),
-                                // new ModuleIOSim(this.driveSimulation.getModules()[2]),
-                                // new ModuleIOSim(this.driveSimulation.getModules()[3]));
+                                drive = new Drive(
+                                                new GyroIOSim(this.driveSimulation.getGyroSimulation()),
+                                                new ModuleIOSim(this.driveSimulation.getModules()[0]),
+                                                new ModuleIOSim(this.driveSimulation.getModules()[1]),
+                                                new ModuleIOSim(this.driveSimulation.getModules()[2]),
+                                                new ModuleIOSim(this.driveSimulation.getModules()[3]));
 
-                                // vision = new VisionSubsystem(drive::addVisionMeasurement,
-                                // new VisionIOSim("camera_0",
-                                // new Transform3d(0.2, 0.0, 0.2,
-                                // new Rotation3d(0.0, 0.0, Math.PI)),
-                                // driveSimulation::getSimulatedDriveTrainPose));
-                                // transfer = new Transfer(new TransferIOSim(driveSimulation));
-                                // algaeOuttake = new AlgaeOuttake(new AlgaeOuttakeIOSim());
-                                // elevatorSubsystem = new Elevator(new ElevatorIOSim());
+                                vision = new VisionSubsystem(drive::addVisionMeasurement,
+                                                new VisionIOSim("camera_0",
+                                                                new Transform3d(0.2, 0.0, 0.2,
+                                                                                new Rotation3d(0.0, 0.0, Math.PI)),
+                                                                driveSimulation::getSimulatedDriveTrainPose));
+                                transfer = new Transfer(new TransferIOSim(driveSimulation));
+                                algaeOuttake = new AlgaeOuttake(new AlgaeOuttakeIOSim());
+                                elevatorSubsystem = new Elevator(new ElevatorIOSim());
 
-                                // leds = new LEDs(new LEDsIOSim());
+                                leds = new LEDs(new LEDsIOSim());
 
                                 break;
 
@@ -177,8 +177,8 @@ public class RobotContainer {
 
                                 transfer = new Transfer(new TransferIO() {
                                 });
-                                // leds = new LEDs(new LEDsIO() {
-                                // });
+                                leds = new LEDs(new LEDsIO() {
+                                });
                                 break;
                 }
 

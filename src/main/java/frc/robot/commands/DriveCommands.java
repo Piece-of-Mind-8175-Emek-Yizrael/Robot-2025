@@ -757,7 +757,9 @@ public class DriveCommands {
       m_timer.reset();
       m_timer.start();
       var currPose = m_drive.getPose();
-      ChassisSpeeds currS = m_drive.getChassisSpeeds();
+      ChassisSpeeds currS = ChassisSpeeds.fromRobotRelativeSpeeds(m_drive.getChassisSpeeds(),
+          currPose.getRotation());
+
       m_controllerX.reset(currPose.getX(), currS.vxMetersPerSecond);
       m_controllerY.reset(currPose.getY(), currS.vyMetersPerSecond);
       m_controllerTheta.reset(currPose.getRotation().getRadians(), currS.omegaRadiansPerSecond);

@@ -1,5 +1,7 @@
 package frc.robot.subsystems.Elevator;
 
+import java.util.function.BooleanSupplier;
+
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -28,6 +30,16 @@ public class ElevatorIOSim implements ElevatorIO {
     @Override
     public void setVoltage(double voltage) {
         elevator.setInputVoltage(voltage);
+    }
+
+    @Override
+    public BooleanSupplier atGoal() {
+        return () -> true;
+    }
+
+    @Override
+    public boolean isPressed() {
+        return true;
     }
 
     // @Override
