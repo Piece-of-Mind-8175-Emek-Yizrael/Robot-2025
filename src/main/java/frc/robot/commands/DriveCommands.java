@@ -593,7 +593,7 @@ public class DriveCommands {
       // cmd.schedule();
 
       new DriveToPosition(drive, destination)
-          .andThen(joystickDriveRobotRelative(drive, () -> 0.35, () -> 0, () -> 0).withTimeout(0.3)
+          .andThen(joystickDriveRobotRelative(drive, () -> 0.4, () -> 0, () -> 0).withTimeout(0.75)
               .raceWith(Commands.runEnd(() -> controller.vibrate(0.2), () -> controller.vibrate(0)).withTimeout(0.3)))
           .schedule();
     }
@@ -628,78 +628,82 @@ public class DriveCommands {
 
   }
 
-  public static class LocateToReefAlgaeOuttakeCommand extends Command {
-    Drive drive;
-    PomXboxController controller;
+  // public static class LocateToReefAlgaeOuttakeCommand extends Command {
+  // Drive drive;
+  // PomXboxController controller;
 
-    public LocateToReefAlgaeOuttakeCommand(Drive drive, PomXboxController controller) {
-      this.drive = drive;
-      this.controller = controller;
-      addRequirements(drive);
-    }
+  // public LocateToReefAlgaeOuttakeCommand(Drive drive, PomXboxController
+  // controller) {
+  // this.drive = drive;
+  // this.controller = controller;
+  // addRequirements(drive);
+  // }
 
-    @Override
-    public void initialize() {
-      Pose2d destination;
-      try {
-        destination = getClosestReef(drive.getPose());
-      } catch (Exception e) {
-        return;
-      }
-      // List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
-      // drive.getPose(),
-      // destination);
-      // PathPlannerPath path = new PathPlannerPath(waypoints,
-      // new PathConstraints(maxSpeedMetersPerSec, maxAccMetersPerSecSquared,
-      // maxSpeedRadiansPerSec,
-      // maxAccRadiansPerSecSquared),
-      // null,
-      // new GoalEndState(0, destination.getRotation()));
-      // path.preventFlipping = true;
-      // Logger.recordOutput("current reef destination", destination);
-      // Command cmd = AutoBuilder.followPath(path)
-      // .until(() ->
-      // drive.getPose().getTranslation().getDistance(destination.getTranslation()) <
-      // 0.6);
+  // @Override
+  // public void initialize() {
+  // Pose2d destination;
+  // try {
+  // destination = getClosestReef(drive.getPose());
+  // } catch (Exception e) {
+  // return;
+  // }
+  // // List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
+  // // drive.getPose(),
+  // // destination);
+  // // PathPlannerPath path = new PathPlannerPath(waypoints,
+  // // new PathConstraints(maxSpeedMetersPerSec, maxAccMetersPerSecSquared,
+  // // maxSpeedRadiansPerSec,
+  // // maxAccRadiansPerSecSquared),
+  // // null,
+  // // new GoalEndState(0, destination.getRotation()));
+  // // path.preventFlipping = true;
+  // // Logger.recordOutput("current reef destination", destination);
+  // // Command cmd = AutoBuilder.followPath(path)
+  // // .until(() ->
+  // // drive.getPose().getTranslation().getDistance(destination.getTranslation())
+  // <
+  // // 0.6);
 
-      // cmd = cmd.andThen(new DriveToPosition(drive, destination));
-      // cmd.schedule();
+  // // cmd = cmd.andThen(new DriveToPosition(drive, destination));
+  // // cmd.schedule();
 
-      new DriveToPosition(drive, destination)
-          .andThen(joystickDriveRobotRelative(drive, () -> 0.35, () -> 0, () -> 0).withTimeout(0.3)
-              .raceWith(Commands.run(() -> controller.vibrate(0.2))))
-          .schedule();
-    }
+  // new DriveToPosition(drive, destination)
+  // .andThen(joystickDriveRobotRelative(drive, () -> 0.5, () -> 0, () ->
+  // 0).withTimeout(0.7)
+  // .alongWith(Commands.run(() -> controller.vibrate(0.2))))
+  // .schedule();
+  // }
 
-    @Override
-    public boolean isFinished() {
-      return true;
-    }
+  // @Override
+  // public boolean isFinished() {
+  // return true;
+  // }
 
-    public Pose2d getClosestReef(Pose2d currentPose) throws Exception {
-      Pose2d[] branches = /* DriverStation.getAlliance().orElseGet(() -> Alliance.Red) == Alliance.Red */ currentPose
-          .getX() > FieldConstants.fieldLength / 2
-              ? (FieldConstants.Reef.redCenterFaces)
-              : (FieldConstants.Reef.blueCenterFaces);
-      // Get the closest reef to the robot
-      double minDistance = Double.MAX_VALUE;
-      Pose2d closestReef = FieldConstants.Reef.blueCenterFaces[0];
-      for (int i = 0; i < FieldConstants.Reef.blueCenterFaces.length; i++) {
-        double distance = currentPose.getTranslation()
-            .getDistance(branches[i].getTranslation());
-        if (distance < minDistance) {
-          minDistance = distance;
-          closestReef = branches[i];
-        }
-      }
-      double allowedDist = 2.5;
-      if (minDistance > allowedDist) {
-        throw new Exception("No reef is close enough");
-      }
-      return closestReef;
-    }
+  // public Pose2d getClosestReef(Pose2d currentPose) throws Exception {
+  // Pose2d[] branches = /* DriverStation.getAlliance().orElseGet(() ->
+  // Alliance.Red) == Alliance.Red */ currentPose
+  // .getX() > FieldConstants.fieldLength / 2
+  // ? (FieldConstants.Reef.redCenterFaces)
+  // : (FieldConstants.Reef.blueCenterFaces);
+  // // Get the closest reef to the robot
+  // double minDistance = Double.MAX_VALUE;
+  // Pose2d closestReef = FieldConstants.Reef.blueCenterFaces[0];
+  // for (int i = 0; i < FieldConstants.Reef.blueCenterFaces.length; i++) {
+  // double distance = currentPose.getTranslation()
+  // .getDistance(branches[i].getTranslation());
+  // if (distance < minDistance) {
+  // minDistance = distance;
+  // closestReef = branches[i];
+  // }
+  // }
+  // double allowedDist = 2.5;
+  // if (minDistance > allowedDist) {
+  // throw new Exception("No reef is close enough");
+  // }
+  // return closestReef;
+  // }
 
-  }
+  // }
 
   public static Command locateToReefCommand(Drive drive, PomXboxController controller, boolean toLeft) {
     return new LocateToReefCommand(drive, controller, toLeft);
@@ -777,6 +781,12 @@ public class DriveCommands {
           m_controllerY.calculate(pose.getTranslation().getY(), m_target.getTranslation().getY()),
           m_controllerTheta.calculate(pose.getRotation().getRadians(), m_target.getRotation().getRadians()));
 
+      // if (Math.abs(m_target.getX() - pose.getX()) + Math.abs(m_target.getY() -
+      // pose.getY()) < 0.2) {
+      // chassisSpeeds = new ChassisSpeeds(chassisSpeeds.vxMetersPerSecond,
+      // chassisSpeeds.vyMetersPerSecond, 0);
+      // }
+
       // if ((pose.getRotation().getDegrees() % 360 + 470) % 360 > 180) {
       // chassisSpeeds = new ChassisSpeeds(-chassisSpeeds.vxMetersPerSecond,
       // -chassisSpeeds.vyMetersPerSecond,
@@ -793,7 +803,9 @@ public class DriveCommands {
 
     @Override
     public void end(boolean interrupted) {
-      m_drive.stop();
+      if (!interrupted) {
+        m_drive.stop();
+      }
     }
 
     @Override

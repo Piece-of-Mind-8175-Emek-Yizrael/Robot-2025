@@ -43,8 +43,9 @@ public class AutonomousRoutines {
 
         public static Command putL2Twice(Drive drive, Elevator elevator, Transfer transfer,
                         boolean proccessorSide) {
-                Pose2d[] poses = new Pose2d[] { new Pose2d(13.5, 1.5, new Rotation2d(Math.PI)),
-                                new Pose2d(16.4, 1.1, Rotation2d.fromDegrees(125)) };
+                Pose2d[] poses = new Pose2d[] { new Pose2d(14.5, 2, Rotation2d.fromDegrees(125)),
+                                new Pose2d(16.1, .6, Rotation2d.fromDegrees(125)),
+                                new Pose2d(15, 3.6, Rotation2d.fromDegrees(180)) };
                 return Commands.sequence(
                                 putL2(drive, elevator, transfer, proccessorSide),
                                 Commands.parallel(
@@ -52,10 +53,11 @@ public class AutonomousRoutines {
                                                 Commands.sequence(
                                                                 driveToPoseInCorrectAlliance(drive, poses[0],
                                                                                 proccessorSide)
-                                                                                .until(() -> drive.getPose()
+                                                                                .raceWith(Commands.run(() -> {
+                                                                                }).until(() -> drive.getPose()
                                                                                                 .getTranslation()
                                                                                                 .getDistance(poses[0]
-                                                                                                                .getTranslation()) < 0.8)
+                                                                                                                .getTranslation()) < 0.8))
                                                                                 .withTimeout(1.5),
                                                                 driveToPoseInCorrectAlliance(drive, poses[1],
                                                                                 proccessorSide)
@@ -63,6 +65,14 @@ public class AutonomousRoutines {
                                 Commands.parallel(
                                                 TransferCommands.intakeCoral(transfer),
                                                 Commands.sequence(
+                                                                driveToPoseInCorrectAlliance(drive, poses[0],
+                                                                                proccessorSide)
+                                                                                .raceWith(Commands.run(() -> {
+                                                                                }).until(() -> drive.getPose()
+                                                                                                .getTranslation()
+                                                                                                .getDistance(poses[2]
+                                                                                                                .getTranslation()) < 0.8))
+                                                                                .withTimeout(1.5),
                                                                 new WaitCommand(0.8),
                                                                 driveToPoseInCorrectAlliance(drive,
                                                                                 FieldConstants.Reef.redLeftBranches[0],
