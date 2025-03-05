@@ -31,3 +31,4 @@ public class LEDsCommands {
     public static Command setSecondHalf(LEDs leds, Color color) {
         return Commands.run(() -> leds.setSecondHalf(color), leds);
     }
+}
