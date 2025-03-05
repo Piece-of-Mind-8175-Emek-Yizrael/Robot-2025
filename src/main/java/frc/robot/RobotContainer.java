@@ -13,12 +13,11 @@
 
 package frc.robot;
 
+import static frc.robot.subsystems.AlgaeOuttake.AlgaeOuttakeConstants.ALGAE_OUTTAKE_ELEVATOR_POSITION;
 import static frc.robot.subsystems.Elevator.ElevatorConstants.L2_POSITION;
-import static frc.robot.subsystems.Elevator.ElevatorConstants.L3_POSITION;
 import static frc.robot.subsystems.Elevator.ElevatorConstants.MANUAL_FAST_CLOSE;
 import static frc.robot.subsystems.Elevator.ElevatorConstants.MANUAL_FAST_OPEN;
 import static frc.robot.subsystems.Elevator.ElevatorConstants.MANUAL_SLOW_CLOSE;
-import static frc.robot.subsystems.AlgaeOuttake.AlgaeOuttakeConstants.ALGAE_OUTTAKE_ELEVATOR_POSITION;
 
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -29,7 +28,6 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -42,6 +40,7 @@ import frc.robot.commands.DriveCommands;
 import frc.robot.commands.DriveCommands.DriveToPosition;
 import frc.robot.commands.DriveCommands.LocateToReefAlgaeOuttakeCommand;
 import frc.robot.commands.ElevatorCommands;
+import frc.robot.commands.LEDsCommands;
 import frc.robot.commands.TransferCommands;
 import frc.robot.subsystems.AlgaeOuttake.AlgaeOuttake;
 import frc.robot.subsystems.AlgaeOuttake.AlgaeOuttakeIO;
@@ -51,6 +50,7 @@ import frc.robot.subsystems.Elevator.ElevatorConstants;
 import frc.robot.subsystems.Elevator.ElevatorIO;
 import frc.robot.subsystems.Elevator.ElevatorReal;
 import frc.robot.subsystems.LEDs.LEDs;
+import frc.robot.subsystems.LEDs.LEDsIOReal;
 import frc.robot.subsystems.Transfer.Transfer;
 import frc.robot.subsystems.Transfer.TransferIO;
 import frc.robot.subsystems.Transfer.TransferIOReal;
@@ -91,7 +91,7 @@ public class RobotContainer {
 
         private Elevator elevatorSubsystem;
 
-        private LEDs leDs;
+        private LEDs leds;
 
         private Color color;
 
@@ -126,6 +126,8 @@ public class RobotContainer {
                                                                 Constants.VisionConstants.r_camera_transform),
                                 };
                                 vision = new VisionSubsystem(drive::addVisionMeasurement, cameras);
+                                leds = new LEDs(new LEDsIOReal(), () -> vision.areVisibleTags(0),
+                                                () -> vision.areVisibleTags(1));
 
                         case SIM:
                                 // Sim robot, instantiate physics sim IO implementations
@@ -151,6 +153,7 @@ public class RobotContainer {
                                 // elevatorSubsystem = new Elevator(new ElevatorIOSim());
 
                                 // leds = new LEDs(new LEDsIOSim());
+                                leds = new LEDs(new LEDsIOReal());
 
                                 break;
 
@@ -469,6 +472,10 @@ public class RobotContainer {
 
         public void closeAlgaeArm() {
                 AlgaeOuttakeCommands.closeArm(algaeOuttake).schedule();
+        }
+
+        public void blinkRed() {
+                LEDsCommands.blink(leds, Color.kPurple, 0.5).schedule();
         }
 
         public Command getPathCommand() {

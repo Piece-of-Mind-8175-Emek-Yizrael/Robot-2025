@@ -69,6 +69,10 @@ public class VisionSubsystem extends SubsystemBase {
         return inputs[cameraIndex].latestTargetObservation.tx();
     }
 
+    public boolean areVisibleTags(int cameraIndex) {
+        return inputs[cameraIndex].tagIds.length > 0;
+    }
+
     public ArrayList<Pair<Integer, Transform3d>> getReefTagsPositions() {
         return null;
     }

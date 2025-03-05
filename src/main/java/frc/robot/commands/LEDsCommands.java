@@ -6,10 +6,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
 
-
-
-
-
 public class LEDsCommands {
 
     public static Command setAll(LEDs leds, Color color) {
@@ -27,5 +23,11 @@ public class LEDsCommands {
     public static Command blink(LEDs leds, LEDPattern pattern, double seconds) {
         return Commands.run(() -> leds.blink(pattern, seconds), leds);
     }
-    
-}
+
+    public static Command setFirstHalf(LEDs leds, Color color) {
+        return Commands.run(() -> leds.setFirstHalf(color), leds);
+    }
+
+    public static Command setSecondHalf(LEDs leds, Color color) {
+        return Commands.run(() -> leds.setSecondHalf(color), leds);
+    }
