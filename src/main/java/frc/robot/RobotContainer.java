@@ -285,14 +285,14 @@ public class RobotContainer {
                                                 () -> driverController.getLeftX() * 0.6,
                                                 () -> driverController.getRightX() * 0.4));
 
-                driverController.leftTrigger().whileTrue(
+                driverController.LB().whileTrue(
                                 DriveCommands.joystickDriveClosedLoopVel(
                                                 drive,
                                                 () -> driverController.getLeftY() * 0.4,
                                                 () -> driverController.getLeftX() * 0.4,
                                                 () -> driverController.getRightX() * 0.3));
 
-                driverController.rightTrigger().whileTrue(
+                driverController.RB().whileTrue(
                                 DriveCommands.joystickDriveClosedLoopVel(
                                                 drive,
                                                 () -> driverController.getLeftY() * 0.8,
@@ -353,10 +353,12 @@ public class RobotContainer {
                 driverController.PovLeft().onTrue(drive.resetGyroCommand(Rotation2d.fromDegrees(125)));
                 driverController.PovRight().onTrue(drive.resetGyroCommand(Rotation2d.fromDegrees(-125)));
 
-                driverController.LB().whileTrue(
-                                DriveCommands.joystickDriveRobotRelative(drive, () -> 0, () -> 0.4, () -> 0));
-                driverController.RB().whileTrue(
-                                DriveCommands.joystickDriveRobotRelative(drive, () -> 0, () -> -0.4, () -> 0));
+                driverController.leftTrigger().whileTrue(
+                                DriveCommands.joystickDriveRobotRelative(drive, () -> 0,
+                                                () -> driverController.getLeftTriggerAxis() * 0.4, () -> 0));
+                driverController.rightTrigger().whileTrue(
+                                DriveCommands.joystickDriveRobotRelative(drive, () -> 0,
+                                                () -> driverController.getRightTriggerAxis() * -0.4, () -> 0));
                 driverController.y().whileTrue(
                                 DriveCommands.joystickDriveRobotRelative(drive, () -> -0.4, () -> 0, () -> 0));
 
