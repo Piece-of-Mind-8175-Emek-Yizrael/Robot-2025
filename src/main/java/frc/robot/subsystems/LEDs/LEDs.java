@@ -19,6 +19,7 @@ public class LEDs extends SubsystemBase {
     public LEDs(LEDsIO ledsIO, BooleanSupplier leftCamera, BooleanSupplier rightCamera) {
         this.ledsIO = ledsIO;
         setAll(Color.kPurple);
+        new Trigger(() -> DriverStation.isEnabled()).onTrue(LEDsCommands.setAll(this, Color.kRed));
         new Trigger(() -> DriverStation.isDisabled()).onTrue(LEDsCommands.setAll(this, Color.kPurple));
 
         new Trigger(leftCamera).onTrue(LEDsCommands.setFirstHalf(this, Color.kGreen));
