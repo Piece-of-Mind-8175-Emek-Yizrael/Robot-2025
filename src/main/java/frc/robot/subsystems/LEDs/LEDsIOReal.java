@@ -93,6 +93,11 @@ public class LEDsIOReal implements LEDsIO {
 
     }
 
+    @Override
+    public void setAll(LEDPattern pattern) {
+        pattern.applyTo(ledBuffer);
+    }
+
     private void updateLEDs() {
         led.setData(ledBuffer);
     }

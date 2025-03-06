@@ -28,6 +28,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -299,7 +300,8 @@ public class RobotContainer {
                                                 drive,
                                                 () -> driverController.getLeftY() * 0.8,
                                                 () -> driverController.getLeftX() * 0.8,
-                                                () -> driverController.getRightX() * 0.7));
+                                                () -> driverController.getRightX() * 0.7)
+                                                .alongWith(LEDsCommands.setAll(leds, LEDPattern.rainbow(255, 128))));
 
                 driverController.start().onTrue(getPathCommand());
                 // driverController.x().whileTrue(new DriveCommands.DriveToReef(drive, vision,

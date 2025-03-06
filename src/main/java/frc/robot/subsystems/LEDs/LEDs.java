@@ -54,6 +54,10 @@ public class LEDs extends SubsystemBase {
         ledsIO.setSecondHalf(color);
     }
 
+    public void setAll(LEDPattern pattern) {
+        ledsIO.setAll(pattern);
+    }
+
     @Override
     public void periodic() {
         ledsIO.updateInputs(inputs);

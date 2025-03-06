@@ -2,6 +2,7 @@ package frc.robot.subsystems.LEDs;
 
 import org.littletonrobotics.junction.AutoLog;
 
+import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
 
@@ -30,6 +31,9 @@ public interface LEDsIO {
     }
 
     public default void setSecondHalf(Color color) {
+    }
+
+    public default void setAll(LEDPattern pattern) {
     }
 
 }

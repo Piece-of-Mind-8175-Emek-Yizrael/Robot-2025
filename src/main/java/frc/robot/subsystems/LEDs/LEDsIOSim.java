@@ -10,16 +10,14 @@ import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
 
-
-public class LEDsIOSim implements LEDsIO{
+public class LEDsIOSim implements LEDsIO {
     private final AddressableLEDBuffer ledBuffer;
-    
+
     public LEDsIOSim() {
         ledBuffer = new AddressableLEDBuffer(LENGTH);
 
     }
 
-    
     @Override
     public void updateInputs(LEDsIOInputs inputs) {
         inputs.ledColorList = new String[ledBuffer.getLength()];
@@ -32,22 +30,21 @@ public class LEDsIOSim implements LEDsIO{
     @Override
     public void setAll(Color color) {
         LEDPattern solidColorPattern = LEDPattern.solid(color);
-        
-        solidColorPattern.applyTo(ledBuffer);    }
 
+        solidColorPattern.applyTo(ledBuffer);
+    }
 
     // Gets a list of Colors and splits them equally across the LED strip
     @Override
-    public void setParts(Color... colors){
+    public void setParts(Color... colors) {
         int numberOfParts = colors.length;
         Map<Double, Color> map = new HashMap<Double, Color>();
-        
+
         for (int i = 0; i < numberOfParts; i++) {
-            map.put(i*(1.0/numberOfParts), colors[i]);
+            map.put(i * (1.0 / numberOfParts), colors[i]);
         }
 
         LEDPattern steps = LEDPattern.steps(map);
-
 
         steps.applyTo(ledBuffer);
 
@@ -68,9 +65,9 @@ public class LEDsIOSim implements LEDsIO{
     }
 
     // private void setColor(int idx, Color color) {
-    //     int rgbFactor = 255;
-    //     ledBuffer.setRGB(idx, (int) (color.red*rgbFactor), (int) (color.green*rgbFactor), (int) (color.blue*rgbFactor));
+    // int rgbFactor = 255;
+    // ledBuffer.setRGB(idx, (int) (color.red*rgbFactor), (int)
+    // (color.green*rgbFactor), (int) (color.blue*rgbFactor));
     // }
 
-
-    }
+}
