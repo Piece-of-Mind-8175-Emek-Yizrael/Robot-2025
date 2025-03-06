@@ -7,7 +7,7 @@ import frc.robot.subsystems.AlgaeTransfer.AlgaeTransferIO.AlgaeTransferIOInputs;
 
 public class AlgaeTransfer extends SubsystemBase {
     private AlgaeTransferIO algaeTransferIO;
-    private AlgaeTransferIOInputs algaeTransferInputs = new AlgaeTransferIOInputs();
+    private AlgaeTransferIOInputsAutoLogged algaeTransferInputs = new AlgaeTransferIOInputsAutoLogged();
 
     public AlgaeTransfer(AlgaeTransfer algaeTransfer){
         this.algaeTransferIO = algaeTransferIO;
