@@ -32,10 +32,15 @@ public class LEDs extends SubsystemBase {
         ledsIO.blink(pattern, seconds);
     }
 
+    public void rainbow() {
+        ledsIO.rainbow();
+    }
+
     @Override
     public void periodic() {
         ledsIO.updateInputs(inputs);
         Logger.processInputs("LEDs", inputs);
+        // setAll(Color.kPurple);
     }
 
 }

@@ -19,6 +19,7 @@ import static frc.robot.subsystems.Elevator.ElevatorConstants.MANUAL_SLOW_CLOSE;
 
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
+import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -28,16 +29,19 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.POM_lib.Joysticks.PomXboxController;
 import frc.robot.commands.AlgaeOuttakeCommands;
 import frc.robot.commands.AutonomousRoutines;
 import frc.robot.commands.DriveCommands;
 // import frc.robot.commands.DriveCommands.LocateToReefAlgaeOuttakeCommand;
 import frc.robot.commands.ElevatorCommands;
+import frc.robot.commands.LEDsCommands;
 import frc.robot.commands.TransferCommands;
 import frc.robot.subsystems.AlgaeOuttake.AlgaeOuttake;
 import frc.robot.subsystems.AlgaeOuttake.AlgaeOuttakeIO;
@@ -235,6 +239,7 @@ public class RobotContainer {
                 autoChooser.addOption("NOT proccessor side L2 intake",
                                 AutonomousRoutines.putL2Twice(drive, elevatorSubsystem, transfer, false));
 
+                SmartDashboard.putData("TransferSub", transfer);
                 // Configure the button bindings
                 configureButtonBindings();
         }
@@ -264,6 +269,9 @@ public class RobotContainer {
                                                 () -> driverController.getLeftY() * 0.8,
                                                 () -> driverController.getLeftX() * 0.8,
                                                 () -> driverController.getRightX() * 0.6));
+
+                driverController.rightTrigger().whileTrue(LEDsCommands.rainbow(leds));
+                driverController.rightTrigger().onFalse(LEDsCommands.setAll(leds, Color.kPurple));
 
                 driverController.start().onTrue(getPathCommand());
                 // driverController.x().whileTrue(new DriveCommands.DriveToReef(drive, vision,
