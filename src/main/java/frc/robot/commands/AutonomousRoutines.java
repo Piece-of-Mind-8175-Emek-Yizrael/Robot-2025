@@ -28,6 +28,14 @@ public class AutonomousRoutines {
                                 () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red);
         }
 
+        public static Command driveRobotRelativeCorrectSide(Drive drive, boolean proccessorSide, double x, double y,
+                        double omega) {
+                return DriveCommands.joystickDrive(drive,
+                                () -> x,
+                                () -> proccessorSide ? y : -y,
+                                () -> proccessorSide ? omega : -omega);
+        }
+
         public static Command putL2(Drive drive, Elevator elevator, Transfer transfer,
                         boolean proccessorSide) {
                 return Commands.sequence(
@@ -45,20 +53,14 @@ public class AutonomousRoutines {
                         boolean proccessorSide) {
                 Pose2d[] poses = new Pose2d[] { new Pose2d(14.8, 1.1, Rotation2d.fromDegrees(125)),
                                 new Pose2d(16.1, .75, Rotation2d.fromDegrees(125)),
-                                new Pose2d(15, 3.6, Rotation2d.fromDegrees(180)) };
+                                new Pose2d(15, 7, Rotation2d.fromDegrees(180)) };
                 return Commands.sequence(
                                 putL2(drive, elevator, transfer, proccessorSide),
                                 Commands.parallel(
                                                 ElevatorCommands.closeElevator(elevator),
                                                 Commands.sequence(
-                                                                driveToPoseInCorrectAlliance(drive, poses[0],
-                                                                                proccessorSide)
-                                                                                .raceWith(Commands.run(() -> {
-                                                                                }).until(() -> drive.getPose()
-                                                                                                .getTranslation()
-                                                                                                .getDistance(poses[0]
-                                                                                                                .getTranslation()) < 1.2)
-                                                                                                .withTimeout(.7)),
+                                                                driveRobotRelativeCorrectSide(drive, proccessorSide,
+                                                                                -0.5, -0.5, -0.4).withTimeout(0.8),
                                                                 driveToPoseInCorrectAlliance(drive, poses[1],
                                                                                 proccessorSide)
                                                                                 .withTimeout(2.5))),
@@ -66,17 +68,11 @@ public class AutonomousRoutines {
                                                 TransferCommands.intakeCoral(transfer),
                                                 Commands.sequence(
                                                                 new WaitCommand(0.8),
-                                                                driveToPoseInCorrectAlliance(drive, poses[2],
-                                                                                proccessorSide)
-                                                                                .raceWith(Commands.run(() -> {
-                                                                                }).until(() -> drive.getPose()
-                                                                                                .getTranslation()
-                                                                                                .getDistance(poses[2]
-                                                                                                                .getTranslation()) < 0.8))
-                                                                                .withTimeout(1),
+                                                                driveRobotRelativeCorrectSide(drive, proccessorSide,
+                                                                                0.2, 0.65, -0.3).withTimeout(1.7),
                                                                 driveToPoseInCorrectAlliance(drive,
                                                                                 FieldConstants.Reef.redLeftBranches[0],
-                                                                                proccessorSide))),
+                                                                                proccessorSide).withTimeout(2))),
                                 DriveCommands.joystickDriveRobotRelative(drive, () -> 0.4, () -> 0, () -> 0)
                                                 .withTimeout(0.7),
                                 ElevatorCommands.L2(elevator),

@@ -325,6 +325,9 @@ public class RobotContainer {
                 driverController.RB().whileTrue(
                                 DriveCommands.joystickDriveRobotRelative(drive, () -> 0, () -> -0.4, () -> 0));
                 driverController.y().whileTrue(
+                                DriveCommands.joystickDriveRobotRelative(drive, () -> 0.4, () -> 0, () -> 0));
+                DriveCommands.joystickDriveRobotRelative(drive, () -> 0, () -> -0.4, () -> 0);
+                driverController.a().whileTrue(
                                 DriveCommands.joystickDriveRobotRelative(drive, () -> -0.4, () -> 0, () -> 0));
 
                 driverController.back().debounce(1)
@@ -358,13 +361,13 @@ public class RobotContainer {
                                 .onTrue(ElevatorCommands.closeElevator(elevatorSubsystem));
                 operatorController.b().onTrue(
                                 ElevatorCommands.goToPosition(elevatorSubsystem, ElevatorConstants.L2_POSITION));
-                operatorController.a().onTrue(ElevatorCommands.stopElevator(elevatorSubsystem));
+                // operatorController.a().onTrue(ElevatorCommands.stopElevator(elevatorSubsystem));
 
                 // intake coral
                 operatorController.PovLeft().whileTrue(TransferCommands.takeCoralIn(transfer));
                 operatorController.PovRight().whileTrue(TransferCommands.coralOutake(transfer));
 
-                // rutern the coral back
+                // return the coral back
                 operatorController.a().onTrue(TransferCommands.intakeCoral(transfer));
 
                 // manual elevator control
