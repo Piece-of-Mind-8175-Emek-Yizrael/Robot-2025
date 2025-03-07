@@ -36,6 +36,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.POM_lib.Joysticks.PomXboxController;
 import frc.robot.commands.AlgaeOuttakeCommands;
 import frc.robot.commands.AutonomousRoutines;
@@ -248,7 +249,7 @@ public class RobotContainer {
         private void configureButtonBindings() {
 
                 // driver controller buttens
-
+                Trigger coraltrig = new Trigger(() -> transfer.getIO().isCoralIn());
                 // Default command, normal field-relative drive
                 leds.setDefaultCommand(new ConditionalCommand(LEDsCommands.setAll(leds, Color.kGreen),
                                 LEDsCommands.setAll(leds, Color.kPurple), () -> transfer.getIO().isCoralIn()));
@@ -259,6 +260,7 @@ public class RobotContainer {
                                                 () -> driverController.getLeftX() * 0.6,
                                                 () -> driverController.getRightX() * 0.4));
 
+                coraltrig.onFalse(LEDsCommands.blink(leds, Color.kGainsboro, 0.2).withTimeout(0.8));
                 driverController.leftTrigger().whileTrue(
                                 DriveCommands.joystickDriveClosedLoopVel(
                                                 drive,
