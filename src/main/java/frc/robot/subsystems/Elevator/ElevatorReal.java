@@ -25,6 +25,7 @@ public class ElevatorReal implements ElevatorIO {
     private POMDigitalInput brakeSwitch;
     private ElevatorTuningPid pidConstants;
     private BooleanSupplier isCoralIn;
+    private SparkMaxConfig brakeConfig, coasConfig;
 
     public ElevatorReal(BooleanSupplier isCoralIn) {
         motor = new POMSparkMax(ELEVATOR_ID);
@@ -59,6 +60,11 @@ public class ElevatorReal implements ElevatorIO {
 
         encoder.setPosition(0);
 
+        brakeConfig = new SparkMaxConfig();
+        brakeConfig.idleMode(IdleMode.kBrake);
+        coasConfig = new SparkMaxConfig();
+        coasConfig.idleMode(IdleMode.kCoast);
+
     }
 
     @Override
@@ -69,7 +75,6 @@ public class ElevatorReal implements ElevatorIO {
         inputs.elevatorAppliedVolts = motor.getAppliedOutput() * motor.getBusVoltage(); // FIXME Wont Return Motor
                                                                                         // Voltage
         inputs.foldSwitch = foldSwitch.get();
-        setPidValues();
         resetlfPressed();
     }
 
@@ -148,20 +153,20 @@ public class ElevatorReal implements ElevatorIO {
         }
         if (DriverStation.isEnabled()) {
             if (foldSwitch.get()) {
-                motor.configure(new SparkMaxConfig().idleMode(IdleMode.kBrake), ResetMode.kNoResetSafeParameters,
+                motor.configure(brakeConfig, ResetMode.kNoResetSafeParameters,
                         PersistMode.kNoPersistParameters);
             } else {
-                motor.configure(new SparkMaxConfig().idleMode(IdleMode.kCoast), ResetMode.kNoResetSafeParameters,
+                motor.configure(coasConfig, ResetMode.kNoResetSafeParameters,
                         PersistMode.kNoPersistParameters);
             }
         } else {
             if (brakeSwitch.get()) {
-                motor.configure(new SparkMaxConfig().idleMode(IdleMode.kCoast),
+                motor.configure(coasConfig,
                         ResetMode.kNoResetSafeParameters,
                         PersistMode.kNoPersistParameters);
                 resetEncoder();
             } else {
-                motor.configure(new SparkMaxConfig().idleMode(IdleMode.kBrake),
+                motor.configure(brakeConfig,
                         ResetMode.kNoResetSafeParameters,
                         PersistMode.kNoPersistParameters);
             }
