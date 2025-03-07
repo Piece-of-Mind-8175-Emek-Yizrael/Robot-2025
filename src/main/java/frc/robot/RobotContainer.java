@@ -33,6 +33,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.POM_lib.Joysticks.PomXboxController;
@@ -249,6 +250,8 @@ public class RobotContainer {
                 // driver controller buttens
 
                 // Default command, normal field-relative drive
+                leds.setDefaultCommand(new ConditionalCommand(LEDsCommands.setAll(leds, Color.kGreen),
+                                LEDsCommands.setAll(leds, Color.kPurple), () -> transfer.getIO().isCoralIn()));
                 drive.setDefaultCommand(
                                 DriveCommands.joystickDriveClosedLoopVel(
                                                 drive,
