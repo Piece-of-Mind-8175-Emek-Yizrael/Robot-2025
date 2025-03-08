@@ -38,6 +38,8 @@ public class TransferCommands {
         return Commands.runOnce(() -> transfer.getIO().setVoltage(3), transfer)
                 .andThen(new WaitUntilCommand(() -> transfer.getIO().isCoralIn()))
                 .andThen(new WaitUntilCommand(() -> !transfer.getIO().isCoralIn()))
+                .andThen(Commands.runOnce(() -> transfer.getIO().setVoltage(-2), transfer))
+                .andThen(new WaitUntilCommand(() -> transfer.getIO().isCoralIn()))
                 .andThen(transfer.getIO()::stopMotor);
     }
 

@@ -278,15 +278,19 @@ public class RobotContainer {
                 driverController.rightTrigger().whileTrue(LEDsCommands.rainbow(leds));
                 driverController.rightTrigger().onFalse(LEDsCommands.setAll(leds, Color.kPurple));
 
-                driverController.start().onTrue(getPathCommand());
+                // driverController.start().onTrue(getPathCommand());
                 // driverController.x().whileTrue(new DriveCommands.DriveToReef(drive, vision,
                 // true));
                 // driverController.b().whileTrue(new DriveCommands.DriveToReef(drive, vision,
                 // false));
-                driverController.x().whileTrue(DriveCommands.locateToReefCommand(drive, driverController,
-                                true));
-                driverController.b().whileTrue(DriveCommands.locateToReefCommand(drive, driverController,
-                                false));
+                driverController.x()
+                                .whileTrue(DriveCommands.locateToReefCommand(drive, driverController,
+                                                operatorController, elevatorSubsystem,
+                                                true));
+                driverController.b()
+                                .whileTrue(DriveCommands.locateToReefCommand(drive, driverController,
+                                                operatorController, elevatorSubsystem,
+                                                false));
                 // driverController.a().whileTrue(new LocateToReefAlgaeOuttakeCommand(drive,
                 // driverController));
 

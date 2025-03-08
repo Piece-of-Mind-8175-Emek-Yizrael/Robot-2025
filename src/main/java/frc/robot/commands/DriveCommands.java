@@ -55,6 +55,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.POM_lib.Joysticks.PomXboxController;
+import frc.robot.subsystems.Elevator.Elevator;
 import frc.robot.subsystems.Vision.VisionSubsystem;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
@@ -556,11 +557,16 @@ public class DriveCommands {
   public static class LocateToReefCommand extends Command {
     Drive drive;
     boolean toLeft;
-    PomXboxController controller;
+    PomXboxController driveController;
+    PomXboxController operatorController;
+    Elevator elevator;
 
-    public LocateToReefCommand(Drive drive, PomXboxController controller, boolean toLeft) {
+    public LocateToReefCommand(Drive drive, PomXboxController driveController, PomXboxController operatorController,
+        Elevator elevator, boolean toLeft) {
       this.drive = drive;
-      this.controller = controller;
+      this.driveController = driveController;
+      this.operatorController = operatorController;
+      this.elevator = elevator;
       this.toLeft = toLeft;
       addRequirements(drive);
     }
@@ -592,9 +598,12 @@ public class DriveCommands {
       // cmd = cmd.andThen(new DriveToPosition(drive, destination));
       // cmd.schedule();
 
-      new DriveToPosition(drive, destination)
+      (new DriveToPosition(drive, destination)
           .andThen(joystickDriveRobotRelative(drive, () -> 0.4, () -> 0, () -> 0).withTimeout(0.75)
-              .raceWith(Commands.runEnd(() -> controller.vibrate(0.2), () -> controller.vibrate(0)).withTimeout(0.3)))
+              .raceWith(Commands.runEnd(() -> driveController.vibrate(0.2), () -> driveController.vibrate(0))
+                  .withTimeout(0.3).raceWith(
+                      Commands.runEnd(() -> operatorController.vibrate(0.2), () -> operatorController.vibrate(0))))))
+          .alongWith(ElevatorCommands.goToPosition(elevator, 10).unless(() -> elevator.getIO().getPosition() > 10))
           .schedule();
     }
 
@@ -705,8 +714,10 @@ public class DriveCommands {
 
   // }
 
-  public static Command locateToReefCommand(Drive drive, PomXboxController controller, boolean toLeft) {
-    return new LocateToReefCommand(drive, controller, toLeft);
+  public static Command locateToReefCommand(Drive drive, PomXboxController driveController,
+      PomXboxController operatorController,
+      Elevator elevator, boolean toLeft) {
+    return new LocateToReefCommand(drive, driveController, operatorController, elevator, toLeft);
   }
 
   public static class DriveToPosition extends Command {
