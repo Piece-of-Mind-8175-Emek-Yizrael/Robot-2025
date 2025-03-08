@@ -81,5 +81,35 @@ public class AutonomousRoutines {
                                 ElevatorCommands.L2(elevator),
                                 TransferCommands.coralOutakeFast(transfer).withTimeout(0.5));
         }
+        public static Command putL2TwiceAlter(Drive drive, Elevator elevator, Transfer transfer,
+                        boolean proccessorSide) {
+                Pose2d[] poses = new Pose2d[] { new Pose2d(14.8, 1.1, Rotation2d.fromDegrees(125)),
+                                new Pose2d(16.7, 1.1, Rotation2d.fromDegrees(125)),
+                                new Pose2d(15, 7, Rotation2d.fromDegrees(180)) };
+                return Commands.sequence(
+                                putL2(drive, elevator, transfer, proccessorSide),
+                                Commands.parallel(
+                                                ElevatorCommands.closeElevator(elevator),
+                                                Commands.sequence(
+                                                                driveRobotRelativeCorrectSide(drive, proccessorSide,
+                                                                                -0.4, -0.7, -0.4).until(()->poses[0].getTranslation().getDistance(drive.getPose().getTranslation()) < 1).withTimeout(1),
+                                                                driveToPoseInCorrectAlliance(drive, poses[1],
+                                                                                proccessorSide)
+                                                                                .withTimeout(2.5))),
+                                Commands.parallel(
+                                                TransferCommands.intakeCoral(transfer),
+                                                Commands.sequence(
+                                                                new WaitCommand(1),
+                                                                driveRobotRelativeCorrectSide(drive, proccessorSide, 0.35, 0.7, -0.3)
+                                                                .until(()->poses[2].getTranslation().getDistance(drive.getPose().getTranslation()) < 1).withTimeout(1.2),
+                                                                driveToPoseInCorrectAlliance(drive,
+                                                                                FieldConstants.Reef.redLeftBranches[0],
+                                                                                proccessorSide).withTimeout(2))),
+                                DriveCommands.joystickDriveRobotRelative(drive, () -> 0.4, () -> 0, () -> 0)
+                                                .withTimeout(0.4),
+                                new InstantCommand(() -> drive.runVelocity(new ChassisSpeeds(), true)),
+                                ElevatorCommands.L2(elevator),
+                                TransferCommands.coralOutakeFast(transfer).withTimeout(0.5));
+        }
 
 }
