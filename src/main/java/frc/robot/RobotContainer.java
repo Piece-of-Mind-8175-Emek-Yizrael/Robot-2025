@@ -236,9 +236,9 @@ public class RobotContainer {
                                 AutonomousRoutines.putL2(drive, elevatorSubsystem, transfer, true));
                 autoChooser.addOption("NOT proccessor side L2",
                                 AutonomousRoutines.putL2(drive, elevatorSubsystem, transfer, false));
-                autoChooser.addOption("proccessor side L2 intake",
+                autoChooser.addOption("proccessor side L2 twice",
                                 AutonomousRoutines.putL2Twice(drive, elevatorSubsystem, transfer, true));
-                autoChooser.addOption("NOT proccessor side L2 intake",
+                autoChooser.addOption("NOT proccessor side L2 twice",
                                 AutonomousRoutines.putL2Twice(drive, elevatorSubsystem, transfer, false));
 
                 SmartDashboard.putData("TransferSub", transfer);

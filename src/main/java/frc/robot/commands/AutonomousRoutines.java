@@ -43,8 +43,8 @@ public class AutonomousRoutines {
                                                 proccessorSide)
                                                 .withTimeout(4)
                                                 .alongWith(ElevatorCommands.goToPosition(elevator, 8)),
-                                DriveCommands.joystickDriveRobotRelative(drive, () -> 0.35, () -> 0, () -> 0)
-                                                .withTimeout(0.3),
+                                DriveCommands.joystickDriveRobotRelative(drive, () -> 0.4, () -> 0, () -> 0)
+                                                .withTimeout(0.4),
                                 ElevatorCommands.L2(elevator),
                                 TransferCommands.coralOutakeFast(transfer).withTimeout(0.5));
         }
@@ -52,7 +52,7 @@ public class AutonomousRoutines {
         public static Command putL2Twice(Drive drive, Elevator elevator, Transfer transfer,
                         boolean proccessorSide) {
                 Pose2d[] poses = new Pose2d[] { new Pose2d(14.8, 1.1, Rotation2d.fromDegrees(125)),
-                                new Pose2d(16.1, .75, Rotation2d.fromDegrees(125)),
+                                new Pose2d(16.7, 1.1, Rotation2d.fromDegrees(125)),
                                 new Pose2d(15, 7, Rotation2d.fromDegrees(180)) };
                 return Commands.sequence(
                                 putL2(drive, elevator, transfer, proccessorSide),
@@ -69,7 +69,7 @@ public class AutonomousRoutines {
                                                 Commands.sequence(
                                                                 new WaitCommand(0.8),
                                                                 driveRobotRelativeCorrectSide(drive, proccessorSide,
-                                                                                0.2, 0.65, -0.3).withTimeout(1.7),
+                                                                                0.3, 0.5, -0.3).withTimeout(1.2),
                                                                 driveToPoseInCorrectAlliance(drive,
                                                                                 FieldConstants.Reef.redLeftBranches[0],
                                                                                 proccessorSide).withTimeout(2))),
