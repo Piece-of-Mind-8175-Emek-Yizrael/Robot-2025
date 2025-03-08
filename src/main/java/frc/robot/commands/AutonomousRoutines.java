@@ -2,11 +2,13 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.Elevator.Elevator;
 import frc.robot.subsystems.Transfer.Transfer;
@@ -60,7 +62,7 @@ public class AutonomousRoutines {
                                                 ElevatorCommands.closeElevator(elevator),
                                                 Commands.sequence(
                                                                 driveRobotRelativeCorrectSide(drive, proccessorSide,
-                                                                                -0.5, -0.5, -0.4).withTimeout(0.8),
+                                                                                -0.4, -0.7, -0.4).withTimeout(0.6),
                                                                 driveToPoseInCorrectAlliance(drive, poses[1],
                                                                                 proccessorSide)
                                                                                 .withTimeout(2.5))),
@@ -75,6 +77,7 @@ public class AutonomousRoutines {
                                                                                 proccessorSide).withTimeout(2))),
                                 DriveCommands.joystickDriveRobotRelative(drive, () -> 0.4, () -> 0, () -> 0)
                                                 .withTimeout(0.7),
+                                new InstantCommand(() -> drive.runVelocity(new ChassisSpeeds(), true)),
                                 ElevatorCommands.L2(elevator),
                                 TransferCommands.coralOutakeFast(transfer).withTimeout(0.5));
         }
