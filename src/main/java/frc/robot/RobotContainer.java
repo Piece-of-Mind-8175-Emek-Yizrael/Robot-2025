@@ -273,7 +273,7 @@ public class RobotContainer {
                                                 drive,
                                                 () -> driverController.getLeftY() * 0.8,
                                                 () -> driverController.getLeftX() * 0.8,
-                                                () -> driverController.getRightX() * 0.6));
+                                                () -> driverController.getRightX() * 0.5));
 
                 driverController.rightTrigger().whileTrue(LEDsCommands.rainbow(leds));
                 driverController.rightTrigger().onFalse(LEDsCommands.setAll(leds, Color.kPurple));
