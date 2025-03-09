@@ -598,13 +598,15 @@ public class DriveCommands {
       // cmd = cmd.andThen(new DriveToPosition(drive, destination));
       // cmd.schedule();
 
-      (new DriveToPosition(drive, destination)
+      new DriveToPosition(drive, destination)
           .andThen(joystickDriveRobotRelative(drive, () -> 0.4, () -> 0, () -> 0).withTimeout(0.75)
               .raceWith(Commands.runEnd(() -> driveController.vibrate(0.2), () -> driveController.vibrate(0))
                   .withTimeout(0.3).raceWith(
-                      Commands.runEnd(() -> operatorController.vibrate(0.2), () -> operatorController.vibrate(0))))))
-          .alongWith(ElevatorCommands.goToPosition(elevator, 10).unless(() -> elevator.getIO().getPosition() > 10))
+                      Commands.runEnd(() -> operatorController.vibrate(0.2), () -> operatorController.vibrate(0)))))
           .schedule();
+      if (elevator.getIO().getPosition() < 8) {
+        ElevatorCommands.goToPosition(elevator, 10);
+      }
     }
 
     @Override

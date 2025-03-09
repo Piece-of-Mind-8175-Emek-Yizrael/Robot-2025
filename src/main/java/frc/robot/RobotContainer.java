@@ -240,6 +240,9 @@ public class RobotContainer {
                                 AutonomousRoutines.putL2Twice(drive, elevatorSubsystem, transfer, true));
                 autoChooser.addOption("NOT proccessor side L2 twice",
                                 AutonomousRoutines.putL2Twice(drive, elevatorSubsystem, transfer, false));
+                autoChooser.addOption("proccessor side L2 twice alternative",
+                                AutonomousRoutines.putL2TwiceAlter(drive, elevatorSubsystem, transfer, true));
+                ;
 
                 SmartDashboard.putData("TransferSub", transfer);
                 // Configure the button bindings
