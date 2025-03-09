@@ -123,4 +123,30 @@ public class AutonomousRoutines {
                                 TransferCommands.coralOutakeFast(transfer).withTimeout(0.5));
         }
 
+        public static Command nearL2PlusAlgae(){
+                return Commands.sequence(
+                        driveToPoseInCorrectAlliance(drive, FieldConstants.Reef.redRightBranches[3].transformBy(new Transform2d(0, 0.1, new Rotation2d())),
+                                        proccessorSide)
+                                        .withTimeout(4)
+                                        .alongWith(ElevatorCommands.goToPosition(elevator, 8)),
+                        Commands.parallel(
+                                DriveCommands.joystickDriveRobotRelative(drive, () -> 0.4, () -> 0, () -> 0)
+                                .withTimeout(0.4),
+                                ElevatorCommands.goToPosition(elevator, 20)
+                        ),
+                        Commands.parallel(
+                                DriveCommands.joystickDriveRobotRelative(drive, () -> -0.3, () -> 0, () -> 0.3)
+                                .withTimeout(0.5),
+                                ElevatorCommands.goToPosition(elevator, 25)
+                        ),
+                        driveToPoseInCorrectAlliance(drive, FieldConstants.Reef.redRightBranches[3],
+                                        proccessorSide)
+                                        .withTimeout(4)
+                                        .alongWith(ElevatorCommands.goToPosition(elevator, 8)),
+                        DriveCommands.joystickDriveRobotRelative(drive, () -> 0.4, () -> 0, () -> 0)
+                                        .withTimeout(0.4),
+                        ElevatorCommands.L3(elevator),
+                        TransferCommands.coralOutakeFast(transfer).withTimeout(0.5));
+        }
+
 }
