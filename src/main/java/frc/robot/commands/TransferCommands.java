@@ -1,5 +1,7 @@
 package frc.robot.commands;
 
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -35,11 +37,12 @@ public class TransferCommands {
     }
 
     public static Command intakeCoral(Transfer transfer) {
+        Debouncer d1 = new Debouncer(0.15), d2 = new Debouncer(0.05, DebounceType.kFalling);
         return Commands.runOnce(() -> transfer.getIO().setVoltage(3), transfer)
-                .andThen(new WaitUntilCommand(() -> transfer.getIO().isCoralIn()))
-                .andThen(new WaitUntilCommand(() -> !transfer.getIO().isCoralIn()))
-                .andThen(Commands.runOnce(() -> transfer.getIO().setVoltage(-2), transfer))
-                .andThen(new WaitUntilCommand(() -> transfer.getIO().isCoralIn()))
+                .andThen(new WaitUntilCommand(() -> d1.calculate(transfer.getIO().isCoralIn())))
+                .andThen(new WaitUntilCommand(() -> d2.calculate(!transfer.getIO().isCoralIn())))
+                .andThen(Commands.runOnce(() -> transfer.getIO().setVoltage(-1.4), transfer))
+                .andThen(new WaitUntilCommand(() -> d1.calculate(transfer.getIO().isCoralIn())))
                 .andThen(transfer.getIO()::stopMotor);
     }
 

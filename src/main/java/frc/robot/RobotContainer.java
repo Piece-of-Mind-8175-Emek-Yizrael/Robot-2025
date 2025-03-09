@@ -240,6 +240,8 @@ public class RobotContainer {
                                 AutonomousRoutines.putL2Twice(drive, elevatorSubsystem, transfer, true));
                 autoChooser.addOption("NOT proccessor side L2 twice",
                                 AutonomousRoutines.putL2Twice(drive, elevatorSubsystem, transfer, false));
+                autoChooser.addOption("NOT proccessor side L2 twice alternative",
+                                AutonomousRoutines.putL2TwiceAlter(drive, elevatorSubsystem, transfer, false));
                 autoChooser.addOption("proccessor side L2 twice alternative",
                                 AutonomousRoutines.putL2TwiceAlter(drive, elevatorSubsystem, transfer, true));
                 ;
@@ -388,7 +390,8 @@ public class RobotContainer {
                 operatorController.PovRight().whileTrue(TransferCommands.coralOutake(transfer));
 
                 // return the coral back
-                operatorController.a().onTrue(TransferCommands.intakeCoral(transfer));
+                operatorController.a()
+                                .onTrue(TransferCommands.intakeCoral(transfer));
 
                 // manual elevator control
                 // fast

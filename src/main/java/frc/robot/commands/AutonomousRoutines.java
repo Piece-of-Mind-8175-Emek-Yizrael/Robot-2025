@@ -81,6 +81,7 @@ public class AutonomousRoutines {
                                 ElevatorCommands.L2(elevator),
                                 TransferCommands.coralOutakeFast(transfer).withTimeout(0.5));
         }
+
         public static Command putL2TwiceAlter(Drive drive, Elevator elevator, Transfer transfer,
                         boolean proccessorSide) {
                 Pose2d[] poses = new Pose2d[] { new Pose2d(14.8, 1.1, Rotation2d.fromDegrees(125)),
@@ -92,7 +93,12 @@ public class AutonomousRoutines {
                                                 ElevatorCommands.closeElevator(elevator),
                                                 Commands.sequence(
                                                                 driveRobotRelativeCorrectSide(drive, proccessorSide,
-                                                                                -0.4, -0.7, -0.4).until(()->poses[0].getTranslation().getDistance(drive.getPose().getTranslation()) < 1).withTimeout(1),
+                                                                                -0.3, -0.7, -0.4)
+                                                                                .until(() -> poses[0].getTranslation()
+                                                                                                .getDistance(drive
+                                                                                                                .getPose()
+                                                                                                                .getTranslation()) < 1)
+                                                                                .withTimeout(1),
                                                                 driveToPoseInCorrectAlliance(drive, poses[1],
                                                                                 proccessorSide)
                                                                                 .withTimeout(2.5))),
@@ -100,8 +106,13 @@ public class AutonomousRoutines {
                                                 TransferCommands.intakeCoral(transfer),
                                                 Commands.sequence(
                                                                 new WaitCommand(1),
-                                                                driveRobotRelativeCorrectSide(drive, proccessorSide, 0.35, 0.7, -0.3)
-                                                                .until(()->poses[2].getTranslation().getDistance(drive.getPose().getTranslation()) < 1).withTimeout(1.2),
+                                                                driveRobotRelativeCorrectSide(drive, proccessorSide,
+                                                                                0.35, 0.7, -0.3)
+                                                                                .until(() -> poses[2].getTranslation()
+                                                                                                .getDistance(drive
+                                                                                                                .getPose()
+                                                                                                                .getTranslation()) < 1)
+                                                                                .withTimeout(1.2),
                                                                 driveToPoseInCorrectAlliance(drive,
                                                                                 FieldConstants.Reef.redLeftBranches[0],
                                                                                 proccessorSide).withTimeout(2))),

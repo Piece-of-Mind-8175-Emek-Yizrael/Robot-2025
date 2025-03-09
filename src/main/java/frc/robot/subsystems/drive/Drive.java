@@ -102,6 +102,8 @@ public class Drive extends SubsystemBase {
   private SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(kinematics, rawGyroRotation,
       lastModulePositions, new Pose2d(10, 7.5, new Rotation2d(-1)));
 
+  Field2d field;
+
   public Drive(
       GyroIO gyroIO,
       ModuleIO flModuleIO,
@@ -161,7 +163,7 @@ public class Drive extends SubsystemBase {
             (voltage) -> runSteerCharacterization(voltage.in(Volts)), null, this));
 
     PushSwerveData();
-    Field2d field = new Field2d();
+    field = new Field2d();
     for (int i = 0; i < 6; i += 1) {
       field.getObject("left" + i).setPose(FieldConstants.Reef.redLeftBranches[i]);
       field.getObject("right" + i).setPose(FieldConstants.Reef.redRightBranches[i]);
@@ -243,6 +245,7 @@ public class Drive extends SubsystemBase {
 
     // Update gyro alert
     gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.currentMode != Mode.SIM);
+    field.setRobotPose(getPose());
 
   }
 
