@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -10,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.subsystems.AlgaeOuttake.AlgaeOuttake;
 import frc.robot.subsystems.Elevator.Elevator;
 import frc.robot.subsystems.Transfer.Transfer;
 import frc.robot.subsystems.drive.Drive;
@@ -123,30 +125,35 @@ public class AutonomousRoutines {
                                 TransferCommands.coralOutakeFast(transfer).withTimeout(0.5));
         }
 
-        public static Command nearL2PlusAlgae(){
+        public static Command nearL3PlusAlgae(Drive drive, Elevator elevator, Transfer transfer,
+                        AlgaeOuttake algaeOuttake) {
                 return Commands.sequence(
-                        driveToPoseInCorrectAlliance(drive, FieldConstants.Reef.redRightBranches[3].transformBy(new Transform2d(0, 0.1, new Rotation2d())),
-                                        proccessorSide)
-                                        .withTimeout(4)
-                                        .alongWith(ElevatorCommands.goToPosition(elevator, 8)),
-                        Commands.parallel(
+                                AlgaeOuttakeCommands.openArm(algaeOuttake),
+                                driveToPoseInCorrectAlliance(drive,
+                                                FieldConstants.Reef.redRightBranches[3]
+                                                                .transformBy(new Transform2d(0, 0.1, new Rotation2d())),
+                                                false)
+                                                .withTimeout(4),
+                                Commands.parallel(
+                                                DriveCommands.joystickDriveRobotRelative(drive, () -> 0.4, () -> 0,
+                                                                () -> 0)
+                                                                .withTimeout(0.4),
+                                                ElevatorCommands.goToPosition(elevator, 15).withTimeout(0.8)),
+                                Commands.parallel(
+                                                DriveCommands.joystickDriveRobotRelative(drive, () -> -0.5, () -> 0,
+                                                                () -> 0.3)
+                                                                .withTimeout(1),
+                                                ElevatorCommands.goToPosition(elevator, 25).withTimeout(1)),
+                                AlgaeOuttakeCommands.closeArm(algaeOuttake),
+                                new WaitCommand(1),
+                                driveToPoseInCorrectAlliance(drive, FieldConstants.Reef.redRightBranches[3],
+                                                false)
+                                                .withTimeout(4)
+                                                .alongWith(ElevatorCommands.goToPosition(elevator, 8)),
                                 DriveCommands.joystickDriveRobotRelative(drive, () -> 0.4, () -> 0, () -> 0)
-                                .withTimeout(0.4),
-                                ElevatorCommands.goToPosition(elevator, 20)
-                        ),
-                        Commands.parallel(
-                                DriveCommands.joystickDriveRobotRelative(drive, () -> -0.3, () -> 0, () -> 0.3)
-                                .withTimeout(0.5),
-                                ElevatorCommands.goToPosition(elevator, 25)
-                        ),
-                        driveToPoseInCorrectAlliance(drive, FieldConstants.Reef.redRightBranches[3],
-                                        proccessorSide)
-                                        .withTimeout(4)
-                                        .alongWith(ElevatorCommands.goToPosition(elevator, 8)),
-                        DriveCommands.joystickDriveRobotRelative(drive, () -> 0.4, () -> 0, () -> 0)
-                                        .withTimeout(0.4),
-                        ElevatorCommands.L3(elevator),
-                        TransferCommands.coralOutakeFast(transfer).withTimeout(0.5));
+                                                .withTimeout(0.4),
+                                ElevatorCommands.L3(elevator).withTimeout(2),
+                                TransferCommands.coralOutakeFast(transfer).withTimeout(0.5));
         }
 
 }

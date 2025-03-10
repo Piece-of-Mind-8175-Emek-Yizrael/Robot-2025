@@ -232,6 +232,8 @@ public class RobotContainer {
                 autoChooser.addOption("drive out",
                                 DriveCommands.joystickDriveRobotRelative(drive, () -> 0.3, () -> 0, () -> 0)
                                                 .withTimeout(1.5));
+                autoChooser.addOption("Algae L3",
+                                AutonomousRoutines.nearL3PlusAlgae(drive, elevatorSubsystem, transfer, algaeOuttake));
                 autoChooser.addOption("proccessor side L2",
                                 AutonomousRoutines.putL2(drive, elevatorSubsystem, transfer, true));
                 autoChooser.addOption("NOT proccessor side L2",
