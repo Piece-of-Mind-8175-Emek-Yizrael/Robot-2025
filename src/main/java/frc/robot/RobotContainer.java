@@ -29,6 +29,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -190,7 +191,7 @@ public class RobotContainer {
 
                 // Set up auto routines
                 autoChooser = new LoggedDashboardChooser<>("Auto Choices",
-                                AutoBuilder.buildAutoChooser()); // TODO use
+                                new SendableChooser<Command>()); // TODO use
                 // autoChooser = new LoggedDashboardChooser<>("Auto Choices", new
                 // SendableChooser<>()); // TODO use
                 // // auto
@@ -242,10 +243,12 @@ public class RobotContainer {
                                 AutonomousRoutines.putL2Twice(drive, elevatorSubsystem, transfer, true));
                 autoChooser.addOption("NOT proccessor side L2 twice",
                                 AutonomousRoutines.putL2Twice(drive, elevatorSubsystem, transfer, false));
-                autoChooser.addOption("NOT proccessor side L2 twice alternative",
-                                AutonomousRoutines.putL2TwiceAlter(drive, elevatorSubsystem, transfer, false));
-                autoChooser.addOption("proccessor side L2 twice alternative",
-                                AutonomousRoutines.putL2TwiceAlter(drive, elevatorSubsystem, transfer, true));
+                // autoChooser.addOption("NOT proccessor side L2 twice alternative",
+                // AutonomousRoutines.putL2TwiceAlter(drive, elevatorSubsystem, transfer,
+                // false));
+                // autoChooser.addOption("proccessor side L2 twice alternative",
+                // AutonomousRoutines.putL2TwiceAlter(drive, elevatorSubsystem, transfer,
+                // true));
                 ;
 
                 SmartDashboard.putData("TransferSub", transfer);
@@ -263,8 +266,8 @@ public class RobotContainer {
                 drive.setDefaultCommand(
                                 DriveCommands.joystickDriveClosedLoopVel(
                                                 drive,
-                                                () -> driverController.getLeftY() * 0.6,
-                                                () -> driverController.getLeftX() * 0.6,
+                                                () -> driverController.getLeftY() * 0.7,
+                                                () -> driverController.getLeftX() * 0.7,
                                                 () -> driverController.getRightX() * 0.4));
 
                 coraltrig.onFalse(LEDsCommands.blink(leds, Color.kGainsboro, 0.2).withTimeout(0.8));
@@ -278,8 +281,8 @@ public class RobotContainer {
                 driverController.rightTrigger().whileTrue(
                                 DriveCommands.joystickDriveClosedLoopVel(
                                                 drive,
-                                                () -> driverController.getLeftY() * 0.8,
-                                                () -> driverController.getLeftX() * 0.8,
+                                                () -> driverController.getLeftY() * 0.9,
+                                                () -> driverController.getLeftX() * 0.9,
                                                 () -> driverController.getRightX() * 0.5));
 
                 driverController.rightTrigger().whileTrue(LEDsCommands.rainbow(leds));

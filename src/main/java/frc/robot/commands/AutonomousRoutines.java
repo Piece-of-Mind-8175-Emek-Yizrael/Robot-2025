@@ -64,16 +64,16 @@ public class AutonomousRoutines {
                                                 ElevatorCommands.closeElevator(elevator),
                                                 Commands.sequence(
                                                                 driveRobotRelativeCorrectSide(drive, proccessorSide,
-                                                                                -0.4, -0.7, -0.4).withTimeout(0.6),
+                                                                                -0.3, -0.75, -0.4).withTimeout(0.5),
                                                                 driveToPoseInCorrectAlliance(drive, poses[1],
                                                                                 proccessorSide)
-                                                                                .withTimeout(2.5))),
+                                                                                .withTimeout(2))),
                                 Commands.parallel(
                                                 TransferCommands.intakeCoral(transfer),
                                                 Commands.sequence(
                                                                 new WaitCommand(0.8),
                                                                 driveRobotRelativeCorrectSide(drive, proccessorSide,
-                                                                                0.3, 0.5, -0.3).withTimeout(1.2),
+                                                                                0.3, 0.6, -0.3).withTimeout(1),
                                                                 driveToPoseInCorrectAlliance(drive,
                                                                                 FieldConstants.Reef.redLeftBranches[0],
                                                                                 proccessorSide).withTimeout(2))),
@@ -109,7 +109,7 @@ public class AutonomousRoutines {
                                                 Commands.sequence(
                                                                 new WaitCommand(1),
                                                                 driveRobotRelativeCorrectSide(drive, proccessorSide,
-                                                                                0.35, 0.7, -0.3)
+                                                                                0.4, 0.75, -0.3)
                                                                                 .until(() -> poses[2].getTranslation()
                                                                                                 .getDistance(drive
                                                                                                                 .getPose()
