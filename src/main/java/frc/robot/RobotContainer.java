@@ -268,7 +268,7 @@ public class RobotContainer {
                                                 drive,
                                                 () -> driverController.getLeftY() * 0.7,
                                                 () -> driverController.getLeftX() * 0.7,
-                                                () -> driverController.getRightX() * 0.4));
+                                                () -> driverController.getRightX() * 0.47));
 
                 coraltrig.onFalse(LEDsCommands.blink(leds, Color.kGainsboro, 0.2).withTimeout(0.8));
                 driverController.leftTrigger().whileTrue(
@@ -400,11 +400,13 @@ public class RobotContainer {
 
                 // manual elevator control
                 // fast
-                operatorController.leftTrigger()
-                                .whileTrue(ElevatorCommands.closeElevatorManual(elevatorSubsystem, MANUAL_FAST_CLOSE));
+                operatorController.leftTrigger(0.2)
+                                .whileTrue(ElevatorCommands.closeElevatorManual(elevatorSubsystem,
+                                                () -> -operatorController.getLeftTriggerAxis() * 4));
 
-                operatorController.rightTrigger()
-                                .whileTrue(ElevatorCommands.openElevatorManual(elevatorSubsystem, MANUAL_FAST_OPEN));
+                operatorController.rightTrigger(0.2)
+                                .whileTrue(ElevatorCommands.openElevatorManual(elevatorSubsystem,
+                                                () -> operatorController.getRightTriggerAxis() * 4));
 
                 // slow FIXME not working
                 // operatorController.PovUp().whileTrue(ElevatorCommands.openElevatorManual(elevatorSubsystem,
@@ -413,7 +415,8 @@ public class RobotContainer {
                 operatorController.PovUp().whileTrue(TransferCommands.coralOutakeFast(transfer));
 
                 operatorController.PovDown()
-                                .whileTrue(ElevatorCommands.closeElevatorManual(elevatorSubsystem, MANUAL_SLOW_CLOSE));
+                                .whileTrue(ElevatorCommands.closeElevatorManual(elevatorSubsystem,
+                                                () -> MANUAL_SLOW_CLOSE));
 
                 // driverController.a().onTrue(LEDsCommands.setAll(leDs,color));
 

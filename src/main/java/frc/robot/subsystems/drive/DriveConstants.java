@@ -31,8 +31,8 @@ public class DriveConstants {
         public static final double KP_OMEGA = 1.4;
         public static final double KI_OMEGA = 0;
         public static final double KD_OMEGA = 0;
-        public static final double MAX_ACCELERATION_OMEGA = 1.5;
-        public static final double MAX_VELOCETY_OMEGA = 1.5;
+        public static final double MAX_ACCELERATION_OMEGA = 2;
+        public static final double MAX_VELOCETY_OMEGA = 1.8;
         public static final double OMEGA_TOLERANCE = 0.05;
 
         public static final double ALGAE_OUTTAKE_DRIVE_BACK_SPEED = 0.04;
@@ -107,7 +107,7 @@ public class DriveConstants {
         public static final double driveSimKv = 0.0789;
 
         public static final double driveSlipCurrent = 70;
-        public static final double driveRampRate = 0.6;
+        public static final double driveRampRate = 0.25;
 
         // Turn motor configuration
         public static final boolean turnInverted = true;

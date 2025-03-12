@@ -255,7 +255,7 @@ public class ModuleIOPOM implements ModuleIO {
 
   @Override
   public void setDriveVelocity(double velocityRadPerSec) {
-    Logger.recordOutput(getModuleString() + "/drive request velocity rad/sec", velocityRadPerSec);
+    Logger.recordOutput(getModuleString() + "/drive request velocity radPerSec", velocityRadPerSec);
     double velocityRotPerSec = Units.radiansToRotations(velocityRadPerSec);
     driveMotor.setControl(velocityVoltageRequest.withVelocity(velocityRotPerSec));
   }

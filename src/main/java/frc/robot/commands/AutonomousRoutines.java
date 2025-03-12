@@ -67,7 +67,8 @@ public class AutonomousRoutines {
                                                                                 -0.3, -0.75, -0.4).withTimeout(0.5),
                                                                 driveToPoseInCorrectAlliance(drive, poses[1],
                                                                                 proccessorSide)
-                                                                                .withTimeout(2))),
+                                                                                .withTimeout(2.1)),
+                                                new InstantCommand(drive::stop)),
                                 Commands.parallel(
                                                 TransferCommands.intakeCoral(transfer),
                                                 Commands.sequence(
@@ -87,7 +88,7 @@ public class AutonomousRoutines {
         public static Command putL2TwiceAlter(Drive drive, Elevator elevator, Transfer transfer,
                         boolean proccessorSide) {
                 Pose2d[] poses = new Pose2d[] { new Pose2d(14.8, 1.1, Rotation2d.fromDegrees(125)),
-                                new Pose2d(16.7, 1.1, Rotation2d.fromDegrees(125)),
+                                new Pose2d(16.3, .8, Rotation2d.fromDegrees(125)),
                                 new Pose2d(15, 7, Rotation2d.fromDegrees(180)) };
                 return Commands.sequence(
                                 putL2(drive, elevator, transfer, proccessorSide),
@@ -95,7 +96,7 @@ public class AutonomousRoutines {
                                                 ElevatorCommands.closeElevator(elevator),
                                                 Commands.sequence(
                                                                 driveRobotRelativeCorrectSide(drive, proccessorSide,
-                                                                                -0.3, -0.7, -0.4)
+                                                                                -0.3, -0.7, -0.55)
                                                                                 .until(() -> poses[0].getTranslation()
                                                                                                 .getDistance(drive
                                                                                                                 .getPose()
@@ -128,12 +129,15 @@ public class AutonomousRoutines {
         public static Command nearL3PlusAlgae(Drive drive, Elevator elevator, Transfer transfer,
                         AlgaeOuttake algaeOuttake) {
                 return Commands.sequence(
-                                AlgaeOuttakeCommands.openArm(algaeOuttake),
-                                driveToPoseInCorrectAlliance(drive,
-                                                FieldConstants.Reef.redRightBranches[3]
-                                                                .transformBy(new Transform2d(0, 0.1, new Rotation2d())),
-                                                false)
-                                                .withTimeout(4),
+                                Commands.parallel(
+                                                AlgaeOuttakeCommands.openArm(algaeOuttake),
+                                                ElevatorCommands.goToPosition(elevator, 10),
+                                                driveToPoseInCorrectAlliance(drive,
+                                                                FieldConstants.Reef.redRightBranches[3]
+                                                                                .transformBy(new Transform2d(0, 0.1,
+                                                                                                new Rotation2d())),
+                                                                false)
+                                                                .withTimeout(4)),
                                 Commands.parallel(
                                                 DriveCommands.joystickDriveRobotRelative(drive, () -> 0.4, () -> 0,
                                                                 () -> 0)

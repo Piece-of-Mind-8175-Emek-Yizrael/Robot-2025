@@ -37,12 +37,12 @@ public class TransferCommands {
     }
 
     public static Command intakeCoral(Transfer transfer) {
-        Debouncer d1 = new Debouncer(0.15), d2 = new Debouncer(0.05, DebounceType.kFalling);
+        Debouncer d1 = new Debouncer(0.3), d2 = new Debouncer(0.3, DebounceType.kFalling), d3 = new Debouncer(0.1);
         return Commands.runOnce(() -> transfer.getIO().setVoltage(3), transfer)
                 .andThen(new WaitUntilCommand(() -> d1.calculate(transfer.getIO().isCoralIn())))
                 .andThen(new WaitUntilCommand(() -> d2.calculate(!transfer.getIO().isCoralIn())))
                 .andThen(Commands.runOnce(() -> transfer.getIO().setVoltage(-1.4), transfer))
-                .andThen(new WaitUntilCommand(() -> d1.calculate(transfer.getIO().isCoralIn())))
+                .andThen(new WaitUntilCommand(() -> d3.calculate(transfer.getIO().isCoralIn())))
                 .andThen(transfer.getIO()::stopMotor);
     }
 
