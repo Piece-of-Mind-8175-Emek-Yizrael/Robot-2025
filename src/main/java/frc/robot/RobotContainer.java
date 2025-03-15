@@ -15,6 +15,7 @@ package frc.robot;
 
 import static frc.robot.subsystems.Elevator.ElevatorConstants.MANUAL_SLOW_CLOSE;
 
+import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -23,6 +24,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.events.EventTrigger;
 import com.pathplanner.lib.path.PathPlannerPath;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
@@ -43,23 +45,29 @@ import frc.robot.commands.TransferCommands;
 import frc.robot.subsystems.AlgaeOuttake.AlgaeOuttake;
 import frc.robot.subsystems.AlgaeOuttake.AlgaeOuttakeIO;
 import frc.robot.subsystems.AlgaeOuttake.AlgaeOuttakeIOReal;
+import frc.robot.subsystems.AlgaeOuttake.AlgaeOuttakeIOSim;
 import frc.robot.subsystems.Elevator.Elevator;
 import frc.robot.subsystems.Elevator.ElevatorConstants;
 import frc.robot.subsystems.Elevator.ElevatorIO;
+import frc.robot.subsystems.Elevator.ElevatorIOSim;
 import frc.robot.subsystems.Elevator.ElevatorReal;
 import frc.robot.subsystems.LEDs.LEDs;
 import frc.robot.subsystems.LEDs.LEDsIO;
 import frc.robot.subsystems.LEDs.LEDsIOReal;
+import frc.robot.subsystems.LEDs.LEDsIOSim;
 import frc.robot.subsystems.Transfer.Transfer;
 import frc.robot.subsystems.Transfer.TransferIO;
 import frc.robot.subsystems.Transfer.TransferIOReal;
+import frc.robot.subsystems.Transfer.TransferIOSim;
 import frc.robot.subsystems.Vision.VisionIOReal;
 import frc.robot.subsystems.Vision.VisionSubsystem;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon;
+import frc.robot.subsystems.drive.GyroIOSim;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOPOM;
+import frc.robot.subsystems.drive.ModuleIOSim;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -176,6 +184,8 @@ public class RobotContainer {
                                 break;
                 }
 
+                registerNamedCommands();
+
                 // Set up auto routines
                 // autoChooser = new LoggedDashboardChooser<>("Auto Choices",
                 // new SendableChooser<Command>()); // TODO use
@@ -240,7 +250,6 @@ public class RobotContainer {
                 SmartDashboard.putData("TransferSub", transfer);
                 // Configure the button bindings
                 configureButtonBindings();
-                registerNamedCommands();
         }
 
         private void configureButtonBindings() {
@@ -331,19 +340,29 @@ public class RobotContainer {
 
                 // Reset gyro to 0° when Y button is pressed
                 driverController.PovUp().onTrue(drive.resetGyroCommand(Rotation2d.fromDegrees(180)));
-                driverController.PovDown().onTrue(drive.resetGyroCommand(new Rotation2d()));
                 driverController.PovLeft().onTrue(drive.resetGyroCommand(Rotation2d.fromDegrees(125)));
                 driverController.PovRight().onTrue(drive.resetGyroCommand(Rotation2d.fromDegrees(-125)));
 
+                driverController.RB()
+                                .whileTrue(DriveCommands.joystickDriveAutoAngle(drive,
+                                                () -> driverController.getLeftY() * 0.7,
+                                                () -> driverController.getLeftX() * 0.7));
+
                 driverController.LB().whileTrue(
-                                DriveCommands.joystickDriveRobotRelative(drive, () -> 0, () -> 0.4, () -> 0));
-                driverController.RB().whileTrue(
-                                DriveCommands.joystickDriveRobotRelative(drive, () -> 0, () -> -0.4, () -> 0));
-                driverController.y().whileTrue(
-                                DriveCommands.joystickDriveRobotRelative(drive, () -> 0.4, () -> 0, () -> 0));
-                DriveCommands.joystickDriveRobotRelative(drive, () -> 0, () -> -0.4, () -> 0);
-                driverController.a().whileTrue(
-                                DriveCommands.joystickDriveRobotRelative(drive, () -> -0.4, () -> 0, () -> 0));
+                                DriveCommands.joystickDriveRobotRelative(drive, () -> driverController.getLeftY() * 0.7,
+                                                () -> driverController.getLeftX() * 0.7,
+                                                () -> driverController.getRightX() * 0.47));
+                // driverController.RB().whileTrue(
+                // DriveCommands.joystickDriveRobotRelative(drive, () -> 0, () -> -0.4, () ->
+                // 0));
+                // driverController.y().whileTrue(
+                // DriveCommands.joystickDriveRobotRelative(drive, () -> 0.4, () -> 0, () ->
+                // 0));
+                // DriveCommands.joystickDriveRobotRelative(drive, () -> 0, () -> -0.4, () ->
+                // 0);
+                // driverController.a().whileTrue(
+                // DriveCommands.joystickDriveRobotRelative(drive, () -> -0.4, () -> 0, () ->
+                // 0));
 
                 driverController.back().debounce(1)
                                 .onTrue(new InstantCommand(() -> drive.disableGoodVision()).ignoringDisable(true));

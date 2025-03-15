@@ -51,11 +51,19 @@ public class FieldConstants {
         }
 
         public static class CoralStation {
-                public static final Pose2d leftCenterFace = new Pose2d(
+                public static final Pose2d blueLeftCenterFace = new Pose2d(
                                 Units.inchesToMeters(33.526),
                                 Units.inchesToMeters(291.176),
                                 Rotation2d.fromDegrees(90 - 144.011));
-                public static final Pose2d rightCenterFace = new Pose2d(
+                public static final Pose2d blueRightCenterFace = new Pose2d(
+                                Units.inchesToMeters(33.526),
+                                Units.inchesToMeters(25.824),
+                                Rotation2d.fromDegrees(144.011 - 90));
+                public static final Pose2d redLeftCenterFace = new Pose2d(
+                                Units.inchesToMeters(33.526),
+                                Units.inchesToMeters(291.176),
+                                Rotation2d.fromDegrees(90 - 144.011));
+                public static final Pose2d redRightCenterFace = new Pose2d(
                                 Units.inchesToMeters(33.526),
                                 Units.inchesToMeters(25.824),
                                 Rotation2d.fromDegrees(144.011 - 90));

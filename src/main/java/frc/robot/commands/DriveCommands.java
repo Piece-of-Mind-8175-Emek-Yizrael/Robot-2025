@@ -47,6 +47,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -176,6 +177,89 @@ public class DriveCommands {
           drive.runVelocity(speeds, true);
         },
         drive).beforeStarting(Commands.runOnce(drive::resetKinematics, drive));
+  }
+
+  public static Command joystickDriveAutoAngle(
+      Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier) {
+    ProfiledPIDController omegaController = new ProfiledPIDController(KP_OMEGA, KI_OMEGA, KD_OMEGA,
+        new Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
+
+    omegaController.enableContinuousInput(-Math.PI, Math.PI);
+
+    return Commands.run(
+        () -> {
+
+          // Get linear velocity
+          Translation2d linearVelocity = getLinearVelocityFromJoysticks(xSupplier.getAsDouble(),
+              ySupplier.getAsDouble());
+
+          Pose2d currPose2d = drive.getPose();
+
+          omegaController.setGoal(getClosestReefOrStation(currPose2d).getRadians());
+          // Apply rotation deadband
+          double omega = MathUtil.applyDeadband(omegaController.calculate(currPose2d.getRotation().getRadians()), 0.05);
+
+          // Convert to field relative speeds & send command
+          ChassisSpeeds speeds = new ChassisSpeeds(
+              linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
+              linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
+              omega * drive.getMaxAngularSpeedRadPerSec());
+          boolean isFlipped = DriverStation.getAlliance().isPresent()
+              && DriverStation.getAlliance().get() == Alliance.Red;
+          speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+              speeds,
+              isFlipped ? drive.getRotation().plus(new Rotation2d(Math.PI)) : drive.getRotation());
+          drive.runVelocity(speeds, true);
+        },
+        drive).beforeStarting(Commands.runOnce(drive::resetKinematics, drive));
+  }
+
+  private static Rotation2d getClosestReefOrStation(Pose2d currentPose) {
+    Pose2d[] branches = /* DriverStation.getAlliance().orElseGet(() -> Alliance.Red) == Alliance.Red */ currentPose
+        .getX() > FieldConstants.fieldLength / 2
+            ? FieldConstants.Reef.redCenterFaces
+            : FieldConstants.Reef.blueCenterFaces;
+    final Rotation2d[] angles = currentPose
+        .getX() < FieldConstants.fieldLength / 2
+            ? new Rotation2d[] { Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(-60),
+                Rotation2d.fromDegrees(-120), Rotation2d.fromDegrees(180), Rotation2d.fromDegrees(120),
+                Rotation2d.fromDegrees(60) }
+            : new Rotation2d[] { Rotation2d.fromDegrees(180), Rotation2d.fromDegrees(120),
+                Rotation2d.fromDegrees(60), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(-60),
+                Rotation2d.fromDegrees(-120) };
+    // Get the closest reef to the robot
+    double minDistance = Double.MAX_VALUE;
+    Rotation2d closestReef = angles[0];
+    for (int i = 0; i < FieldConstants.Reef.blueCenterFaces.length; i++) {
+      double distance = currentPose.getTranslation()
+          .getDistance(branches[i].getTranslation());
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestReef = angles[i];
+      }
+    }
+    double distance;
+    if ((distance = FieldConstants.CoralStation.blueLeftCenterFace.getTranslation()
+        .getDistance(currentPose.getTranslation()) * 0.5) < minDistance) {
+      closestReef = FieldConstants.CoralStation.blueLeftCenterFace.getRotation();
+      minDistance = distance;
+    }
+    if ((distance = FieldConstants.CoralStation.blueRightCenterFace.getTranslation()
+        .getDistance(currentPose.getTranslation()) * 0.5) < minDistance) {
+      minDistance = distance;
+      closestReef = FieldConstants.CoralStation.blueRightCenterFace.getRotation();
+    }
+    if ((distance = FieldConstants.CoralStation.redLeftCenterFace.getTranslation()
+        .getDistance(currentPose.getTranslation()) * 0.5) < minDistance) {
+      minDistance = distance;
+      closestReef = FieldConstants.CoralStation.redLeftCenterFace.getRotation();
+    }
+    if ((distance = FieldConstants.CoralStation.redRightCenterFace.getTranslation()
+        .getDistance(currentPose.getTranslation()) * 0.5) < minDistance) {
+      minDistance = distance;
+      closestReef = FieldConstants.CoralStation.redRightCenterFace.getRotation();
+    }
+    return closestReef;
   }
 
   public static Command joystickDriveRobotRelative(
