@@ -13,13 +13,10 @@
 
 package frc.robot;
 
-import static frc.robot.subsystems.Elevator.ElevatorConstants.MANUAL_FAST_CLOSE;
-import static frc.robot.subsystems.Elevator.ElevatorConstants.MANUAL_FAST_OPEN;
 import static frc.robot.subsystems.Elevator.ElevatorConstants.MANUAL_SLOW_CLOSE;
 
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
-import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -36,7 +33,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.POM_lib.Joysticks.PomXboxController;
 import frc.robot.commands.AlgaeOuttakeCommands;
@@ -45,6 +41,7 @@ import frc.robot.commands.DriveCommands;
 // import frc.robot.commands.DriveCommands.LocateToReefAlgaeOuttakeCommand;
 import frc.robot.commands.ElevatorCommands;
 import frc.robot.commands.LEDsCommands;
+import frc.robot.commands.MultiSystemCommands;
 import frc.robot.commands.TransferCommands;
 import frc.robot.subsystems.AlgaeOuttake.AlgaeOuttake;
 import frc.robot.subsystems.AlgaeOuttake.AlgaeOuttakeIO;
@@ -139,27 +136,27 @@ public class RobotContainer {
                         case SIM:
                                 // Sim robot, instantiate physics sim IO implementations
 
-                                // driveSimulation = new SwerveDriveSimulation(Drive.maplesimConfig,
-                                // new Pose2d(3, 3, new Rotation2d()));
-                                // SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
+                                driveSimulation = new SwerveDriveSimulation(Drive.maplesimConfig,
+                                                new Pose2d(3, 3, new Rotation2d()));
+                                SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
 
-                                // drive = new Drive(
-                                // new GyroIOSim(this.driveSimulation.getGyroSimulation()),
-                                // new ModuleIOSim(this.driveSimulation.getModules()[0]),
-                                // new ModuleIOSim(this.driveSimulation.getModules()[1]),
-                                // new ModuleIOSim(this.driveSimulation.getModules()[2]),
-                                // new ModuleIOSim(this.driveSimulation.getModules()[3]));
+                                drive = new Drive(
+                                                new GyroIOSim(this.driveSimulation.getGyroSimulation()),
+                                                new ModuleIOSim(this.driveSimulation.getModules()[0]),
+                                                new ModuleIOSim(this.driveSimulation.getModules()[1]),
+                                                new ModuleIOSim(this.driveSimulation.getModules()[2]),
+                                                new ModuleIOSim(this.driveSimulation.getModules()[3]));
 
-                                // vision = new VisionSubsystem(drive::addVisionMeasurement,
-                                // new VisionIOSim("camera_0",
-                                // new Transform3d(0.2, 0.0, 0.2,
-                                // new Rotation3d(0.0, 0.0, Math.PI)),
-                                // driveSimulation::getSimulatedDriveTrainPose));
-                                // transfer = new Transfer(new TransferIOSim(driveSimulation));
-                                // algaeOuttake = new AlgaeOuttake(new AlgaeOuttakeIOSim());
-                                // elevatorSubsystem = new Elevator(new ElevatorIOSim());
+                                vision = new VisionSubsystem(drive::addVisionMeasurement,
+                                                new VisionIOSim("camera_0",
+                                                                new Transform3d(0.2, 0.0, 0.2,
+                                                                                new Rotation3d(0.0, 0.0, Math.PI)),
+                                                                driveSimulation::getSimulatedDriveTrainPose));
+                                transfer = new Transfer(new TransferIOSim(driveSimulation));
+                                algaeOuttake = new AlgaeOuttake(new AlgaeOuttakeIOSim());
+                                elevatorSubsystem = new Elevator(new ElevatorIOSim());
 
-                                // leds = new LEDs(new LEDsIOSim());
+                                leds = new LEDs(new LEDsIOSim());
 
                                 break;
 
@@ -249,7 +246,6 @@ public class RobotContainer {
                 // autoChooser.addOption("proccessor side L2 twice alternative",
                 // AutonomousRoutines.putL2TwiceAlter(drive, elevatorSubsystem, transfer,
                 // true));
-                ;
 
                 SmartDashboard.putData("TransferSub", transfer);
                 // Configure the button bindings
@@ -371,6 +367,8 @@ public class RobotContainer {
                 // algae arm open & close
                 operatorController.LB().onTrue(AlgaeOuttakeCommands.closeArm(algaeOuttake));
                 operatorController.RB().onTrue(AlgaeOuttakeCommands.openArm(algaeOuttake));
+                operatorController.RB()
+                                .onTrue(MultiSystemCommands.ClearAlgeaHigh(drive, elevatorSubsystem, algaeOuttake));
 
                 // outake algae
                 // operatorController.a()
