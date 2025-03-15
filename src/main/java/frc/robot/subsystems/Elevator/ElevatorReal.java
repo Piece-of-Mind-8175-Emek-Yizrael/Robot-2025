@@ -70,7 +70,7 @@ public class ElevatorReal implements ElevatorIO {
                                                                                         // Voltage
         inputs.foldSwitch = foldSwitch.get();
         setPidValues();
-        resetlfPressed();
+        resetIfPressed();
     }
 
     private void resetEncoder() {
@@ -141,29 +141,43 @@ public class ElevatorReal implements ElevatorIO {
 
     // }
 
+    boolean isBrake = true;
+
     @Override
-    public void resetlfPressed() {
+    public void resetIfPressed() {
         if (foldSwitch.get()) {
             resetEncoder();
         }
         if (DriverStation.isEnabled()) {
             if (foldSwitch.get()) {
-                motor.configure(new SparkMaxConfig().idleMode(IdleMode.kBrake), ResetMode.kNoResetSafeParameters,
-                        PersistMode.kNoPersistParameters);
+                if (!isBrake) {
+                    motor.configure(new SparkMaxConfig().idleMode(IdleMode.kBrake), ResetMode.kNoResetSafeParameters,
+                            PersistMode.kNoPersistParameters);
+                    isBrake = true;
+                }
             } else {
-                motor.configure(new SparkMaxConfig().idleMode(IdleMode.kCoast), ResetMode.kNoResetSafeParameters,
-                        PersistMode.kNoPersistParameters);
+                if (isBrake) {
+                    motor.configure(new SparkMaxConfig().idleMode(IdleMode.kCoast), ResetMode.kNoResetSafeParameters,
+                            PersistMode.kNoPersistParameters);
+                    isBrake = false;
+                }
             }
         } else {
             if (brakeSwitch.get()) {
-                motor.configure(new SparkMaxConfig().idleMode(IdleMode.kCoast),
-                        ResetMode.kNoResetSafeParameters,
-                        PersistMode.kNoPersistParameters);
+                if (isBrake) {
+                    motor.configure(new SparkMaxConfig().idleMode(IdleMode.kCoast),
+                            ResetMode.kNoResetSafeParameters,
+                            PersistMode.kNoPersistParameters);
+                    isBrake = false;
+                }
                 resetEncoder();
             } else {
-                motor.configure(new SparkMaxConfig().idleMode(IdleMode.kBrake),
-                        ResetMode.kNoResetSafeParameters,
-                        PersistMode.kNoPersistParameters);
+                if (!isBrake) {
+                    motor.configure(new SparkMaxConfig().idleMode(IdleMode.kBrake),
+                            ResetMode.kNoResetSafeParameters,
+                            PersistMode.kNoPersistParameters);
+                    isBrake = true;
+                }
             }
         }
     }
