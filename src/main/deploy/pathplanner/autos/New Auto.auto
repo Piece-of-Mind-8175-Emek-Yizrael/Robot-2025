@@ -7,13 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Go to right reef"
+            "pathName": "Go to C right branch"
           }
         }
       ]
     }
   },
-  "resetOdom": false,
+  "resetOdom": true,
   "folder": null,
   "choreoAuto": false
 }

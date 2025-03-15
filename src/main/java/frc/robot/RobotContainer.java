@@ -15,24 +15,25 @@ package frc.robot;
 
 import static frc.robot.subsystems.Elevator.ElevatorConstants.MANUAL_SLOW_CLOSE;
 
-import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.events.EventTrigger;
 import com.pathplanner.lib.path.PathPlannerPath;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+<<<<<<< HEAD
+=======
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+>>>>>>> 1e51ac4e2c034f573a9aa88bad14900465e7a1b6
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.POM_lib.Joysticks.PomXboxController;
 import frc.robot.commands.AlgaeOuttakeCommands;
@@ -46,30 +47,23 @@ import frc.robot.commands.TransferCommands;
 import frc.robot.subsystems.AlgaeOuttake.AlgaeOuttake;
 import frc.robot.subsystems.AlgaeOuttake.AlgaeOuttakeIO;
 import frc.robot.subsystems.AlgaeOuttake.AlgaeOuttakeIOReal;
-import frc.robot.subsystems.AlgaeOuttake.AlgaeOuttakeIOSim;
 import frc.robot.subsystems.Elevator.Elevator;
 import frc.robot.subsystems.Elevator.ElevatorConstants;
 import frc.robot.subsystems.Elevator.ElevatorIO;
-import frc.robot.subsystems.Elevator.ElevatorIOSim;
 import frc.robot.subsystems.Elevator.ElevatorReal;
 import frc.robot.subsystems.LEDs.LEDs;
 import frc.robot.subsystems.LEDs.LEDsIO;
 import frc.robot.subsystems.LEDs.LEDsIOReal;
-import frc.robot.subsystems.LEDs.LEDsIOSim;
 import frc.robot.subsystems.Transfer.Transfer;
 import frc.robot.subsystems.Transfer.TransferIO;
 import frc.robot.subsystems.Transfer.TransferIOReal;
-import frc.robot.subsystems.Transfer.TransferIOSim;
 import frc.robot.subsystems.Vision.VisionIOReal;
-import frc.robot.subsystems.Vision.VisionIOSim;
 import frc.robot.subsystems.Vision.VisionSubsystem;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon;
-import frc.robot.subsystems.drive.GyroIOSim;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOPOM;
-import frc.robot.subsystems.drive.ModuleIOSim;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -147,6 +141,7 @@ public class RobotContainer {
                                                 new ModuleIOSim(this.driveSimulation.getModules()[2]),
                                                 new ModuleIOSim(this.driveSimulation.getModules()[3]));
 
+<<<<<<< HEAD
                                 vision = new VisionSubsystem(drive::addVisionMeasurement,
                                                 new VisionIOSim("camera_0",
                                                                 new Transform3d(0.2, 0.0, 0.2,
@@ -155,6 +150,16 @@ public class RobotContainer {
                                 transfer = new Transfer(new TransferIOSim(driveSimulation));
                                 algaeOuttake = new AlgaeOuttake(new AlgaeOuttakeIOSim());
                                 elevatorSubsystem = new Elevator(new ElevatorIOSim());
+=======
+                                // // vision = new VisionSubsystem(drive::addVisionMeasurement,
+                                // // new VisionIOSim("camera_0",
+                                // // new Transform3d(0.2, 0.0, 0.2,
+                                // // new Rotation3d(0.0, 0.0, Math.PI)),
+                                // // driveSimulation::getSimulatedDriveTrainPose));
+                                // transfer = new Transfer(new TransferIOSim(driveSimulation));
+                                // algaeOuttake = new AlgaeOuttake(new AlgaeOuttakeIOSim());
+                                // elevatorSubsystem = new Elevator(new ElevatorIOSim());
+>>>>>>> 1e51ac4e2c034f573a9aa88bad14900465e7a1b6
 
                                 leds = new LEDs(new LEDsIOSim());
 
@@ -187,10 +192,9 @@ public class RobotContainer {
                 }
 
                 // Set up auto routines
-                autoChooser = new LoggedDashboardChooser<>("Auto Choices",
-                                new SendableChooser<Command>()); // TODO use
-                // autoChooser = new LoggedDashboardChooser<>("Auto Choices", new
-                // SendableChooser<>()); // TODO use
+                // autoChooser = new LoggedDashboardChooser<>("Auto Choices",
+                // new SendableChooser<Command>()); // TODO use
+                autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
                 // // auto
                 // // builder
 
@@ -250,6 +254,7 @@ public class RobotContainer {
                 SmartDashboard.putData("TransferSub", transfer);
                 // Configure the button bindings
                 configureButtonBindings();
+                registerNamedCommands();
         }
 
         private void configureButtonBindings() {
@@ -258,7 +263,8 @@ public class RobotContainer {
                 Trigger coraltrig = new Trigger(() -> transfer.getIO().isCoralIn());
                 // Default command, normal field-relative drive
                 leds.setDefaultCommand(new ConditionalCommand(LEDsCommands.setAll(leds, Color.kGreen),
-                                LEDsCommands.setAll(leds, Color.kPurple), () -> transfer.getIO().isCoralIn()));
+                                LEDsCommands.setAll(leds, Color.kPurple), () -> transfer.getIO().isCoralIn())
+                                .andThen(new WaitCommand(0.1)));
                 drive.setDefaultCommand(
                                 DriveCommands.joystickDriveClosedLoopVel(
                                                 drive,
@@ -404,7 +410,7 @@ public class RobotContainer {
 
                 operatorController.rightTrigger(0.2)
                                 .whileTrue(ElevatorCommands.openElevatorManual(elevatorSubsystem,
-                                                () -> operatorController.getRightTriggerAxis() * 4));
+                                                () -> operatorController.getRightTriggerAxis() * 5.5));
 
                 // slow FIXME not working
                 // operatorController.PovUp().whileTrue(ElevatorCommands.openElevatorManual(elevatorSubsystem,
@@ -440,6 +446,38 @@ public class RobotContainer {
 
                 // leds.setDefaultCommand(LEDsCommands.setAll(leds, Color.kPurple));
 
+        }
+
+        public void registerNamedCommands() {
+                // Elevator
+                NamedCommands.registerCommand("L2", ElevatorCommands.L2(elevatorSubsystem));
+                NamedCommands.registerCommand("L3", ElevatorCommands.L3(elevatorSubsystem));
+                NamedCommands.registerCommand("Close elevator", ElevatorCommands.closeElevator(elevatorSubsystem));
+                NamedCommands.registerCommand("Open elevator for vision",
+                                ElevatorCommands.goToPosition(elevatorSubsystem, 10));
+
+                // Transfer
+                NamedCommands.registerCommand("Intake", TransferCommands.intakeCoral(transfer));
+                NamedCommands.registerCommand("Score", TransferCommands.coralOutakeFast(transfer).withTimeout(0.5));
+
+                // Algae
+                NamedCommands.registerCommand("Open algae arm", AlgaeOuttakeCommands.openArm(algaeOuttake));
+                NamedCommands.registerCommand("Close algae arm", AlgaeOuttakeCommands.closeArm(algaeOuttake));
+                NamedCommands.registerCommand("Drive back twist",
+                                DriveCommands.joystickDriveRobotRelative(drive, () -> -0.5, () -> 0, () -> 0.3));
+
+                NamedCommands.registerCommand("Remove low algae", Commands.sequence(Commands.parallel(
+                                DriveCommands.joystickDriveRobotRelative(drive, () -> 0.4, () -> 0,
+                                                () -> 0)
+                                                .withTimeout(0.4),
+                                ElevatorCommands.goToPosition(elevatorSubsystem, 15).withTimeout(0.8)),
+                                Commands.parallel(
+                                                DriveCommands.joystickDriveRobotRelative(drive, () -> -0.5, () -> 0,
+                                                                () -> 0.3)
+                                                                .withTimeout(1),
+                                                ElevatorCommands.goToPosition(elevatorSubsystem, 25).withTimeout(1))));
+
+                new EventTrigger("Open elevator").onTrue(ElevatorCommands.L2(elevatorSubsystem));
         }
 
         public void displaSimFieldToAdvantageScope() {

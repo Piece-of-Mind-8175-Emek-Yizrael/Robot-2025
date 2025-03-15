@@ -28,15 +28,14 @@ public class LEDsIOReal implements LEDsIO {
         led.setLength(ledBuffer.getLength());
         led.setData(ledBuffer);
         led.start();
-
     }
 
     @Override
     public void updateInputs(LEDsIOInputs inputs) {
-        inputs.ledColorList = new String[ledBuffer.getLength()];
-        for (int i = 0; i < ledBuffer.getLength(); i++) {
-            inputs.ledColorList[i] = ledBuffer.getLED(i).toHexString();
-        }
+        // inputs.ledColorList = new String[ledBuffer.getLength()];
+        // for (int i = 0; i < ledBuffer.getLength(); i++) {
+        // inputs.ledColorList[i] = ledBuffer.getLED(i).toHexString();
+        // }
     }
 
     // Sets all LEDs to the same color.

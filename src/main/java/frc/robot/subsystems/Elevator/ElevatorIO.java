@@ -41,7 +41,7 @@ public interface ElevatorIO {
     public default void resistGravity() {
     }
 
-    public default void resetlfPressed() {
+    public default void resetIfPressed() {
     }
 
     public default void setPidValues() {

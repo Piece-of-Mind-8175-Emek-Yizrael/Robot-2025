@@ -247,6 +247,8 @@ public class Drive extends SubsystemBase {
     gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.currentMode != Mode.SIM);
     field.setRobotPose(getPose());
 
+    Logger.recordOutput("Field speeds", ChassisSpeeds.fromRobotRelativeSpeeds(getChassisSpeeds(), getRotation()));
+
   }
 
   public void runPureVelocity(ChassisSpeeds speeds) {

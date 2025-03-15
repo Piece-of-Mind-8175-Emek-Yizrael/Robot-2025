@@ -100,7 +100,7 @@ public class ElevatorRealPid implements ElevatorIO {
     }
 
     @Override
-    public void resetlfPressed() {
+    public void resetIfPressed() {
         if (foldSwitch.get()) {
             encoder.setPosition(0);
         }
