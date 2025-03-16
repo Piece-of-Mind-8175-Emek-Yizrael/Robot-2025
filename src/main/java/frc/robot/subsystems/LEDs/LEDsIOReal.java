@@ -75,7 +75,7 @@ public class LEDsIOReal implements LEDsIO {
 
     @Override
     public void setFirstHalf(Color color) {
-        AddressableLEDBufferView half = ledBuffer.createView(0, LENGTH / 2);
+        AddressableLEDBufferView half = ledBuffer.createView(0, LENGTH / 2 - 1);
         LEDPattern solidColorPattern = LEDPattern.solid(color);
         solidColorPattern.applyTo(half);
 
@@ -85,7 +85,7 @@ public class LEDsIOReal implements LEDsIO {
 
     @Override
     public void setSecondHalf(Color color) {
-        AddressableLEDBufferView half = ledBuffer.createView(LENGTH / 2 + 1, LENGTH);
+        AddressableLEDBufferView half = ledBuffer.createView(LENGTH / 2, LENGTH - 1);
         LEDPattern solidColorPattern = LEDPattern.solid(color);
         solidColorPattern.applyTo(half);
 

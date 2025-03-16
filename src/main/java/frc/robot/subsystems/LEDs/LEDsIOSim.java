@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.AddressableLEDBufferView;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
 
@@ -64,10 +65,22 @@ public class LEDsIOSim implements LEDsIO {
         blinking.applyTo(ledBuffer);
     }
 
-    // private void setColor(int idx, Color color) {
-    // int rgbFactor = 255;
-    // ledBuffer.setRGB(idx, (int) (color.red*rgbFactor), (int)
-    // (color.green*rgbFactor), (int) (color.blue*rgbFactor));
-    // }
+    @Override
+    public void setFirstHalf(Color color) {
+        AddressableLEDBufferView half = ledBuffer.createView(0, LENGTH / 2 - 1);
+        LEDPattern solidColorPattern = LEDPattern.solid(color);
+        solidColorPattern.applyTo(half);
+
+        // updateLEDs();
+
+    }
+
+    @Override
+    public void setSecondHalf(Color color) {
+        AddressableLEDBufferView half = ledBuffer.createView(LENGTH / 2, LENGTH - 1);
+        LEDPattern solidColorPattern = LEDPattern.solid(color);
+        solidColorPattern.applyTo(half);
+
+    }
 
 }
