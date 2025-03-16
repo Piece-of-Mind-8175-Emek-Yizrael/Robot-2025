@@ -25,14 +25,14 @@ public class LEDsCommands {
     }
 
     public static Command setFirstHalf(LEDs leds, Color color) {
-        return Commands.run(() -> leds.setFirstHalf(color), leds);
+        return Commands.runOnce(() -> leds.setFirstHalf(color), leds);
     }
 
     public static Command setSecondHalf(LEDs leds, Color color) {
-        return Commands.run(() -> leds.setSecondHalf(color), leds);
+        return Commands.runOnce(() -> leds.setSecondHalf(color), leds);
     }
 
     public static Command setAll(LEDs leds, LEDPattern pattern) {
-        return Commands.run(() -> leds.setAll(pattern), leds);
+        return Commands.runOnce(() -> leds.setAll(pattern), leds);
     }
 }

@@ -169,8 +169,8 @@ public class RobotContainer {
                                 // Camera
                                 // () -> vision.areVisibleTags(1)); // Right Camera
 
-                                leds = new LEDs(new LEDsIOSim(), operatorController.x(), // Left Camera
-                                                operatorController.b()); // Right Camera
+                                leds = new LEDs(new LEDsIOSim(), operatorController.back(), // Left Camera
+                                                operatorController.start()); // Right Camera
 
                                 break;
 
