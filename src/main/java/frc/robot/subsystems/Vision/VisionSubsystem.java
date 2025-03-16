@@ -194,6 +194,9 @@ public class VisionSubsystem extends SubsystemBase {
         Logger.recordOutput(
                 "Vision/Summary/RobotPosesRejected",
                 allRobotPosesRejected.toArray(new Pose3d[allRobotPosesRejected.size()]));
+
+        Logger.recordOutput("areVisibleTags Camera 0", areVisibleTags(0));
+        Logger.recordOutput("areVisibleTags Camera 1", areVisibleTags(1));
     }
 
     @FunctionalInterface
