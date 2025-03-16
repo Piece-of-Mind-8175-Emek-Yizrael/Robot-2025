@@ -5,9 +5,16 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Go to C right branch"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Go to C right branch"
+                }
+              }
+            ]
           }
         },
         {
@@ -96,6 +103,32 @@
           "type": "named",
           "data": {
             "name": "Score"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "A to left station"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Close elevator"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
           }
         }
       ]

@@ -13,6 +13,7 @@
 
 package frc.robot;
 
+import static frc.robot.subsystems.Elevator.ElevatorConstants.L1_POSITION;
 import static frc.robot.subsystems.Elevator.ElevatorConstants.MANUAL_SLOW_CLOSE;
 
 import org.ironmaple.simulation.SimulatedArena;
@@ -32,10 +33,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-<<<<<<< HEAD
-=======
 import edu.wpi.first.wpilibj2.command.WaitCommand;
->>>>>>> 1e51ac4e2c034f573a9aa88bad14900465e7a1b6
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.POM_lib.Joysticks.PomXboxController;
 import frc.robot.commands.AlgaeOuttakeCommands;
@@ -138,27 +136,17 @@ public class RobotContainer {
                         case SIM:
                                 // Sim robot, instantiate physics sim IO implementations
 
-                                driveSimulation = new SwerveDriveSimulation(Drive.maplesimConfig,
-                                                new Pose2d(3, 3, new Rotation2d()));
-                                SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
+                                // driveSimulation = new SwerveDriveSimulation(Drive.maplesimConfig,
+                                // new Pose2d(3, 3, new Rotation2d()));
+                                // SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
 
-                                drive = new Drive(
-                                                new GyroIOSim(this.driveSimulation.getGyroSimulation()),
-                                                new ModuleIOSim(this.driveSimulation.getModules()[0]),
-                                                new ModuleIOSim(this.driveSimulation.getModules()[1]),
-                                                new ModuleIOSim(this.driveSimulation.getModules()[2]),
-                                                new ModuleIOSim(this.driveSimulation.getModules()[3]));
+                                // drive = new Drive(
+                                // new GyroIOSim(this.driveSimulation.getGyroSimulation()),
+                                // new ModuleIOSim(this.driveSimulation.getModules()[0]),
+                                // new ModuleIOSim(this.driveSimulation.getModules()[1]),
+                                // new ModuleIOSim(this.driveSimulation.getModules()[2]),
+                                // new ModuleIOSim(this.driveSimulation.getModules()[3]));
 
-<<<<<<< HEAD
-                                vision = new VisionSubsystem(drive::addVisionMeasurement,
-                                                new VisionIOSim("camera_0",
-                                                                new Transform3d(0.2, 0.0, 0.2,
-                                                                                new Rotation3d(0.0, 0.0, Math.PI)),
-                                                                driveSimulation::getSimulatedDriveTrainPose));
-                                transfer = new Transfer(new TransferIOSim(driveSimulation));
-                                algaeOuttake = new AlgaeOuttake(new AlgaeOuttakeIOSim());
-                                elevatorSubsystem = new Elevator(new ElevatorIOSim());
-=======
                                 // // vision = new VisionSubsystem(drive::addVisionMeasurement,
                                 // // new VisionIOSim("camera_0",
                                 // // new Transform3d(0.2, 0.0, 0.2,
@@ -167,9 +155,8 @@ public class RobotContainer {
                                 // transfer = new Transfer(new TransferIOSim(driveSimulation));
                                 // algaeOuttake = new AlgaeOuttake(new AlgaeOuttakeIOSim());
                                 // elevatorSubsystem = new Elevator(new ElevatorIOSim());
->>>>>>> 1e51ac4e2c034f573a9aa88bad14900465e7a1b6
 
-                                leds = new LEDs(new LEDsIOSim());
+                                // leds = new LEDs(new LEDsIOSim());
 
                                 break;
 
@@ -411,6 +398,8 @@ public class RobotContainer {
                                 .onTrue(ElevatorCommands.closeElevator(elevatorSubsystem));
                 operatorController.b().onTrue(
                                 ElevatorCommands.goToPosition(elevatorSubsystem, ElevatorConstants.L2_POSITION));
+
+                operatorController.PovDown().onTrue(ElevatorCommands.goToPosition(elevatorSubsystem, L1_POSITION));
                 // operatorController.a().onTrue(ElevatorCommands.stopElevator(elevatorSubsystem));
 
                 // intake coral
@@ -437,9 +426,9 @@ public class RobotContainer {
 
                 operatorController.PovUp().whileTrue(TransferCommands.coralOutakeFast(transfer));
 
-                operatorController.PovDown()
-                                .whileTrue(ElevatorCommands.closeElevatorManual(elevatorSubsystem,
-                                                () -> MANUAL_SLOW_CLOSE));
+                // operatorController.PovDown()
+                // .whileTrue(ElevatorCommands.closeElevatorManual(elevatorSubsystem,
+                // () -> MANUAL_SLOW_CLOSE));
 
                 // driverController.a().onTrue(LEDsCommands.setAll(leDs,color));
 
@@ -496,7 +485,6 @@ public class RobotContainer {
                                                                 .withTimeout(1),
                                                 ElevatorCommands.goToPosition(elevatorSubsystem, 25).withTimeout(1))));
 
-                new EventTrigger("Open elevator").onTrue(ElevatorCommands.L2(elevatorSubsystem));
         }
 
         public void displaSimFieldToAdvantageScope() {

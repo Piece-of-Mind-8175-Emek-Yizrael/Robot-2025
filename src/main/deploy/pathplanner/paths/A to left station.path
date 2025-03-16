@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 6.36,
-        "y": 7.059230769230769
+        "x": 3.2225641025641014,
+        "y": 4.169487179487179
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.766921498912962,
-        "y": 6.560790397362464
+        "x": 3.0686300643220954,
+        "y": 4.409313550886317
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "A left Branch"
     },
     {
       "anchor": {
-        "x": 4.956410256410256,
-        "y": 5.139615384615385
+        "x": 1.3029487179487176,
+        "y": 7.245
       },
       "prevControl": {
-        "x": 5.225043125169702,
-        "y": 5.357265630002254
+        "x": 1.8729214688526266,
+        "y": 6.269728181520899
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "C right branch"
+      "linkedName": "left coral station"
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -121.18497465873838
+    "rotation": -53.365886124032606
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -118.92642583482109
+    "rotation": 1.6365770416166436
   },
   "useDefaultConstraints": true
 }
