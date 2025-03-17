@@ -39,6 +39,7 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -186,9 +187,9 @@ public class DriveCommands {
 
     omegaController.enableContinuousInput(-Math.PI, Math.PI);
 
-    return Commands.run(
+    return Commands.startRun(
+        () -> omegaController.reset(drive.getRotation().getRadians(), drive.getChassisSpeeds().omegaRadiansPerSecond),
         () -> {
-
           // Get linear velocity
           Translation2d linearVelocity = getLinearVelocityFromJoysticks(xSupplier.getAsDouble(),
               ySupplier.getAsDouble());
@@ -683,7 +684,93 @@ public class DriveCommands {
       // cmd.schedule();
 
       new DriveToPosition(drive, destination)
-          .andThen(joystickDriveRobotRelative(drive, () -> 0.4, () -> 0, () -> 0).withTimeout(0.75)
+          .andThen(joystickDriveRobotRelative(drive, () -> 0.4, () -> 0, () -> 0).withTimeout(0.68)
+              .raceWith(Commands.runEnd(() -> driveController.vibrate(0.2), () -> driveController.vibrate(0))
+                  .withTimeout(0.3).raceWith(
+                      Commands.runEnd(() -> operatorController.vibrate(0.2), () -> operatorController.vibrate(0)))))
+          .schedule();
+      if (elevator.getIO().getPosition() < 8) {
+        ElevatorCommands.goToPosition(elevator, 10);
+      }
+    }
+
+    @Override
+    public boolean isFinished() {
+      return true;
+    }
+
+    public Pose2d getClosestReef(Pose2d currentPose, boolean toLeft) throws Exception {
+      Pose2d[] branches = /* DriverStation.getAlliance().orElseGet(() -> Alliance.Red) == Alliance.Red */ currentPose
+          .getX() > FieldConstants.fieldLength / 2
+              ? (toLeft ? FieldConstants.Reef.redLeftBranches : FieldConstants.Reef.redRightBranches)
+              : (toLeft ? FieldConstants.Reef.blueLeftBranches : FieldConstants.Reef.blueRightBranches);
+      // Get the closest reef to the robot
+      double minDistance = Double.MAX_VALUE;
+      Pose2d closestReef = FieldConstants.Reef.blueCenterFaces[0];
+      for (int i = 0; i < FieldConstants.Reef.blueCenterFaces.length; i++) {
+        double distance = currentPose.getTranslation()
+            .getDistance(branches[i].getTranslation());
+        if (distance < minDistance) {
+          minDistance = distance;
+          closestReef = branches[i];
+        }
+      }
+      double allowedDist = 2.5;
+      if (minDistance > allowedDist) {
+        throw new Exception("No reef is close enough");
+      }
+      return closestReef;
+    }
+
+  }
+
+  public static class LocateToReefCommandPureP extends Command {
+    Drive drive;
+    boolean toLeft;
+    PomXboxController driveController;
+    PomXboxController operatorController;
+    Elevator elevator;
+
+    public LocateToReefCommandPureP(Drive drive, PomXboxController driveController,
+        PomXboxController operatorController,
+        Elevator elevator, boolean toLeft) {
+      this.drive = drive;
+      this.driveController = driveController;
+      this.operatorController = operatorController;
+      this.elevator = elevator;
+      this.toLeft = toLeft;
+      addRequirements(drive);
+    }
+
+    @Override
+    public void initialize() {
+      Pose2d destination;
+      try {
+        destination = getClosestReef(drive.getPose(), toLeft);
+      } catch (Exception e) {
+        return;
+      }
+      // List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
+      // drive.getPose(),
+      // destination);
+      // PathPlannerPath path = new PathPlannerPath(waypoints,
+      // new PathConstraints(maxSpeedMetersPerSec, maxAccMetersPerSecSquared,
+      // maxSpeedRadiansPerSec,
+      // maxAccRadiansPerSecSquared),
+      // null,
+      // new GoalEndState(0, destination.getRotation()));
+      // path.preventFlipping = true;
+      // Logger.recordOutput("current reef destination", destination);
+      // Command cmd = AutoBuilder.followPath(path)
+      // .until(() ->
+      // drive.getPose().getTranslation().getDistance(destination.getTranslation()) <
+      // 0.6);
+
+      // cmd = cmd.andThen(new DriveToPosition(drive, destination));
+      // cmd.schedule();
+
+      new DriveToPositionPureP(drive, destination)
+          .andThen(joystickDriveRobotRelative(drive, () -> 0.4, () -> 0, () -> 0).withTimeout(0.68)
               .raceWith(Commands.runEnd(() -> driveController.vibrate(0.2), () -> driveController.vibrate(0))
                   .withTimeout(0.3).raceWith(
                       Commands.runEnd(() -> operatorController.vibrate(0.2), () -> operatorController.vibrate(0)))))
@@ -915,6 +1002,107 @@ public class DriveCommands {
     public boolean isFinished() {
       // return m_timer.hasElapsed(5) ||
       return (m_controllerX.atGoal() && m_controllerY.atGoal() && m_controllerTheta.atGoal());
+    }
+  }
+
+  public static class DriveToPositionPureP extends Command {
+    private final Drive m_drive;
+    private final Pose2d m_target;
+    private final PIDController m_controllerX;
+    private final PIDController m_controllerY;
+    private final PIDController m_controllerTheta;
+    private final Timer m_timer = new Timer();
+
+    LoggedNetworkNumber kpTune = new LoggedNetworkNumber("tunes/translation kp", KP_XY);
+    LoggedNetworkNumber kiTune = new LoggedNetworkNumber("tunes/translation ki", KI_XY);
+    LoggedNetworkNumber kdTune = new LoggedNetworkNumber("tunes/translation kd", KD_XY);
+    LoggedNetworkNumber maxVelocityTune = new LoggedNetworkNumber("tunes/translation max velocity", MAX_VELOCETY_XY);
+    LoggedNetworkNumber maxAccelerationTune = new LoggedNetworkNumber("tunes/translation max acceleration",
+        MAX_ACCELERATION_XY);
+
+    LoggedNetworkNumber kpThetaTune = new LoggedNetworkNumber("tunes/rotation kp", KP_OMEGA);
+    LoggedNetworkNumber kiThetaTune = new LoggedNetworkNumber("tunes/rotation ki", KI_OMEGA);
+    LoggedNetworkNumber kdThetaTune = new LoggedNetworkNumber("tunes/rotation kd", KD_OMEGA);
+    LoggedNetworkNumber maxVelocityThetaTune = new LoggedNetworkNumber("tunes/rotation max velocity",
+        MAX_VELOCETY_OMEGA);
+    LoggedNetworkNumber maxAccelerationThetaTune = new LoggedNetworkNumber("tunes/rotation max acceleration",
+        MAX_ACCELERATION_OMEGA);
+
+    LoggedNetworkNumber translationTolerance = new LoggedNetworkNumber("tunes/translation tolerance",
+        TRANSLATION_TOLERANCE);
+    LoggedNetworkNumber omegaTolerance = new LoggedNetworkNumber("tunes/rotation tolerance", OMEGA_TOLERANCE);
+
+    public DriveToPositionPureP(Drive drive, Pose2d target) {
+      m_drive = drive;
+      m_target = target;
+      m_controllerX = new PIDController(KP_XY, KI_XY, KD_XY);
+      m_controllerX.setTolerance(TRANSLATION_TOLERANCE);
+      m_controllerY = new PIDController(KP_XY, KI_XY, KD_XY);
+      m_controllerY.setTolerance(TRANSLATION_TOLERANCE);
+      m_controllerTheta = new PIDController(KP_OMEGA, KI_OMEGA, KD_OMEGA);
+      m_controllerTheta.setTolerance(OMEGA_TOLERANCE);
+      m_controllerTheta.enableContinuousInput(-Math.PI, Math.PI);
+      addRequirements(drive);
+    }
+
+    @Override
+    public void initialize() {
+
+    }
+
+    @Override
+    public void execute() {
+      // m_controllerX.setPID(kpTune.get(), kiTune.get(), kdTune.get());
+      // m_controllerX
+      // .setConstraints(new TrapezoidProfile.Constraints(maxVelocityTune.get(),
+      // maxAccelerationTune.get()));
+      // m_controllerY.setPID(kpTune.get(), kiTune.get(), kdTune.get());
+      // m_controllerY
+      // .setConstraints(new TrapezoidProfile.Constraints(maxVelocityTune.get(),
+      // maxAccelerationTune.get()));
+      // m_controllerTheta.setPID(kpThetaTune.get(), kiThetaTune.get(),
+      // kdThetaTune.get());
+      // m_controllerTheta.setConstraints(
+      // new TrapezoidProfile.Constraints(maxVelocityThetaTune.get(),
+      // maxAccelerationThetaTune.get()));
+
+      var pose = m_drive.getPose();
+      var chassisSpeeds = new ChassisSpeeds(
+          m_controllerX.calculate(pose.getTranslation().getX(), m_target.getTranslation().getX()),
+          m_controllerY.calculate(pose.getTranslation().getY(), m_target.getTranslation().getY()),
+          m_controllerTheta.calculate(pose.getRotation().getRadians(), m_target.getRotation().getRadians()));
+
+      // if (Math.abs(m_target.getX() - pose.getX()) + Math.abs(m_target.getY() -
+      // pose.getY()) < 0.2) {
+      // chassisSpeeds = new ChassisSpeeds(chassisSpeeds.vxMetersPerSecond,
+      // chassisSpeeds.vyMetersPerSecond, 0);
+      // }
+
+      // if ((pose.getRotation().getDegrees() % 360 + 470) % 360 > 180) {
+      // chassisSpeeds = new ChassisSpeeds(-chassisSpeeds.vxMetersPerSecond,
+      // -chassisSpeeds.vyMetersPerSecond,
+      // chassisSpeeds.omegaRadiansPerSecond);
+      // }
+      chassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(chassisSpeeds, pose.getRotation().unaryMinus());
+      Logger.recordOutput("Requested speeds", chassisSpeeds);
+      // Logger.recordOutput("pose", pose);
+      // Logger.recordOutput("pose to", m_target);
+      Logger.recordOutput("error x", m_target.getTranslation().getX() - pose.getTranslation().getX());
+      Logger.recordOutput("error y", m_target.getTranslation().getY() - pose.getTranslation().getY());
+      m_drive.runVelocity(chassisSpeeds, false);
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+      // if (!interrupted) {
+      // m_drive.stop();
+      // }
+    }
+
+    @Override
+    public boolean isFinished() {
+      // return m_timer.hasElapsed(5) ||
+      return (m_controllerX.atSetpoint() && m_controllerY.atSetpoint() && m_controllerTheta.atSetpoint());
     }
   }
 

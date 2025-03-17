@@ -11,10 +11,16 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Go to C right branch"
+                  "pathName": "New Path"
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Locate closest left"
           }
         },
         {

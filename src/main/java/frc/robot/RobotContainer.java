@@ -264,8 +264,8 @@ public class RobotContainer {
                 drive.setDefaultCommand(
                                 DriveCommands.joystickDriveClosedLoopVel(
                                                 drive,
-                                                () -> driverController.getLeftY() * 0.7,
-                                                () -> driverController.getLeftX() * 0.7,
+                                                () -> driverController.getLeftY() * 0.5,
+                                                () -> driverController.getLeftX() * 0.5,
                                                 () -> driverController.getRightX() * 0.47));
 
                 coraltrig.onFalse(LEDsCommands.blink(leds, Color.kGainsboro, 0.2).withTimeout(0.8));
@@ -305,6 +305,13 @@ public class RobotContainer {
                 driverController.x().or(driverController.b().or(driverController.a()))
                                 .onFalse(new InstantCommand(() -> {
                                 }, drive));
+
+                driverController.a()
+                                .onTrue(MultiSystemCommands.ClearAlgeaLow(drive, elevatorSubsystem,
+                                                algaeOuttake));
+                driverController.y()
+                                .onTrue(MultiSystemCommands.ClearAlgeaHigh(drive, elevatorSubsystem,
+                                                algaeOuttake));
 
                 // driverController.povLeft().onTrue(Commands.runOnce(() ->
                 // moduleFL.setTurnPosition(new Rotation2d(Math.PI)).l;p.));
@@ -346,12 +353,12 @@ public class RobotContainer {
 
                 driverController.RB()
                                 .whileTrue(DriveCommands.joystickDriveAutoAngle(drive,
-                                                () -> driverController.getLeftY() * 0.7,
-                                                () -> driverController.getLeftX() * 0.7));
+                                                () -> driverController.getLeftY() * 0.5,
+                                                () -> driverController.getLeftX() * 0.5));
 
                 driverController.LB().whileTrue(
-                                DriveCommands.joystickDriveRobotRelative(drive, () -> driverController.getLeftY() * 0.7,
-                                                () -> driverController.getLeftX() * 0.7,
+                                DriveCommands.joystickDriveRobotRelative(drive, () -> driverController.getLeftY() * 0.5,
+                                                () -> driverController.getLeftX() * 0.5,
                                                 () -> driverController.getRightX() * 0.47));
                 // driverController.RB().whileTrue(
                 // DriveCommands.joystickDriveRobotRelative(drive, () -> 0, () -> -0.4, () ->
@@ -379,8 +386,6 @@ public class RobotContainer {
                 // algae arm open & close
                 operatorController.LB().onTrue(AlgaeOuttakeCommands.closeArm(algaeOuttake));
                 operatorController.RB().onTrue(AlgaeOuttakeCommands.openArm(algaeOuttake));
-                operatorController.RB()
-                                .onTrue(MultiSystemCommands.ClearAlgeaHigh(drive, elevatorSubsystem, algaeOuttake));
 
                 // outake algae
                 // operatorController.a()
@@ -484,6 +489,11 @@ public class RobotContainer {
                                                                 () -> 0.3)
                                                                 .withTimeout(1),
                                                 ElevatorCommands.goToPosition(elevatorSubsystem, 25).withTimeout(1))));
+
+                NamedCommands.registerCommand("Locate closest left", DriveCommands.locateToReefCommand(drive,
+                                driverController, operatorController, elevatorSubsystem, true).withTimeout(2));
+                NamedCommands.registerCommand("Locate closest right", DriveCommands.locateToReefCommand(drive,
+                                driverController, operatorController, elevatorSubsystem, false).withTimeout(2));
 
         }
 
