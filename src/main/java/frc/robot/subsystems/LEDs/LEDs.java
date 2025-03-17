@@ -4,6 +4,7 @@ import java.util.function.BooleanSupplier;
 
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
@@ -25,8 +26,10 @@ public class LEDs extends SubsystemBase {
         new Trigger(leftCamera).onTrue(LEDsCommands.setFirstHalf(this, Color.kGreen));
         new Trigger(rightCamera).onTrue(LEDsCommands.setSecondHalf(this, Color.kGreen));
 
-        new Trigger(leftCamera).onFalse(LEDsCommands.setFirstHalf(this, Color.kBlack));
-        new Trigger(rightCamera).onFalse(LEDsCommands.setSecondHalf(this, Color.kBlack));
+        new Trigger(leftCamera).debounce(0.15, DebounceType.kFalling)
+                .onFalse(LEDsCommands.setFirstHalf(this, Color.kBlack));
+        new Trigger(rightCamera).debounce(0.15, DebounceType.kFalling)
+                .onFalse(LEDsCommands.setSecondHalf(this, Color.kBlack));
 
     }
 
