@@ -478,21 +478,13 @@ public class RobotContainer {
                 NamedCommands.registerCommand("Drive back twist",
                                 DriveCommands.joystickDriveRobotRelative(drive, () -> -0.5, () -> 0, () -> 0.3));
 
-                NamedCommands.registerCommand("Remove low algae", Commands.sequence(Commands.parallel(
-                                DriveCommands.joystickDriveRobotRelative(drive, () -> 0.4, () -> 0,
-                                                () -> 0)
-                                                .withTimeout(0.4),
-                                ElevatorCommands.goToPosition(elevatorSubsystem, 15).withTimeout(0.8)),
-                                Commands.parallel(
-                                                DriveCommands.joystickDriveRobotRelative(drive, () -> -0.5, () -> 0,
-                                                                () -> 0.3)
-                                                                .withTimeout(1),
-                                                ElevatorCommands.goToPosition(elevatorSubsystem, 25).withTimeout(1))));
+                NamedCommands.registerCommand("Remove low algae",
+                                MultiSystemCommands.ClearAlgeaLow(drive, elevatorSubsystem, algaeOuttake));
+                NamedCommands.registerCommand("Remove high algae",
+                                MultiSystemCommands.ClearAlgeaHigh(drive, elevatorSubsystem, algaeOuttake));
 
-                NamedCommands.registerCommand("Locate closest left", new LocateToReefCommand(drive,
-                                driverController, operatorController, elevatorSubsystem, leds, true));
-                NamedCommands.registerCommand("Locate closest right", new LocateToReefCommand(drive,
-                                driverController, operatorController, elevatorSubsystem, leds, false));
+                NamedCommands.registerCommand("Locate closest left", MultiSystemCommands.goToBranch(drive, true));
+                NamedCommands.registerCommand("Locate closest right", MultiSystemCommands.goToBranch(drive, false));
 
         }
 
