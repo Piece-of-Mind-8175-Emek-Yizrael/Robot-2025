@@ -89,12 +89,28 @@ public class FieldConstants {
                 public static final Pose2d[] blueRightBranches = new Pose2d[6]; // Starting facing the driver station in
                                                                                 // clockwise
                                                                                 // order
+                public static final Pose2d[] blueLeftBranchesBehind = new Pose2d[6]; // Starting facing the driver
+                                                                                     // station in
+                                                                                     // clockwise
+                                                                                     // order
+                public static final Pose2d[] blueRightBranchesBehind = new Pose2d[6]; // Starting facing the driver
+                                                                                      // station in
+                                                                                      // clockwise
+                                                                                      // order
                 public static final Pose2d[] redLeftBranches = new Pose2d[6]; // Starting facing the driver station in
                                                                               // clockwise
                                                                               // order
                 public static final Pose2d[] redRightBranches = new Pose2d[6]; // Starting facing the driver station in
                                                                                // clockwise
                                                                                // order
+                public static final Pose2d[] redLeftBranchesBehind = new Pose2d[6]; // Starting facing the driver
+                                                                                    // station in
+                                                                                    // clockwise
+                                                                                    // order
+                public static final Pose2d[] redRightBranchesBehind = new Pose2d[6]; // Starting facing the driver
+                                                                                     // station in
+                                                                                     // clockwise
+                                                                                     // order
 
                 public static final Pose2d[] redAlgaePositions = new Pose2d[6];
 
@@ -108,6 +124,7 @@ public class FieldConstants {
                                                                                                        // in
                                                                                                        // clockwise
                 public static final double branchDist = 0.16; // Half the distance between branches
+                public static final double behindDist = 0.5; // Half the distance between branches
                 public static final double algaeDist = 0.1;
 
                 static {
@@ -155,10 +172,20 @@ public class FieldConstants {
                                                                 * Math.cos(blueCenterFaces[i].getRotation()
                                                                                 .getRadians()),
                                                 Rotation2d.fromDegrees(-i * 60));
+                                blueRightBranchesBehind[i] = new Pose2d(
+                                                blueRightBranches[i].getX() - behindDist
+                                                                * Math.cos(Math.PI / 3.0 * i),
+                                                blueRightBranches[i].getY() + behindDist
+                                                                * Math.sin(Math.PI / 3.0 * i),
+                                                Rotation2d.fromDegrees(-i * 60));
+                                blueLeftBranchesBehind[i] = new Pose2d(
+                                                blueLeftBranches[i].getX() - behindDist
+                                                                * Math.cos(Math.PI / 3.0 * i),
+                                                blueLeftBranches[i].getY() + behindDist
+                                                                * Math.sin(Math.PI / 3.0 * i),
+                                                Rotation2d.fromDegrees(-i * 60));
 
                         }
-                        Logger.recordOutput("left branch blue", blueLeftBranches);
-                        Logger.recordOutput("right branch blue", blueRightBranches);
 
                         for (int i = 0; i < blueCenterFaces.length; i++) {
                                 redCenterFaces[i] = new Pose2d(fieldLength - blueCenterFaces[i].getX(),
@@ -174,23 +201,36 @@ public class FieldConstants {
                                                 Rotation2d.fromDegrees(
                                                                 180 + blueRightBranches[i].getRotation()
                                                                                 .getDegrees()));
+                                redLeftBranchesBehind[i] = new Pose2d(fieldLength - blueLeftBranchesBehind[i].getX(),
+                                                fieldWidth - blueLeftBranchesBehind[i].getY(),
+                                                Rotation2d.fromDegrees(
+                                                                180 + blueLeftBranchesBehind[i].getRotation()
+                                                                                .getDegrees()));
+                                redRightBranchesBehind[i] = new Pose2d(fieldLength - blueRightBranchesBehind[i].getX(),
+                                                fieldWidth - blueRightBranchesBehind[i].getY(),
+                                                Rotation2d.fromDegrees(
+                                                                180 + blueRightBranchesBehind[i].getRotation()
+                                                                                .getDegrees()));
 
-                                redAlgaePositions[i] = new Pose2d(
-                                                redRightBranches[i].getX() - algaeDist
-                                                                * Math.sin(redRightBranches[i].getRotation()
+                                blueAlgaePositions[i] = new Pose2d(
+                                                blueRightBranches[i].getX() + algaeDist
+                                                                * Math.sin(blueCenterFaces[i].getRotation()
                                                                                 .getRadians()),
-                                                redRightBranches[i].getY() - algaeDist
-                                                                * Math.cos(redRightBranches[i].getRotation()
+                                                blueRightBranches[i].getY() + algaeDist
+                                                                * Math.cos(blueCenterFaces[i].getRotation()
                                                                                 .getRadians()),
                                                 Rotation2d.fromDegrees(-i * 60));
 
-                                blueAlgaePositions[i] = new Pose2d(fieldLength - redAlgaePositions[i].getX(),
-                                                fieldWidth - redAlgaePositions[i].getY(),
+                                redAlgaePositions[i] = new Pose2d(fieldLength - blueAlgaePositions[i].getX(),
+                                                fieldWidth - blueAlgaePositions[i].getY(),
                                                 Rotation2d.fromDegrees(
-                                                                180 + redAlgaePositions[i].getRotation().getDegrees()));
+                                                                180 + blueAlgaePositions[i].getRotation()
+                                                                                .getDegrees()));
 
                         }
 
+                        Logger.recordOutput("left branch blue behind", redAlgaePositions);
+                        Logger.recordOutput("right branch blue behind", blueAlgaePositions);
                         Logger.recordOutput("left branch 0", redLeftBranches);
                         // leftBranches[1] = new Pose2d(
                         // branchDist * Math.sin(-2 * Math.PI / 3) + centerFaces[1].getX(),

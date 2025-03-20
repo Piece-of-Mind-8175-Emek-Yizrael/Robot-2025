@@ -27,6 +27,7 @@ import static frc.robot.subsystems.drive.DriveConstants.MAX_VELOCETY_XY;
 import static frc.robot.subsystems.drive.DriveConstants.OMEGA_TOLERANCE;
 import static frc.robot.subsystems.drive.DriveConstants.TRANSLATION_TOLERANCE;
 
+import java.lang.annotation.Target;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.LinkedList;
@@ -38,7 +39,14 @@ import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.Waypoint;
+
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -52,12 +60,14 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.POM_lib.Joysticks.PomXboxController;
 import frc.robot.subsystems.Elevator.Elevator;
+import frc.robot.subsystems.LEDs.LEDs;
 import frc.robot.subsystems.Vision.VisionSubsystem;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
@@ -645,52 +655,59 @@ public class DriveCommands {
     PomXboxController driveController;
     PomXboxController operatorController;
     Elevator elevator;
+    LEDs leds;
 
     public LocateToReefCommand(Drive drive, PomXboxController driveController, PomXboxController operatorController,
-        Elevator elevator, boolean toLeft) {
+        Elevator elevator, LEDs leds, boolean toLeft) {
       this.drive = drive;
       this.driveController = driveController;
       this.operatorController = operatorController;
       this.elevator = elevator;
       this.toLeft = toLeft;
+      this.leds = leds;
       addRequirements(drive);
     }
 
     @Override
     public void initialize() {
-      Pose2d destination;
+      Pose2d destination, midWay;
       try {
-        destination = getClosestReef(drive.getPose(), toLeft);
+        var res = getClosestReef(drive.getPose(), toLeft);
+        destination = res.getFirst();
+        midWay = res.getSecond();
       } catch (Exception e) {
         return;
       }
-      // List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
-      // drive.getPose(),
-      // destination);
-      // PathPlannerPath path = new PathPlannerPath(waypoints,
-      // new PathConstraints(maxSpeedMetersPerSec, maxAccMetersPerSecSquared,
-      // maxSpeedRadiansPerSec,
-      // maxAccRadiansPerSecSquared),
-      // null,
-      // new GoalEndState(0, destination.getRotation()));
-      // path.preventFlipping = true;
-      // Logger.recordOutput("current reef destination", destination);
-      // Command cmd = AutoBuilder.followPath(path)
+      List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
+          drive.getPose(),
+          midWay);
+      PathPlannerPath path = new PathPlannerPath(waypoints,
+          new PathConstraints(DriveConstants.maxSpeedMetersPerSec, DriveConstants.maxAccMetersPerSecSquared,
+              DriveConstants.maxSpeedRadiansPerSec,
+              DriveConstants.maxAccRadiansPerSecSquared),
+          null,
+          new GoalEndState(0.3, destination.getRotation()));
+      path.preventFlipping = true;
+      Logger.recordOutput("current reef destination", destination);
+      Command cmd = AutoBuilder.followPath(path);
       // .until(() ->
       // drive.getPose().getTranslation().getDistance(destination.getTranslation()) <
       // 0.6);
 
       // cmd = cmd.andThen(new DriveToPosition(drive, destination));
       // cmd.schedule();
-
-      new DriveToPosition(drive, destination)
-          .andThen(joystickDriveRobotRelative(drive, () -> 0.4, () -> 0, () -> 0).withTimeout(0.68)
-              .raceWith(Commands.runEnd(() -> driveController.vibrate(0.2), () -> driveController.vibrate(0))
-                  .withTimeout(0.3).raceWith(
-                      Commands.runEnd(() -> operatorController.vibrate(0.2), () -> operatorController.vibrate(0)))))
+      cmd.andThen(
+          Commands.parallel(
+              LEDsCommands.blink(leds, Color.kSeaGreen, 0.2).withTimeout(1),
+              new DriveToPositionPureP(drive, destination)
+                  .andThen(joystickDriveRobotRelative(drive, () -> 0.4, () -> 0, () -> 0).withTimeout(0.68)
+                      .raceWith(Commands.runEnd(() -> driveController.vibrate(0.2), () -> driveController.vibrate(0))
+                          .withTimeout(0.2).raceWith(
+                              Commands.runEnd(() -> operatorController.vibrate(0.2),
+                                  () -> operatorController.vibrate(0)))))))
           .schedule();
       if (elevator.getIO().getPosition() < 8) {
-        ElevatorCommands.goToPosition(elevator, 10);
+        ElevatorCommands.goToPosition(elevator, 10).schedule();
       }
     }
 
@@ -699,39 +716,43 @@ public class DriveCommands {
       return true;
     }
 
-    public Pose2d getClosestReef(Pose2d currentPose, boolean toLeft) throws Exception {
+    public Pair<Pose2d, Pose2d> getClosestReef(Pose2d currentPose, boolean toLeft) throws Exception {
       Pose2d[] branches = /* DriverStation.getAlliance().orElseGet(() -> Alliance.Red) == Alliance.Red */ currentPose
           .getX() > FieldConstants.fieldLength / 2
               ? (toLeft ? FieldConstants.Reef.redLeftBranches : FieldConstants.Reef.redRightBranches)
               : (toLeft ? FieldConstants.Reef.blueLeftBranches : FieldConstants.Reef.blueRightBranches);
+      Pose2d[] midWays = /* DriverStation.getAlliance().orElseGet(() -> Alliance.Red) == Alliance.Red */ currentPose
+          .getX() > FieldConstants.fieldLength / 2
+              ? (toLeft ? FieldConstants.Reef.redLeftBranchesBehind : FieldConstants.Reef.redRightBranchesBehind)
+              : (toLeft ? FieldConstants.Reef.blueLeftBranchesBehind : FieldConstants.Reef.blueRightBranchesBehind);
       // Get the closest reef to the robot
       double minDistance = Double.MAX_VALUE;
-      Pose2d closestReef = FieldConstants.Reef.blueCenterFaces[0];
+      int closestReef = 0;
       for (int i = 0; i < FieldConstants.Reef.blueCenterFaces.length; i++) {
         double distance = currentPose.getTranslation()
             .getDistance(branches[i].getTranslation());
         if (distance < minDistance) {
           minDistance = distance;
-          closestReef = branches[i];
+          closestReef = i;
         }
       }
       double allowedDist = 2.5;
       if (minDistance > allowedDist) {
         throw new Exception("No reef is close enough");
       }
-      return closestReef;
+      return new Pair<>(branches[closestReef], midWays[closestReef]);
     }
 
   }
 
-  public static class LocateToReefCommandPureP extends Command {
+  public static class LocateToReefCommandProfiled extends Command {
     Drive drive;
     boolean toLeft;
     PomXboxController driveController;
     PomXboxController operatorController;
     Elevator elevator;
 
-    public LocateToReefCommandPureP(Drive drive, PomXboxController driveController,
+    public LocateToReefCommandProfiled(Drive drive, PomXboxController driveController,
         PomXboxController operatorController,
         Elevator elevator, boolean toLeft) {
       this.drive = drive;
@@ -769,7 +790,7 @@ public class DriveCommands {
       // cmd = cmd.andThen(new DriveToPosition(drive, destination));
       // cmd.schedule();
 
-      new DriveToPositionPureP(drive, destination)
+      new DriveToPosition(drive, destination)
           .andThen(joystickDriveRobotRelative(drive, () -> 0.4, () -> 0, () -> 0).withTimeout(0.68)
               .raceWith(Commands.runEnd(() -> driveController.vibrate(0.2), () -> driveController.vibrate(0))
                   .withTimeout(0.3).raceWith(
@@ -887,12 +908,6 @@ public class DriveCommands {
 
   // }
 
-  public static Command locateToReefCommand(Drive drive, PomXboxController driveController,
-      PomXboxController operatorController,
-      Elevator elevator, boolean toLeft) {
-    return new LocateToReefCommand(drive, driveController, operatorController, elevator, toLeft);
-  }
-
   public static class DriveToPosition extends Command {
     private final Drive m_drive;
     private final Pose2d m_target;
@@ -943,6 +958,122 @@ public class DriveCommands {
       var currPose = m_drive.getPose();
       ChassisSpeeds currS = ChassisSpeeds.fromRobotRelativeSpeeds(m_drive.getChassisSpeeds(),
           currPose.getRotation());
+
+      m_controllerX.reset(currPose.getX(), currS.vxMetersPerSecond);
+      m_controllerY.reset(currPose.getY(), currS.vyMetersPerSecond);
+      m_controllerTheta.reset(currPose.getRotation().getRadians(), currS.omegaRadiansPerSecond);
+    }
+
+    @Override
+    public void execute() {
+      // m_controllerX.setPID(kpTune.get(), kiTune.get(), kdTune.get());
+      // m_controllerX
+      // .setConstraints(new TrapezoidProfile.Constraints(maxVelocityTune.get(),
+      // maxAccelerationTune.get()));
+      // m_controllerY.setPID(kpTune.get(), kiTune.get(), kdTune.get());
+      // m_controllerY
+      // .setConstraints(new TrapezoidProfile.Constraints(maxVelocityTune.get(),
+      // maxAccelerationTune.get()));
+      // m_controllerTheta.setPID(kpThetaTune.get(), kiThetaTune.get(),
+      // kdThetaTune.get());
+      // m_controllerTheta.setConstraints(
+      // new TrapezoidProfile.Constraints(maxVelocityThetaTune.get(),
+      // maxAccelerationThetaTune.get()));
+
+      var pose = m_drive.getPose();
+      var chassisSpeeds = new ChassisSpeeds(
+          m_controllerX.calculate(pose.getTranslation().getX(), m_target.getTranslation().getX()),
+          m_controllerY.calculate(pose.getTranslation().getY(), m_target.getTranslation().getY()),
+          m_controllerTheta.calculate(pose.getRotation().getRadians(), m_target.getRotation().getRadians()));
+
+      // if (Math.abs(m_target.getX() - pose.getX()) + Math.abs(m_target.getY() -
+      // pose.getY()) < 0.2) {
+      // chassisSpeeds = new ChassisSpeeds(chassisSpeeds.vxMetersPerSecond,
+      // chassisSpeeds.vyMetersPerSecond, 0);
+      // }
+
+      // if ((pose.getRotation().getDegrees() % 360 + 470) % 360 > 180) {
+      // chassisSpeeds = new ChassisSpeeds(-chassisSpeeds.vxMetersPerSecond,
+      // -chassisSpeeds.vyMetersPerSecond,
+      // chassisSpeeds.omegaRadiansPerSecond);
+      // }
+      chassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(chassisSpeeds, pose.getRotation().unaryMinus());
+      Logger.recordOutput("Requested speeds", chassisSpeeds);
+      // Logger.recordOutput("pose", pose);
+      // Logger.recordOutput("pose to", m_target);
+      Logger.recordOutput("error x", m_target.getTranslation().getX() - pose.getTranslation().getX());
+      Logger.recordOutput("error y", m_target.getTranslation().getY() - pose.getTranslation().getY());
+      m_drive.runVelocity(chassisSpeeds, false);
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+      // if (!interrupted) {
+      // m_drive.stop();
+      // }
+    }
+
+    @Override
+    public boolean isFinished() {
+      // return m_timer.hasElapsed(5) ||
+      return (m_controllerX.atGoal() && m_controllerY.atGoal() && m_controllerTheta.atGoal());
+    }
+  }
+
+  public static class DriveToSuppliedPosition extends Command {
+    private final Drive m_drive;
+    private Pose2d m_target;
+    private final Supplier<Pose2d> m_suppliedPose;
+    private final ProfiledPIDController m_controllerX;
+    private final ProfiledPIDController m_controllerY;
+    private final ProfiledPIDController m_controllerTheta;
+    private final Timer m_timer = new Timer();
+
+    LoggedNetworkNumber kpTune = new LoggedNetworkNumber("tunes/translation kp", KP_XY);
+    LoggedNetworkNumber kiTune = new LoggedNetworkNumber("tunes/translation ki", KI_XY);
+    LoggedNetworkNumber kdTune = new LoggedNetworkNumber("tunes/translation kd", KD_XY);
+    LoggedNetworkNumber maxVelocityTune = new LoggedNetworkNumber("tunes/translation max velocity", MAX_VELOCETY_XY);
+    LoggedNetworkNumber maxAccelerationTune = new LoggedNetworkNumber("tunes/translation max acceleration",
+        MAX_ACCELERATION_XY);
+
+    LoggedNetworkNumber kpThetaTune = new LoggedNetworkNumber("tunes/rotation kp", KP_OMEGA);
+    LoggedNetworkNumber kiThetaTune = new LoggedNetworkNumber("tunes/rotation ki", KI_OMEGA);
+    LoggedNetworkNumber kdThetaTune = new LoggedNetworkNumber("tunes/rotation kd", KD_OMEGA);
+    LoggedNetworkNumber maxVelocityThetaTune = new LoggedNetworkNumber("tunes/rotation max velocity",
+        MAX_VELOCETY_OMEGA);
+    LoggedNetworkNumber maxAccelerationThetaTune = new LoggedNetworkNumber("tunes/rotation max acceleration",
+        MAX_ACCELERATION_OMEGA);
+
+    LoggedNetworkNumber translationTolerance = new LoggedNetworkNumber("tunes/translation tolerance",
+        TRANSLATION_TOLERANCE);
+    LoggedNetworkNumber omegaTolerance = new LoggedNetworkNumber("tunes/rotation tolerance", OMEGA_TOLERANCE);
+
+    public DriveToSuppliedPosition(Drive drive, Supplier<Pose2d> target) {
+      m_drive = drive;
+      m_target = new Pose2d();
+      m_suppliedPose = target;
+      m_controllerX = new ProfiledPIDController(KP_XY, KI_XY, KD_XY,
+          new TrapezoidProfile.Constraints(MAX_VELOCETY_XY, MAX_ACCELERATION_XY));
+      m_controllerX.setTolerance(TRANSLATION_TOLERANCE);
+      m_controllerY = new ProfiledPIDController(KP_XY, KI_XY, KD_XY,
+          new TrapezoidProfile.Constraints(MAX_VELOCETY_XY, MAX_ACCELERATION_XY));
+      m_controllerY.setTolerance(TRANSLATION_TOLERANCE);
+      m_controllerTheta = new ProfiledPIDController(KP_OMEGA, KI_OMEGA, KD_OMEGA,
+          new TrapezoidProfile.Constraints(MAX_VELOCETY_OMEGA, MAX_ACCELERATION_OMEGA));
+      m_controllerTheta.setTolerance(OMEGA_TOLERANCE);
+      m_controllerTheta.enableContinuousInput(-Math.PI, Math.PI);
+      addRequirements(drive);
+    }
+
+    @Override
+    public void initialize() {
+      m_timer.reset();
+      m_timer.start();
+      var currPose = m_drive.getPose();
+      ChassisSpeeds currS = ChassisSpeeds.fromRobotRelativeSpeeds(m_drive.getChassisSpeeds(),
+          currPose.getRotation());
+
+      m_target = m_suppliedPose.get();
 
       m_controllerX.reset(currPose.getX(), currS.vxMetersPerSecond);
       m_controllerY.reset(currPose.getY(), currS.vyMetersPerSecond);

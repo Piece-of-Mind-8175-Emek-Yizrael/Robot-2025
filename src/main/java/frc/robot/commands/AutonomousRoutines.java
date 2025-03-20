@@ -131,7 +131,7 @@ public class AutonomousRoutines {
                 return Commands.sequence(
                                 Commands.parallel(
                                                 AlgaeOuttakeCommands.openArm(algaeOuttake),
-                                                ElevatorCommands.goToPosition(elevator, 10),
+                                                ElevatorCommands.goToPosition(elevator, 1.4),
                                                 driveToPoseInCorrectAlliance(drive,
                                                                 FieldConstants.Reef.redRightBranches[3]
                                                                                 .transformBy(new Transform2d(0, 0.1,
@@ -144,7 +144,7 @@ public class AutonomousRoutines {
                                                                 .withTimeout(0.4),
                                                 ElevatorCommands.goToPosition(elevator, 15).withTimeout(0.8)),
                                 Commands.parallel(
-                                                DriveCommands.joystickDriveRobotRelative(drive, () -> -0.5, () -> 0,
+                                                DriveCommands.joystickDriveRobotRelative(drive, () -> -0.5, () -> 0.1,
                                                                 () -> 0.3)
                                                                 .withTimeout(1),
                                                 ElevatorCommands.goToPosition(elevator, 25).withTimeout(1)),
@@ -157,7 +157,8 @@ public class AutonomousRoutines {
                                 DriveCommands.joystickDriveRobotRelative(drive, () -> 0.4, () -> 0, () -> 0)
                                                 .withTimeout(0.4),
                                 ElevatorCommands.L3(elevator).withTimeout(2),
-                                TransferCommands.coralOutakeFast(transfer).withTimeout(0.5));
+                                TransferCommands.coralOutakeFast(transfer).withTimeout(1),
+                                ElevatorCommands.closeElevator(elevator));
         }
 
 }
