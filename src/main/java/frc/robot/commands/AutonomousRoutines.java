@@ -142,7 +142,7 @@ public class AutonomousRoutines {
                                                 DriveCommands.joystickDriveRobotRelative(drive, () -> 0.4, () -> 0,
                                                                 () -> 0)
                                                                 .withTimeout(0.4),
-                                                ElevatorCommands.goToPosition(elevator, 15).withTimeout(0.8)),
+                                                ElevatorCommands.goToPosition(elevator, 18).withTimeout(0.8)),
                                 Commands.parallel(
                                                 DriveCommands.joystickDriveRobotRelative(drive, () -> -0.5, () -> 0,
                                                                 () -> 0.3)

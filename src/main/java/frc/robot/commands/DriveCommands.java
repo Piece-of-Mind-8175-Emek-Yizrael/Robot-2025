@@ -684,14 +684,14 @@ public class DriveCommands {
       // cmd.schedule();
 
       new DriveToPosition(drive, destination)
-          .andThen(joystickDriveRobotRelative(drive, () -> 0.4, () -> 0, () -> 0).withTimeout(0.68)
+          .andThen(joystickDriveRobotRelative(drive, () -> 0.3, () -> 0, () -> 0).withTimeout(1.5)
               .raceWith(Commands.runEnd(() -> driveController.vibrate(0.2), () -> driveController.vibrate(0))
                   .withTimeout(0.3).raceWith(
                       Commands.runEnd(() -> operatorController.vibrate(0.2), () -> operatorController.vibrate(0)))))
           .schedule();
-      if (elevator.getIO().getPosition() < 8) {
-        ElevatorCommands.goToPosition(elevator, 10);
-      }
+      // if (elevator.getIO().getPosition() < 8) {
+      // ElevatorCommands.goToPosition(elevator, 10);
+      // }
     }
 
     @Override
