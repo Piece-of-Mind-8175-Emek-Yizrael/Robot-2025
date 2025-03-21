@@ -706,9 +706,9 @@ public class DriveCommands {
                               Commands.runEnd(() -> operatorController.vibrate(0.2),
                                   () -> operatorController.vibrate(0)))))))
           .schedule();
-      if (elevator.getIO().getPosition() < 8) {
-        ElevatorCommands.goToPosition(elevator, 10).schedule();
-      }
+      // if (elevator.getIO().getPosition() < 8) {
+      // ElevatorCommands.goToPosition(elevator, 10).schedule();
+      // }
     }
 
     @Override
