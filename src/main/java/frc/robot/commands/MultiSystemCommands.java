@@ -21,8 +21,8 @@ public class MultiSystemCommands {
                                                                                                 .withTimeout(0.3)),
                                                 AlgaeOuttakeCommands.openArm(algaeOuttake),
                                                 ElevatorCommands.goToPosition(elevator, 2)),
-                                ElevatorCommands.goToPosition(elevator, 15).withTimeout(0.5),
-                                Commands.parallel(ElevatorCommands.goToPosition(elevator, 25).withTimeout(1),
+                                ElevatorCommands.goToPosition(elevator, 17).withTimeout(0.9),
+                                Commands.parallel(ElevatorCommands.goToPosition(elevator, 27).withTimeout(1),
                                                 DriveCommands.joystickDriveRobotRelative(drive, () -> -0.5, () -> 0,
                                                                 () -> 0.3)
                                                                 .withTimeout(1)),
@@ -43,14 +43,27 @@ public class MultiSystemCommands {
                                                                                                 .withTimeout(0.3)),
                                                 AlgaeOuttakeCommands.openArm(algaeOuttake),
                                                 ElevatorCommands.goToPosition(elevator, 23).withTimeout(1)),
-                                ElevatorCommands.goToPosition(elevator, 33).withTimeout(1),
-                                Commands.parallel(ElevatorCommands.goToPosition(elevator, 40).withTimeout(.9),
+                                ElevatorCommands.goToPosition(elevator, 35).withTimeout(1),
+                                Commands.parallel(ElevatorCommands.goToPosition(elevator, 42).withTimeout(.9),
                                                 DriveCommands.joystickDriveRobotRelative(drive, () -> -0.5, () -> 0,
                                                                 () -> 0.3)
                                                                 .withTimeout(1)),
                                 AlgaeOuttakeCommands.closeArm(algaeOuttake)
 
                 );
+        }
+
+        public static Command GotoL1(Drive drive) {
+                return new DriveCommands.DriveToSuppliedPosition(drive,
+                                () -> getClosestReef(drive.getPose())).andThen(
+                                                DriveCommands.joystickDriveRobotRelative(
+                                                                drive, () -> 0.4,
+                                                                () -> 0, () -> 0)
+                                                                .withTimeout(0.5),
+                                                DriveCommands.joystickDriveRobotRelative(
+                                                                drive, () -> 0.25,
+                                                                () -> 0, () -> 0)
+                                                                .withTimeout(1));
         }
 
         public static Pose2d getClosestReef(Pose2d currentPose) {

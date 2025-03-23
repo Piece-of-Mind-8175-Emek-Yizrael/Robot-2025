@@ -698,9 +698,9 @@ public class DriveCommands {
       // cmd.schedule();
       cmd.andThen(
           Commands.parallel(
-              LEDsCommands.blink(leds, Color.kSeaGreen, 0.2).withTimeout(1),
+              LEDsCommands.blink(leds, Color.kGold, 0.2).withTimeout(1),
               new DriveToPositionPureP(drive, destination)
-                  .andThen(joystickDriveRobotRelative(drive, () -> 0.4, () -> 0, () -> 0).withTimeout(0.68)
+                  .andThen(joystickDriveRobotRelative(drive, () -> 0.47, () -> 0, () -> 0).withTimeout(1)
                       .raceWith(Commands.runEnd(() -> driveController.vibrate(0.2), () -> driveController.vibrate(0))
                           .withTimeout(0.2).raceWith(
                               Commands.runEnd(() -> operatorController.vibrate(0.2),
@@ -752,15 +752,17 @@ public class DriveCommands {
     PomXboxController driveController;
     PomXboxController operatorController;
     Elevator elevator;
+    LEDs leds;
 
     public LocateToReefCommandProfiled(Drive drive, PomXboxController driveController,
         PomXboxController operatorController,
-        Elevator elevator, boolean toLeft) {
+        Elevator elevator, LEDs leds, boolean toLeft) {
       this.drive = drive;
       this.driveController = driveController;
       this.operatorController = operatorController;
       this.elevator = elevator;
       this.toLeft = toLeft;
+      this.leds = leds;
       addRequirements(drive);
     }
 
@@ -792,14 +794,16 @@ public class DriveCommands {
       // cmd.schedule();
 
       new DriveToPosition(drive, destination)
-          .andThen(joystickDriveRobotRelative(drive, () -> 0.4, () -> 0, () -> 0).withTimeout(0.68)
+          .andThen(joystickDriveRobotRelative(drive, () -> 0.47, () -> 0, () -> 0).withTimeout(1)
               .raceWith(Commands.runEnd(() -> driveController.vibrate(0.2), () -> driveController.vibrate(0))
                   .withTimeout(0.3).raceWith(
-                      Commands.runEnd(() -> operatorController.vibrate(0.2), () -> operatorController.vibrate(0)))))
+                      Commands.runEnd(() -> operatorController.vibrate(0.2), () -> operatorController.vibrate(0)),
+                      LEDsCommands.blink(leds, Color.kGold, 0.05))))
+          .andThen(joystickDriveRobotRelative(drive, () -> 0.3, () -> 0, () -> 0).withTimeout(2))
           .schedule();
-      if (elevator.getIO().getPosition() < 8) {
-        ElevatorCommands.goToPosition(elevator, 10);
-      }
+      // if (elevator.getIO().getPosition() < 8) {
+      // ElevatorCommands.goToPosition(elevator, 10);
+      // }
     }
 
     @Override
