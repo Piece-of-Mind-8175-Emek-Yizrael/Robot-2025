@@ -705,10 +705,11 @@ public class DriveCommands {
                           .withTimeout(0.2).raceWith(
                               Commands.runEnd(() -> operatorController.vibrate(0.2),
                                   () -> operatorController.vibrate(0)))))))
+          .andThen(joystickDriveRobotRelative(drive, () -> 0.3, () -> 0, () -> 0).withTimeout(2))
           .schedule();
       // if (elevator.getIO().getPosition() < 8) {
       // ElevatorCommands.goToPosition(elevator, 10).schedule();
-      // }
+      // }\][]
     }
 
     @Override
