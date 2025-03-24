@@ -49,7 +49,10 @@ public class AutonomousRoutines {
                                                 .alongWith(ElevatorCommands.goToPosition(elevator, 8)),
                                 DriveCommands.joystickDriveRobotRelative(drive, () -> 0.4, () -> 0, () -> 0)
                                                 .withTimeout(0.4),
-                                ElevatorCommands.L2(elevator),
+                                Commands.race(
+                                                ElevatorCommands.L2(elevator),
+                                                DriveCommands.joystickDriveRobotRelative(drive, () -> 0.2, () -> 0,
+                                                                () -> 0)),
                                 TransferCommands.coralOutakeFast(transfer).withTimeout(0.5));
         }
 
@@ -81,7 +84,10 @@ public class AutonomousRoutines {
                                 DriveCommands.joystickDriveRobotRelative(drive, () -> 0.4, () -> 0, () -> 0)
                                                 .withTimeout(0.7),
                                 new InstantCommand(() -> drive.runVelocity(new ChassisSpeeds(), true)),
-                                ElevatorCommands.L2(elevator),
+                                Commands.race(
+                                                ElevatorCommands.L2(elevator),
+                                                DriveCommands.joystickDriveRobotRelative(drive, () -> 0.2, () -> 0,
+                                                                () -> 0)),
                                 TransferCommands.coralOutakeFast(transfer).withTimeout(0.5));
         }
 
