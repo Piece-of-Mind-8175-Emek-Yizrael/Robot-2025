@@ -356,12 +356,12 @@ public class RobotContainer {
 
                 driverController.RB()
                                 .whileTrue(DriveCommands.joystickDriveAutoAngle(drive,
-                                                () -> driverController.getLeftY() * 0.5,
-                                                () -> driverController.getLeftX() * 0.5));
+                                                () -> driverController.getLeftY() * 0.7,
+                                                () -> driverController.getLeftX() * 0.7));
 
                 driverController.LB().whileTrue(
-                                DriveCommands.joystickDriveRobotRelative(drive, () -> driverController.getLeftY() * 0.5,
-                                                () -> driverController.getLeftX() * 0.5,
+                                DriveCommands.joystickDriveRobotRelative(drive, () -> driverController.getLeftY() * 0.7,
+                                                () -> driverController.getLeftX() * 0.7,
                                                 () -> driverController.getRightX() * 0.47));
                 // driverController.RB().whileTrue(
                 // DriveCommands.joystickDriveRobotRelative(drive, () -> 0, () -> -0.4, () ->

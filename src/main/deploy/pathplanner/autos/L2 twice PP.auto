@@ -5,13 +5,19 @@
     "data": {
       "commands": [
         {
-          "type": "parallel",
+          "type": "sequential",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
                   "pathName": "Go to C right branch"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Locate closest right"
                 }
               }
             ]

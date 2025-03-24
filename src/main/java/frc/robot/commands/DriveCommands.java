@@ -192,7 +192,7 @@ public class DriveCommands {
 
   public static Command joystickDriveAutoAngle(
       Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier) {
-    ProfiledPIDController omegaController = new ProfiledPIDController(1, KI_OMEGA, KD_OMEGA,
+    ProfiledPIDController omegaController = new ProfiledPIDController(1.25, KI_OMEGA, KD_OMEGA,
         new Constraints(MAX_VELOCETY_OMEGA, MAX_ACCELERATION_OMEGA));
 
     omegaController.enableContinuousInput(-Math.PI, Math.PI);
