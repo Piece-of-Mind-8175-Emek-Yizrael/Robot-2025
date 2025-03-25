@@ -126,32 +126,33 @@ public class FieldConstants {
                 public static final double branchDist = 0.16; // Half the distance between branches
                 public static final double behindDist = 0.5; // Half the distance between branches
                 public static final double algaeDist = 0.1;
+                public static final double backInches = 21;
 
                 static {
                         // Initialize faces
                         blueCenterFaces[0] = new Pose2d(
-                                        Units.inchesToMeters(144.003 - 22),
+                                        Units.inchesToMeters(144.003 - backInches),
                                         Units.inchesToMeters(158.500),
                                         Rotation2d.fromDegrees(0));
                         blueCenterFaces[1] = new Pose2d(
-                                        Units.inchesToMeters(160.373 - (18 * Math.cos(Math.PI / 3))),
-                                        Units.inchesToMeters(186.857 + (18 * Math.sin(Math.PI / 3))),
+                                        Units.inchesToMeters(160.373 - (backInches * Math.cos(Math.PI / 3))),
+                                        Units.inchesToMeters(186.857 + (backInches * Math.sin(Math.PI / 3))),
                                         Rotation2d.fromDegrees(60));
                         blueCenterFaces[2] = new Pose2d(
-                                        Units.inchesToMeters(193.116 - (18 * Math.cos(2 * Math.PI / 3))),
-                                        Units.inchesToMeters(186.858 + (18 * Math.sin(2 * Math.PI / 3))),
+                                        Units.inchesToMeters(193.116 - (backInches * Math.cos(2 * Math.PI / 3))),
+                                        Units.inchesToMeters(186.858 + (backInches * Math.sin(2 * Math.PI / 3))),
                                         Rotation2d.fromDegrees(120));
                         blueCenterFaces[3] = new Pose2d(
-                                        Units.inchesToMeters(209.489 + 18),
+                                        Units.inchesToMeters(209.489 + backInches),
                                         Units.inchesToMeters(158.502),
                                         Rotation2d.fromDegrees(180));
                         blueCenterFaces[4] = new Pose2d(
-                                        Units.inchesToMeters(193.118 - (18 * Math.cos(-2 * Math.PI / 3))),
-                                        Units.inchesToMeters(130.145 + (18 * Math.sin(-2 * Math.PI / 3))),
+                                        Units.inchesToMeters(193.118 - (backInches * Math.cos(-2 * Math.PI / 3))),
+                                        Units.inchesToMeters(130.145 + (backInches * Math.sin(-2 * Math.PI / 3))),
                                         Rotation2d.fromDegrees(-120));
                         blueCenterFaces[5] = new Pose2d(
-                                        Units.inchesToMeters(160.375 - (18 * Math.cos(-Math.PI / 3))),
-                                        Units.inchesToMeters(130.144 + (18 * Math.sin(-Math.PI / 3))),
+                                        Units.inchesToMeters(160.375 - (backInches * Math.cos(-Math.PI / 3))),
+                                        Units.inchesToMeters(130.144 + (backInches * Math.sin(-Math.PI / 3))),
                                         Rotation2d.fromDegrees(-60));
                         Logger.recordOutput("center face 0", blueCenterFaces);
                         for (int i = 0; i < 6; i++) {
