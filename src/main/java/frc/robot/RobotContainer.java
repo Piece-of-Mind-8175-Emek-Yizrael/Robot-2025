@@ -27,9 +27,12 @@ import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -427,6 +430,15 @@ public class RobotContainer {
                 operatorController.rightTrigger(0.2)
                                 .whileTrue(ElevatorCommands.openElevatorManual(elevatorSubsystem,
                                                 () -> operatorController.getRightTriggerAxis() * 5.5));
+
+                // new Trigger(() -> Timer.getMatchTime() < 10 // && DriverStation.isTeleop()
+                // && CommandScheduler.getInstance().requiring(leds) == null)
+                // .onTrue(LEDsCommands.setAll(leds, Color.kWhite)
+                // .beforeStarting(() -> leds.setDefaultCommand(null)));
+                // new Trigger(() -> Timer.getMatchTime() < 5// && DriverStation.isTeleop()
+                // && CommandScheduler.getInstance().requiring(leds) == null)
+                // .onTrue(LEDsCommands.setAll(leds, Color.kRed)
+                // .beforeStarting(() -> leds.setDefaultCommand(null)));
 
                 // slow FIXME not working
                 // operatorController.PovUp().whileTrue(ElevatorCommands.openElevatorManual(elevatorSubsystem,

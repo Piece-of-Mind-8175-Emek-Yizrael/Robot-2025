@@ -55,7 +55,7 @@ public class DriveConstants {
         // Zeroed rotation values for each module, see setup instructions
         public static final Rotation2d frontLeftZeroRotation = new Rotation2d(0.9215 + Math.PI);
         public static final Rotation2d frontRightZeroRotation = new Rotation2d(
-                        0.39 + 3.063 + 2.586 + 2.003 + 0.63);// 0.39
+                        0.39 + 3.063 + 2.586 + 2.003);// 0.39
         public static final Rotation2d backLeftZeroRotation = new Rotation2d(1.54 - 0.035 + Math.PI);
         public static final Rotation2d backRightZeroRotation = new Rotation2d(3.05 - 0.05 + 1.015 + Math.PI + 0.218);
 
@@ -107,7 +107,7 @@ public class DriveConstants {
         public static final double driveSimKv = 0.0789;
 
         public static final double driveSlipCurrent = 70;
-        public static final double driveRampRate = 0.25;
+        public static final double driveRampRate = 0.22;
 
         // Turn motor configuration
         public static final boolean turnInverted = true;

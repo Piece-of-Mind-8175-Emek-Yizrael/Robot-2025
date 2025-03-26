@@ -21,7 +21,7 @@ public class MultiSystemCommands {
                                                                                                 .withTimeout(0.3)),
                                                 AlgaeOuttakeCommands.openArm(algaeOuttake),
                                                 ElevatorCommands.goToPosition(elevator, 2)),
-                                ElevatorCommands.goToPosition(elevator, 17).withTimeout(0.9),
+                                ElevatorCommands.goToPosition(elevator, 27).withTimeout(0.9),
                                 Commands.parallel(ElevatorCommands.goToPosition(elevator, 27).withTimeout(1),
                                                 DriveCommands.joystickDriveRobotRelative(drive, () -> -0.5, () -> 0,
                                                                 () -> 0.3)
@@ -43,8 +43,8 @@ public class MultiSystemCommands {
                                                                                                 .withTimeout(0.3)),
                                                 AlgaeOuttakeCommands.openArm(algaeOuttake),
                                                 ElevatorCommands.goToPosition(elevator, 23).withTimeout(1)),
-                                ElevatorCommands.goToPosition(elevator, 35).withTimeout(1),
-                                Commands.parallel(ElevatorCommands.goToPosition(elevator, 42).withTimeout(.9),
+                                ElevatorCommands.goToPosition(elevator, 46).withTimeout(1.25),
+                                Commands.parallel(ElevatorCommands.goToPosition(elevator, 46).withTimeout(.9),
                                                 DriveCommands.joystickDriveRobotRelative(drive, () -> -0.5, () -> 0,
                                                                 () -> 0.3)
                                                                 .withTimeout(1)),
