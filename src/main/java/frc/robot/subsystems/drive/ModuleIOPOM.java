@@ -255,7 +255,7 @@ public class ModuleIOPOM implements ModuleIO {
 
   @Override
   public void setDriveVelocity(double velocityRadPerSec) {
-    Logger.recordOutput(getModuleString() + "/drive request velocity rad/sec", velocityRadPerSec);
+    Logger.recordOutput(getModuleString() + "/drive request velocity radPerSec", velocityRadPerSec);
     double velocityRotPerSec = Units.radiansToRotations(velocityRadPerSec);
     driveMotor.setControl(velocityVoltageRequest.withVelocity(velocityRotPerSec));
   }
@@ -270,7 +270,7 @@ public class ModuleIOPOM implements ModuleIO {
     var ks = Math.copySign(turnKs, error);
     Logger.recordOutput(getModuleString() + "/ks", ks);
     Logger.recordOutput(getModuleString() + "/error", error);
-    if (Math.abs(error) > 0.07) {
+    if (Math.abs(error) > 0.03) {
       turnController.setReference(setpoint.getRadians(), ControlType.kPosition,
           ClosedLoopSlot.kSlot0, ks, ArbFFUnits.kVoltage);
     } else {

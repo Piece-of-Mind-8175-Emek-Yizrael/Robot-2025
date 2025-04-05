@@ -42,8 +42,10 @@ public class VisionIOReal implements VisionIO {
         inputs.latestTargetObservation = new TargetObservation(
             Rotation2d.fromDegrees(result.getBestTarget().getYaw()),
             Rotation2d.fromDegrees(result.getBestTarget().getPitch()));
+        inputs.cameraToBestTarget = result.getBestTarget().bestCameraToTarget;
       } else {
         inputs.latestTargetObservation = new TargetObservation(new Rotation2d(), new Rotation2d());
+        inputs.cameraToBestTarget = null;
       }
 
       // Add pose observation
@@ -88,8 +90,8 @@ public class VisionIOReal implements VisionIO {
         if (tagPose.isPresent()) {
           Transform3d fieldToTarget = new Transform3d(tagPose.get().getTranslation(), tagPose.get().getRotation());
           Transform3d cameraToTarget = target.bestCameraToTarget;
-          // if (cameraToTarget.getTranslation().getNor )  > 1 .5){
-          //   continue;
+          // if (cameraToTarget.getTranslation().getNor ) > 1 .5){
+          // continue;
           // }
           Transform3d fieldToCamera = fieldToTarget.plus(cameraToTarget.inverse());
           Transform3d fieldToRobot = fieldToCamera.plus(robotToCamera.inverse());
