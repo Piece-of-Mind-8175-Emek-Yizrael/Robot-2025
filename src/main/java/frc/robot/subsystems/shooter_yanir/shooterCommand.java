@@ -13,33 +13,35 @@ public class shooterCommand extends Command {
 
     @Override
     public void initialize() {
-        shooterSubsystem.setSpeedtoFlyWheels(15);
-        new java.util.Timer().schedule(new java.util.TimerTask() {
-            @Override
-            public void run() {
-                shooterSubsystem.setSpeedtoFlyWheels(0);
-            }
-        }, 3000);
+        // shooterSubsystem.setSpeedtoFlyWheels(15);
+        // new java.util.Timer().schedule(new java.util.TimerTask() {
+        // @Override
+        // public void run() {
+        // shooterSubsystem.setSpeedtoFlyWheels(0);
+        // }
+        // }, 3000);
+        shooterSubsystem.setSpeedtoFlyWheels(Speed);
     }
 
-    int executeCounter = 0;
+    // int executeCounter = 0;
 
     @Override
     public void execute() {
-        executeCounter += 1;
+        // executeCounter += 1;
     }
 
     public void end() {
-
+        shooterSubsystem.stopMotor();
     }
 
     @Override
     public boolean isFinished() {
-        if (executeCounter >= 1) {
-            return true;
-        } else {
-            return false;
-        }
+        // if (executeCounter >= 1) {
+        // return true;
+        // } else {
+        // return false;
+        // }
+        return false;
     }
 
 }

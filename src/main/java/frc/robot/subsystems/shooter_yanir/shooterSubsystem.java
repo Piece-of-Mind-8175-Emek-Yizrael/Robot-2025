@@ -43,4 +43,9 @@ public class shooterSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("FlyWheels Speed", getSpeed());
         SmartDashboard.putBoolean("is Ring in", isRingReadyToBeShot());
     }
+
+    public void stopMotor() {
+        flyWheelMain.stopMotor();
+        ;
+    }
 }
