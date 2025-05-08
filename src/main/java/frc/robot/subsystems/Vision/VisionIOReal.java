@@ -125,5 +125,6 @@ public class VisionIOReal implements VisionIO {
     for (int id : tagIds) {
       inputs.tagIds[i++] = id;
     }
+
   }
 }

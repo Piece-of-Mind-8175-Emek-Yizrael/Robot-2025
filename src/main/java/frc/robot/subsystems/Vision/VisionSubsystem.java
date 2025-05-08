@@ -14,7 +14,20 @@
 
 package frc.robot.subsystems.Vision;
 
-import static frc.robot.subsystems.Vision.VisionConstants.*;
+import static frc.robot.subsystems.Vision.VisionConstants.angularStdDevBaseline;
+import static frc.robot.subsystems.Vision.VisionConstants.angularStdDevMegatag2Factor;
+import static frc.robot.subsystems.Vision.VisionConstants.aprilTagLayout;
+import static frc.robot.subsystems.Vision.VisionConstants.cameraStdDevFactors;
+import static frc.robot.subsystems.Vision.VisionConstants.linearStdDevBaseline;
+import static frc.robot.subsystems.Vision.VisionConstants.linearStdDevMegatag2Factor;
+import static frc.robot.subsystems.Vision.VisionConstants.maxAmbiguity;
+import static frc.robot.subsystems.Vision.VisionConstants.maxZError;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Pair;
@@ -29,11 +42,6 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.Vision.VisionIO.PoseObservationType;
-
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import org.littletonrobotics.junction.Logger;
 
 public class VisionSubsystem extends SubsystemBase {
     private final VisionConsumer consumer;
@@ -90,6 +98,8 @@ public class VisionSubsystem extends SubsystemBase {
         for (int i = 0; i < io.length; i++) {
             io[i].updateInputs(inputs[i]);
             Logger.processInputs("Vision/Camera" + Integer.toString(i), inputs[i]);
+            // Logger.recordOutput("Vision/Camera/areVisibleTags" + Integer.toString(i) +
+            // "/Connected", inputs[i].connected);
         }
 
         // Initialize logging values

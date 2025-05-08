@@ -15,21 +15,14 @@ package frc.robot;
 
 import static frc.robot.subsystems.AlgaeOuttake.AlgaeOuttakeConstants.ALGAE_OUTTAKE_ELEVATOR_POSITION;
 import static frc.robot.subsystems.Elevator.ElevatorConstants.L2_POSITION;
-import static frc.robot.subsystems.Elevator.ElevatorConstants.MANUAL_FAST_CLOSE;
-import static frc.robot.subsystems.Elevator.ElevatorConstants.MANUAL_FAST_OPEN;
-import static frc.robot.subsystems.Elevator.ElevatorConstants.MANUAL_SLOW_CLOSE;
 
-import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathPlannerPath;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.LEDPattern;
@@ -51,11 +44,11 @@ import frc.robot.commands.TransferCommands;
 import frc.robot.subsystems.AlgaeOuttake.AlgaeOuttake;
 import frc.robot.subsystems.AlgaeOuttake.AlgaeOuttakeIO;
 import frc.robot.subsystems.AlgaeOuttake.AlgaeOuttakeIOReal;
-import frc.robot.subsystems.AlgaeOuttake.AlgaeOuttakeIOSim;
+import frc.robot.subsystems.AlgeaOuttake_yanir.AlgaeOuttakeCommand_yanir;
+import frc.robot.subsystems.AlgeaOuttake_yanir.AlgaeOuttakeSubsystem;
 import frc.robot.subsystems.Elevator.Elevator;
 import frc.robot.subsystems.Elevator.ElevatorConstants;
 import frc.robot.subsystems.Elevator.ElevatorIO;
-import frc.robot.subsystems.Elevator.ElevatorIOSim;
 import frc.robot.subsystems.Elevator.ElevatorReal;
 import frc.robot.subsystems.LEDs.LEDs;
 import frc.robot.subsystems.LEDs.LEDsIOReal;
@@ -63,18 +56,16 @@ import frc.robot.subsystems.LEDs.LEDsIOSim;
 import frc.robot.subsystems.Transfer.Transfer;
 import frc.robot.subsystems.Transfer.TransferIO;
 import frc.robot.subsystems.Transfer.TransferIOReal;
-import frc.robot.subsystems.Transfer.TransferIOSim;
 import frc.robot.subsystems.Vision.VisionIOReal;
-import frc.robot.subsystems.Vision.VisionIOSim;
 import frc.robot.subsystems.Vision.VisionSubsystem;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.FieldConstants.Reef;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon;
-import frc.robot.subsystems.drive.GyroIOSim;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOPOM;
-import frc.robot.subsystems.drive.ModuleIOSim;
+import frc.robot.subsystems.shooter_yanir.shooterCommand;
+import frc.robot.subsystems.shooter_yanir.shooterSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -111,6 +102,8 @@ public class RobotContainer {
         private boolean isRelative;
 
         private VisionSubsystem vision;
+        private AlgaeOuttakeSubsystem algaeOuttakeSubsystem;
+        private shooterSubsystem shooterSubsystem;
 
         /**
          * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -165,14 +158,14 @@ public class RobotContainer {
                                 // algaeOuttake = new AlgaeOuttake(new AlgaeOuttakeIOSim());
                                 // elevatorSubsystem = new Elevator(new ElevatorIOSim());
 
-                                // // leds = new LEDs(new LEDsIOSim(), () -> vision.areVisibleTags(0), // Left
-                                // // Camera
-                                // // () -> vision.areVisibleTags(1)); // Right Camera
+                                // leds = new LEDs(new LEDsIOSim(), () -> vision.areVisibleTags(0), // Left
+                                // Camera
+                                // () -> vision.areVisibleTags(1)); // Right Camera
 
-                                // leds = new LEDs(new LEDsIOSim(), operatorController.back(), // Left Camera
-                                // operatorController.start()); // Right Camera
+                                leds = new LEDs(new LEDsIOSim(), operatorController.back(), // Left Camera
+                                                operatorController.start()); // Right Camera
 
-                                // break;
+                                break;
 
                         default:
                                 // Replayed robot, disable IO implementations
@@ -459,7 +452,8 @@ public class RobotContainer {
                 // .alongWith(ElevatorCommands.closeElevator(elevatorSubsystem)));
 
                 // leds.setDefaultCommand(LEDsCommands.setAll(leds, Color.kPurple));
-
+                operatorController.b().onTrue(new AlgaeOuttakeCommand_yanir(algaeOuttakeSubsystem, 90));
+                operatorController.rightTrigger().onTrue(new shooterCommand(shooterSubsystem, 15));
         }
 
         public void displaSimFieldToAdvantageScope() {
@@ -491,7 +485,7 @@ public class RobotContainer {
                 AlgaeOuttakeCommands.closeArm(algaeOuttake).schedule();
         }
 
-public void blinkRed() {
+        public void blinkRed() {
                 LEDsCommands.blink(leds, Color.kPurple, 0.5).schedule();
         }
 

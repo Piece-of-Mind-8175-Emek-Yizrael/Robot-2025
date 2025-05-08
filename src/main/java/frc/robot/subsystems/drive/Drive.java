@@ -181,7 +181,7 @@ public class Drive extends SubsystemBase {
           Volts.of(0.2),
           Volts.of(0.2),
           Inches.of(2),
-          KilogramSquareMeters.of(0.004),
+          KilogramSquareMeters.of(0.0055),
           DriveConstants.wheelCOF))
       .withBumperSize(Meters.of(0.7), Meters.of(0.7));
 
