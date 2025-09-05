@@ -13,12 +13,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.Threads;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.seasonspecific.crescendo2024.CrescendoNoteOnField;
 import org.littletonrobotics.junction.LogFileUtil;
@@ -28,6 +22,12 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import org.littletonrobotics.urcl.URCL;
+
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.Threads;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -80,6 +80,7 @@ public class Robot extends LoggedRobot {
     switch (Constants.currentMode) {
       case REAL:
         // Running on a real robot, log to a USB stick ("/U/logs")
+        // Logger.addDataReceiver(new WPILOGWriter("/home/lvuser/logs"));
         Logger.addDataReceiver(new WPILOGWriter("/home/lvuser/logs"));
         Logger.addDataReceiver(new NT4Publisher());
         break;
@@ -113,7 +114,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void robotPeriodic() {
     // Switch thread to high priority to improve loop timing
-    Threads.setCurrentThreadPriority(true, 99);
+    // Threads.setCurrentThreadPriority(true, 99);
 
     // Runs the Scheduler. This is responsible for polling buttons, adding
     // newly-scheduled commands, running already-scheduled commands, removing
@@ -123,7 +124,9 @@ public class Robot extends LoggedRobot {
     CommandScheduler.getInstance().run();
 
     // Return to normal thread priority
-    Threads.setCurrentThreadPriority(false, 10);
+    // Threads.setCurrentThreadPriority(false, 10);
+
+    Logger.recordOutput("Match time", Timer.getMatchTime());
   }
 
   /** This function is called once when the robot is disabled. */
@@ -131,6 +134,7 @@ public class Robot extends LoggedRobot {
   public void disabledInit() {
     // POMTalonFX.DisableSound();
     // POMTalonFX.DisableSound();
+
   }
 
   /** This function is called periodically when disabled. */

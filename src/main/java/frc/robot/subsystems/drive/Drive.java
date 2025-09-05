@@ -100,7 +100,9 @@ public class Drive extends SubsystemBase {
           new SwerveModulePosition()
       };
   private SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(kinematics, rawGyroRotation,
-      lastModulePositions, new Pose2d(3, 3, new Rotation2d()));
+      lastModulePositions, new Pose2d(10, 7.5, new Rotation2d(-1)));
+
+  Field2d field;
 
   public Drive(
       GyroIO gyroIO,
@@ -127,7 +129,7 @@ public class Drive extends SubsystemBase {
         this::getChassisSpeeds,
         this::runPureVelocity,
         new PPHolonomicDriveController(
-            new PIDConstants(2.5, 0.0, 0.0), new PIDConstants(2.5, 0.0, 0.0)),
+            new PIDConstants(1, 0.0, 0.0), new PIDConstants(1, 0.0, 0.0)),
         ppConfig,
         () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
         this);
@@ -161,7 +163,7 @@ public class Drive extends SubsystemBase {
             (voltage) -> runSteerCharacterization(voltage.in(Volts)), null, this));
 
     PushSwerveData();
-    Field2d field = new Field2d();
+    field = new Field2d();
     for (int i = 0; i < 6; i += 1) {
       field.getObject("left" + i).setPose(FieldConstants.Reef.redLeftBranches[i]);
       field.getObject("right" + i).setPose(FieldConstants.Reef.redRightBranches[i]);
@@ -243,6 +245,9 @@ public class Drive extends SubsystemBase {
 
     // Update gyro alert
     gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.currentMode != Mode.SIM);
+    field.setRobotPose(getPose());
+
+    Logger.recordOutput("Field speeds", ChassisSpeeds.fromRobotRelativeSpeeds(getChassisSpeeds(), getRotation()));
 
   }
 

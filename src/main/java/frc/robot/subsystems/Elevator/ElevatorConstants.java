@@ -15,11 +15,12 @@ public class ElevatorConstants {
     public static final double RESIST_GRAVITY = 0;
     public static final double TOLERANCE = 0.15;
 
-    public static final double MAX_ACCELERATION = 75;
-    public static final double MAX_VELOCITY = 50;
+    public static final double MAX_ACCELERATION = 85;
+    public static final double MAX_VELOCITY = 65;
 
     public static final double FORWARD_SOFT_LIMIT = 0;
     public static final double L2_POSITION = 34;
+    public static final double L1_POSITION = 13.2;
     public static final double L3_POSITION = 55;
 
     public static final double CLOSE_ELEVATOR_SPEED = -0.5;

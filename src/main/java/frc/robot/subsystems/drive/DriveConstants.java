@@ -28,11 +28,11 @@ public class DriveConstants {
         public static final double MAX_VELOCETY_XY = 4;
         public static final double TRANSLATION_TOLERANCE = 0.03;
 
-        public static final double KP_OMEGA = 1.4;
+        public static final double KP_OMEGA = 2;
         public static final double KI_OMEGA = 0;
         public static final double KD_OMEGA = 0;
-        public static final double MAX_ACCELERATION_OMEGA = 1.5;
-        public static final double MAX_VELOCETY_OMEGA = 1.5;
+        public static final double MAX_ACCELERATION_OMEGA = 2;
+        public static final double MAX_VELOCETY_OMEGA = 1.8;
         public static final double OMEGA_TOLERANCE = 0.05;
 
         public static final double ALGAE_OUTTAKE_DRIVE_BACK_SPEED = 0.04;
@@ -53,10 +53,11 @@ public class DriveConstants {
         };
 
         // Zeroed rotation values for each module, see setup instructions
-        public static final Rotation2d frontLeftZeroRotation = new Rotation2d(0.9715 + Math.PI);
-        public static final Rotation2d frontRightZeroRotation = new Rotation2d(0.39);
-        public static final Rotation2d backLeftZeroRotation = new Rotation2d(1.54 + Math.PI);
-        public static final Rotation2d backRightZeroRotation = new Rotation2d(3.05 + 1.015 + Math.PI);
+        public static final Rotation2d frontLeftZeroRotation = new Rotation2d(0.9215 + Math.PI);
+        public static final Rotation2d frontRightZeroRotation = new Rotation2d(
+                        0.39 + 3.063 + 2.586 + 2.003);// 0.39
+        public static final Rotation2d backLeftZeroRotation = new Rotation2d(1.54 - 0.035 + Math.PI);
+        public static final Rotation2d backRightZeroRotation = new Rotation2d(3.05 - 0.05 + 1.015 + Math.PI + 0.218);
 
         // Device CAN IDs
         public static final int pigeonCanId = 2;
@@ -106,7 +107,7 @@ public class DriveConstants {
         public static final double driveSimKv = 0.0789;
 
         public static final double driveSlipCurrent = 70;
-        public static final double driveRampRate = 0.6;
+        public static final double driveRampRate = 0.22;
 
         // Turn motor configuration
         public static final boolean turnInverted = true;
@@ -124,7 +125,7 @@ public class DriveConstants {
         // Turn PID configuration
         public static final double turnKp = 0.29;
         public static final double turnKd = 0.0744;
-        public static final double turnKs = 0.25;
+        public static final double turnKs = 0.22;
         // public static final double turnKp = 0.275;
         // public static final double turnKd = 0.0744;
         public static final double turnSimP = 8.0;
